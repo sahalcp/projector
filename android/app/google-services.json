@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "791392216984",
+    "project_id": "projectormobile-3fcd2",
+    "storage_bucket": "projectormobile-3fcd2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:791392216984:android:f966ebb4bd289c4f71eded",
+        "android_client_info": {
+          "package_name": "com.projectorllc.projectorapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "791392216984-fqboe9itkveionba34i2nksih5fv9efg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXhx-EjfkrbgTk6qiHCMOSrBexY3fzLMM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "791392216984-fqboe9itkveionba34i2nksih5fv9efg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "791392216984-6g5refk44rp42tk7dmp6hsjbpfa8o6cv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.goodbits.projectorstream"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

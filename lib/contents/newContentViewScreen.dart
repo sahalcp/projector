@@ -1,27 +1,25 @@
 import 'dart:async';
-import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projector/accountSettings/NotificationInvitationScreen.dart';
-import 'package:projector/apis/accountService.dart';
 import 'package:projector/apis/videoService.dart';
 import 'package:projector/apis/viewService.dart';
-import 'package:projector/common/snappingListScroll.dart';
 import 'package:projector/constant.dart';
 import 'package:projector/contents/albumDetailsScreen.dart';
+import 'package:projector/contents/category_video_list.dart';
 import 'package:projector/contents/contentDetailsScreen.dart';
 import 'package:projector/shimmer/shimmerLoading.dart';
 import 'package:projector/sideDrawer/viewProfiePage.dart';
 import 'package:projector/style.dart';
-import 'package:projector/uploading/selectFileMainScreen.dart';
-import 'package:projector/widgets/commingSoon.dart';
 import 'package:projector/widgets/dialogs.dart';
 import 'package:projector/widgets/uploadPopupDialog.dart';
 import 'package:projector/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../startWatching.dart';
 
 class NewContentViewScreen extends StatefulWidget {
@@ -40,9 +38,8 @@ class NewContentViewScreen extends StatefulWidget {
 }
 
 class _NewContentViewScreenState extends State<NewContentViewScreen> {
-  String name = '', searchText = '', categoryId = '', image;
+  String name = '', searchText = '', image;
   StreamController searchVideoList = StreamController.broadcast();
-  bool selectedCategory = false;
   bool isResumeWatching = true;
   int notificationBadge = 0;
   List resumeListData = [];
@@ -160,7 +157,7 @@ class _NewContentViewScreenState extends State<NewContentViewScreen> {
   int selectedIndex = 0;
   bool searchVideos = false;
 
-  _goToContentDetailScreen({videoId}){
+  _goToContentDetailScreen({videoId}) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -200,7 +197,6 @@ class _NewContentViewScreenState extends State<NewContentViewScreen> {
     double tabVideoHeight = height * 0.16;
     double videoWidth = width * 0.40;
     double tabVideoWidth = width * 0.25;
-    double videoWidthSelected = width * 0.42;
     double albumHeight = 105;
     double albumWidth = 105;
     double tabAlbumWidth = 150;
@@ -215,9 +211,8 @@ class _NewContentViewScreenState extends State<NewContentViewScreen> {
     double videoMarginLeft = 16.0;
     double videoMarginRight = 5.0;
 
-    var resumeDataLength = 0;
     return Sizer(builder: (context, orientation, deviceType) {
-     /* if(deviceType == DeviceType.mobile){
+      /* if(deviceType == DeviceType.mobile){
         SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
       }else{
         SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight]);
@@ -496,10 +491,9 @@ class _NewContentViewScreenState extends State<NewContentViewScreen> {
                                                       ['thumbnails'];
                                               return InkWell(
                                                 onTap: () {
-
-                                                  _goToContentDetailScreen(videoId:
-                                                  snapshot
-                                                      .data[index]['id']);
+                                                  _goToContentDetailScreen(
+                                                      videoId: snapshot
+                                                          .data[index]['id']);
 
                                                   /*navigate(
                                                     context,
@@ -744,11 +738,10 @@ class _NewContentViewScreenState extends State<NewContentViewScreen> {
                                                 return InkWell(
                                                   onTap: () {
                                                     _goToContentDetailScreen(
-                                                      videoId:
-                                                      snapshot
-                                                          .data[index]['id']);
+                                                        videoId: snapshot
+                                                            .data[index]['id']);
 
-                                                  /*navigate(
+                                                    /*navigate(
                                                       context,
                                                       ContentDetailScreen(
                                                         videoId: snapshot
@@ -767,7 +760,11 @@ class _NewContentViewScreenState extends State<NewContentViewScreen> {
                                                             right: 16,
                                                             top: 4,
                                                             bottom: 4),
-                                                        height: deviceType == DeviceType.mobile ? videoHeight : tabVideoHeight,
+                                                        height: deviceType ==
+                                                                DeviceType
+                                                                    .mobile
+                                                            ? videoHeight
+                                                            : tabVideoHeight,
                                                         decoration:
                                                             BoxDecoration(
                                                           image:
@@ -872,10 +869,11 @@ class _NewContentViewScreenState extends State<NewContentViewScreen> {
 
                               // TODO: category list start
                               Container(
-                                height: deviceType == DeviceType.mobile ? height * 0.09 : height * 0.15,
+                                height: deviceType == DeviceType.mobile
+                                    ? height * 0.09
+                                    : height * 0.15,
                                 child: FutureBuilder(
-                                  future: VideoService()
-                                      .getUserContentList(
+                                  future: VideoService().getUserContentList(
                                       widget.userId, context),
                                   builder: (context, snapshot) {
                                     if (snapshot.hasData) {
@@ -895,98 +893,120 @@ class _NewContentViewScreenState extends State<NewContentViewScreen> {
                                               child: ListView.builder(
                                                 itemCount: snapshot.data.length,
                                                 shrinkWrap: true,
-                                               // physics: NeverScrollableScrollPhysics(),
+                                                // physics: NeverScrollableScrollPhysics(),
                                                 scrollDirection:
                                                     Axis.horizontal,
                                                 itemBuilder: (context, index) {
-                                                  var categoryList = snapshot.data[index]['id'] == "1";
+                                                  var categoryList = snapshot
+                                                          .data[index]['id'] ==
+                                                      "1";
 
+                                                  return categoryList
+                                                      ? Container(
+                                                          child: ListView
+                                                              .builder(
+                                                                  itemCount: snapshot
+                                                                      .data[
+                                                                          index]
+                                                                          [
+                                                                          'content']
+                                                                      .length,
+                                                                  shrinkWrap:
+                                                                      true,
+                                                                  // physics: NeverScrollableScrollPhysics(),
+                                                                  scrollDirection:
+                                                                      Axis
+                                                                          .horizontal,
+                                                                  itemBuilder:
+                                                                      (context,
+                                                                          contentIndex) {
+                                                                    var title = snapshot.data[index]['content']
+                                                                            [
+                                                                            contentIndex]
+                                                                        [
+                                                                        'title'];
+                                                                    var image = snapshot.data[index]['content']
+                                                                            [
+                                                                            contentIndex]
+                                                                        [
+                                                                        'icon'];
 
-                                                  return categoryList ? Container(
-                                                    child: ListView.builder(
-                                                        itemCount: snapshot.data[index]['content'].length,
-                                                        shrinkWrap: true,
-                                                       // physics: NeverScrollableScrollPhysics(),
-                                                        scrollDirection:
-                                                        Axis.horizontal,
-                                                        itemBuilder: (context,contentIndex){
-                                                          var title = snapshot.data[index]['content'][contentIndex]['title'];
-                                                          var image = snapshot.data[index]['content'][contentIndex]['icon'];
-                                                          var categoryIdData = snapshot.data[index]['content'][contentIndex]['id'];
-
-                                                          return InkWell(
-                                                            onTap: (){
-                                                              setState(() {
-                                                                categoryId = categoryIdData;
-                                                                selectedCategory = true;
-                                                              });
-                                                            },
-                                                            child: Container(
-                                                              padding:
-                                                              EdgeInsets.symmetric(
-                                                                  horizontal: 15),
-                                                              margin: EdgeInsets.only(
-                                                                  right: 4, left: 16.0),
-                                                              height: height * 0.08,
-                                                              width: deviceType ==
-                                                                  DeviceType.mobile
-                                                                  ? videoWidth
-                                                                  : videoWidth * 0.6,
-                                                              decoration: BoxDecoration(
-                                                                color:
-                                                                Color(0xff2F303D),
-                                                                borderRadius:
-                                                                BorderRadius
-                                                                    .circular(10.0),
-                                                                border: Border.all(
-                                                                  color: selectedCategory &&
-                                                                      categoryId ==
-                                                                          categoryIdData
-                                                                      ? Colors.white
-                                                                      : Colors
-                                                                      .transparent,
-                                                                  width: 3.0,
-                                                                ),
-                                                                image: DecorationImage(
-                                                                  // image: AssetImage('images/pic.png'),
-                                                                  colorFilter:
-                                                                  new ColorFilter
-                                                                      .mode(
-                                                                      Colors.black
-                                                                          .withOpacity(
-                                                                          0.5),
-                                                                      BlendMode
-                                                                          .dstATop),
-                                                                  image: NetworkImage(
-                                                                      image),
-                                                                  fit: BoxFit.cover,
-                                                                ),
-                                                              ),
-                                                              child: Center(
-                                                                child: Text(
-                                                                  title,
-                                                                  overflow:
-                                                                  TextOverflow.fade,
-                                                                  textAlign:
-                                                                  TextAlign.center,
-                                                                  style: GoogleFonts
-                                                                      .poppins(
-                                                                    color: Colors.white,
-                                                                    fontSize: deviceType ==
-                                                                        DeviceType
-                                                                            .mobile
-                                                                        ? 20
-                                                                        : 25,
-                                                                    fontWeight:
-                                                                    FontWeight.w500,
-                                                                  ),
-                                                                  maxLines: 2,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          );
-                                                        }),
-                                                  ) : Container();
+                                                                    return InkWell(
+                                                                      onTap:
+                                                                          () {
+                                                                        navigate(
+                                                                          context,
+                                                                          CategoryVideoList(
+                                                                            userId:
+                                                                                widget.userId,
+                                                                            categoryData:
+                                                                                snapshot.data[index]['content'][contentIndex],
+                                                                          ),
+                                                                        );
+                                                                      },
+                                                                      child:
+                                                                          Container(
+                                                                        padding:
+                                                                            EdgeInsets.symmetric(horizontal: 15),
+                                                                        margin: EdgeInsets.only(
+                                                                            right:
+                                                                                4,
+                                                                            left:
+                                                                                16.0),
+                                                                        height: height *
+                                                                            0.08,
+                                                                        width: deviceType == DeviceType.mobile
+                                                                            ? videoWidth
+                                                                            : videoWidth *
+                                                                                0.6,
+                                                                        decoration:
+                                                                            BoxDecoration(
+                                                                          color:
+                                                                              Color(0xff2F303D),
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(10.0),
+                                                                          border:
+                                                                              Border.all(
+                                                                            color:
+                                                                                Colors.transparent,
+                                                                            width:
+                                                                                3.0,
+                                                                          ),
+                                                                          image:
+                                                                              DecorationImage(
+                                                                            // image: AssetImage('images/pic.png'),
+                                                                            colorFilter:
+                                                                                new ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.dstATop),
+                                                                            image:
+                                                                                NetworkImage(image),
+                                                                            fit:
+                                                                                BoxFit.cover,
+                                                                          ),
+                                                                        ),
+                                                                        child:
+                                                                            Center(
+                                                                          child:
+                                                                              Text(
+                                                                            title,
+                                                                            overflow:
+                                                                                TextOverflow.fade,
+                                                                            textAlign:
+                                                                                TextAlign.center,
+                                                                            style:
+                                                                                GoogleFonts.poppins(
+                                                                              color: Colors.white,
+                                                                              fontSize: deviceType == DeviceType.mobile ? 20 : 25,
+                                                                              fontWeight: FontWeight.w500,
+                                                                            ),
+                                                                            maxLines:
+                                                                                2,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    );
+                                                                  }),
+                                                        )
+                                                      : Container();
                                                 },
                                               ),
                                             );
@@ -1001,379 +1021,94 @@ class _NewContentViewScreenState extends State<NewContentViewScreen> {
                                 ),
                               ),
                               // TODO: category list end
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 40),
+                                  //videoTitle('Resume Watching'),
+                                  if (resumeListData.length > 0)
+                                    Visibility(
+                                      visible: isResumeWatching,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          videoTitle(
+                                              title: 'Resume Watching',
+                                              deviceType: deviceType),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          InkWell(
+                                            onTap: () async {
+                                              var response =
+                                                  await VideoService()
+                                                      .clearResumeList(
+                                                          userId:
+                                                              widget.userId);
 
-                              selectedCategory
-                                  ? Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(height: 20),
-                                        Container(
-                                          child: FutureBuilder(
-                                            future: VideoService()
-                                                .getCategoryDetail(
-                                                    widget.userId, categoryId),
-                                            builder: (context, snapshot) {
-                                              if (snapshot.hasData) {
-                                                return snapshot.data.length == 0
-                                                    ? Center(
-                                                        child: Text(
-                                                          'No Videos',
-                                                          style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            fontSize:
-                                                                noVideosSize,
-                                                          ),
-                                                        ),
-                                                      )
-                                                    : Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Wrap(
-                                                            direction:
-                                                                Axis.vertical,
-                                                            children: [
-                                                              Container(
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  border: Border.all(
-                                                                      color: Colors
-                                                                          .white,
-                                                                      width:
-                                                                          2.0),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .all(
-                                                                    Radius.circular(
-                                                                        15.0),
-                                                                  ),
-                                                                ),
-                                                                padding: EdgeInsets
-                                                                    .only(
-                                                                        left:
-                                                                            10.0,
-                                                                        right:
-                                                                            10.0,
-                                                                        top:
-                                                                            5.0,
-                                                                        bottom:
-                                                                            5.0),
-                                                                margin: EdgeInsets
-                                                                    .only(
-                                                                        left:
-                                                                            20.0),
-                                                                child: InkWell(
-                                                                  onTap: () {
-                                                                    setState(
-                                                                        () {
-                                                                      selectedCategory =
-                                                                          false;
-                                                                    });
-                                                                  },
-                                                                  child: Row(
-                                                                    children: [
-                                                                      Text(
-                                                                        snapshot.data['details']
-                                                                            [
-                                                                            'title'],
-                                                                        style:
-                                                                            TextStyle(
-                                                                          color:
-                                                                              Colors.white,
-                                                                          fontWeight:
-                                                                              FontWeight.w500,
-                                                                          fontSize:
-                                                                              15,
-                                                                        ),
-                                                                      ),
-                                                                      SizedBox(
-                                                                        width:
-                                                                            8,
-                                                                      ),
-                                                                      Icon(
-                                                                        Icons
-                                                                            .close,
-                                                                        size:
-                                                                            18,
-                                                                        color: Colors
-                                                                            .white,
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          SizedBox(
-                                                            height: 20,
-                                                          ),
-                                                          Container(
-                                                            // height: height * 0.3,
-                                                            child: GridView
-                                                                .builder(
-                                                              gridDelegate:
-                                                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                                                crossAxisCount:
-                                                                    deviceType ==
-                                                                            DeviceType.mobile
-                                                                        ? 2
-                                                                        : 3,
-                                                                childAspectRatio:
-                                                                    1.3,
-                                                              ),
-                                                              itemCount: snapshot
-                                                                  .data[
-                                                                      'videos']
-                                                                  .length,
-                                                              shrinkWrap: true,
-                                                              physics:
-                                                                  NeverScrollableScrollPhysics(),
-                                                              scrollDirection:
-                                                                  Axis.vertical,
-                                                              itemBuilder:
-                                                                  (context,
-                                                                      index) {
-                                                                var title = snapshot
-                                                                            .data[
-                                                                        'videos']
-                                                                    [
-                                                                    index]['title'];
-                                                                var subCategory =
-                                                                    snapshot.data['videos']
-                                                                            [
-                                                                            index]
-                                                                        [
-                                                                        'SubCategory'];
-
-                                                                var image = snapshot
-                                                                            .data[
-                                                                        'videos'][index]
-                                                                    [
-                                                                    'thumbnails'];
-                                                                return InkWell(
-                                                                  onTap: () {
-                                                                    _goToContentDetailScreen(
-                                                                      videoId: snapshot.data['videos'][index]['id']
-                                                                    );
-
-                                                                    /*navigate(
-                                                                      context,
-                                                                      ContentDetailScreen(
-                                                                        videoId:
-                                                                            snapshot.data['videos'][index]['id'],
-                                                                      ),
-                                                                    );*/
-                                                                  },
-                                                                  child:
-                                                                      Container(
-                                                                    width:
-                                                                        width,
-                                                                    margin: EdgeInsets.only(
-                                                                        right:
-                                                                            15.0,
-                                                                        left:
-                                                                            15.0),
-                                                                    child:
-                                                                        Column(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .start,
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
-                                                                      children: [
-                                                                        Container(
-                                                                          height: deviceType == DeviceType.mobile
-                                                                              ? videoHeight
-                                                                              : tabVideoHeight,
-                                                                          width:
-                                                                              width,
-                                                                          decoration:
-                                                                              BoxDecoration(
-                                                                            borderRadius:
-                                                                                BorderRadius.circular(5.0),
-                                                                          ),
-                                                                          child: ClipRRect(
-                                                                              borderRadius: BorderRadius.circular(5.0),
-                                                                              child: Image(
-                                                                                image: NetworkImage(image),
-                                                                                fit: BoxFit.fill,
-                                                                              )),
-                                                                        ),
-                                                                        Row(
-                                                                          mainAxisAlignment:
-                                                                              MainAxisAlignment.spaceBetween,
-                                                                          children: [
-                                                                            Expanded(
-                                                                              child: Text(
-                                                                                '',
-                                                                                overflow: TextOverflow.ellipsis,
-                                                                                style: GoogleFonts.poppins(
-                                                                                  color: Colors.white,
-                                                                                  fontSize: 10,
-                                                                                  fontWeight: FontWeight.w500,
-                                                                                ),
-                                                                              ),
-                                                                            ),
-                                                                            Expanded(
-                                                                              child: Text(
-                                                                                subCategory ?? '',
-                                                                                overflow: TextOverflow.ellipsis,
-                                                                                style: GoogleFonts.poppins(
-                                                                                  color: Colors.white,
-                                                                                  fontSize: deviceType == DeviceType.mobile ? subCategorySize : tabSubCategorySize,
-                                                                                  fontWeight: FontWeight.w500,
-                                                                                ),
-                                                                                textAlign: TextAlign.right,
-                                                                              ),
-                                                                            ),
-                                                                          ],
-                                                                        ),
-                                                                        Expanded(
-                                                                          child:
-                                                                              Text(
-                                                                            title ??
-                                                                                '',
-                                                                            overflow:
-                                                                                TextOverflow.ellipsis,
-                                                                            style:
-                                                                                GoogleFonts.montserrat(
-                                                                              color: Colors.white,
-                                                                              fontSize: deviceType == DeviceType.mobile ? titleSize : tabTitleSize,
-                                                                              fontWeight: FontWeight.w700,
-                                                                            ),
-                                                                            textAlign:
-                                                                                TextAlign.left,
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                );
-                                                              },
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      );
-                                              } else {
-                                                return Center(
-                                                  child:
-                                                      CircularProgressIndicator(),
-                                                );
+                                              if (response['success'] == true) {
+                                                var message =
+                                                    response['message'];
+                                                Fluttertoast.showToast(
+                                                    msg: message,
+                                                    backgroundColor:
+                                                        Colors.black,
+                                                    textColor: Colors.white);
+                                                setState(() {
+                                                  resumeListData.length = 0;
+                                                });
                                               }
                                             },
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  : Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(height: 40),
-                                        //videoTitle('Resume Watching'),
-                                        if (resumeListData.length > 0)
-                                          Visibility(
-                                            visible: isResumeWatching,
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                videoTitle(
-                                                    title: 'Resume Watching',
-                                                    deviceType: deviceType),
-                                                SizedBox(
-                                                  width: 5,
-                                                ),
-                                                InkWell(
-                                                  onTap: () async {
-                                                    var response =
-                                                        await VideoService()
-                                                            .clearResumeList(
-                                                                userId: widget
-                                                                    .userId);
-
-                                                    if (response['success'] ==
-                                                        true) {
-                                                      var message =
-                                                          response['message'];
-                                                      Fluttertoast.showToast(
-                                                          msg: message,
-                                                          backgroundColor:
-                                                              Colors.black,
-                                                          textColor:
-                                                              Colors.white);
-                                                      setState(() {
-                                                        resumeListData.length =
-                                                            0;
-                                                      });
-                                                    }
-                                                  },
-                                                  child: Text(
-                                                    "Clear All",
-                                                    style:
-                                                        GoogleFonts.montserrat(
-                                                      fontSize: deviceType ==
-                                                              DeviceType.mobile
-                                                          ? 13.0
-                                                          : 18.0,
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
+                                            child: Text(
+                                              "Clear All",
+                                              style: GoogleFonts.montserrat(
+                                                fontSize: deviceType ==
+                                                        DeviceType.mobile
+                                                    ? 13.0
+                                                    : 18.0,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w600,
+                                              ),
                                             ),
                                           ),
-                                        SizedBox(height: 10),
-                                        //Todo: resume list start
-                                        if (resumeListData.length > 0)
-                                          Visibility(
-                                            visible: isResumeWatching,
-                                            //visible: resumeDataLength == 0? false : true,
-                                            child: Container(
-                                              height: deviceType == DeviceType.mobile ?  height * 0.2: height * 0.25,
-                                              child: ListView.builder(
-                                                itemCount:
-                                                    resumeListData.length,
-                                                shrinkWrap: true,
-                                                scrollDirection:
-                                                    Axis.horizontal,
-                                                itemBuilder: (context, index) {
-                                                  var title =
-                                                      resumeListData[index]
-                                                          ['title'];
-                                                  var subCategory =
-                                                      resumeListData[index]
-                                                          ['SubCategory'];
-                                                  var image =
-                                                      resumeListData[index]
-                                                          ['thumbnails'];
-                                                  var videoId =
-                                                      resumeListData[index]
-                                                          ['id'];
+                                        ],
+                                      ),
+                                    ),
+                                  SizedBox(height: 10),
+                                  //Todo: resume list start
+                                  if (resumeListData.length > 0)
+                                    Visibility(
+                                      visible: isResumeWatching,
+                                      //visible: resumeDataLength == 0? false : true,
+                                      child: Container(
+                                        height: deviceType == DeviceType.mobile
+                                            ? height * 0.2
+                                            : height * 0.25,
+                                        child: ListView.builder(
+                                          itemCount: resumeListData.length,
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.horizontal,
+                                          itemBuilder: (context, index) {
+                                            var title =
+                                                resumeListData[index]['title'];
+                                            var subCategory =
+                                                resumeListData[index]
+                                                    ['SubCategory'];
+                                            var image = resumeListData[index]
+                                                ['thumbnails'];
+                                            var videoId =
+                                                resumeListData[index]['id'];
 
-                                                  return InkWell(
-                                                    onTap: () {
-                                                      _goToContentDetailScreen(
-                                                        videoId: videoId
-                                                      );
+                                            return InkWell(
+                                              onTap: () {
+                                                _goToContentDetailScreen(
+                                                    videoId: videoId);
 
-                                                      /*Navigator.push(
+                                                /*Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
                                                           builder: (context) => ContentDetailScreen(
@@ -1381,329 +1116,331 @@ class _NewContentViewScreenState extends State<NewContentViewScreen> {
                                                           ),
                                                         ),
                                                       );*/
-
-                                                    },
-                                                    child: Container(
-                                                      width: deviceType ==
+                                              },
+                                              child: Container(
+                                                width: deviceType ==
+                                                        DeviceType.mobile
+                                                    ? videoWidth
+                                                    : tabVideoWidth,
+                                                margin: EdgeInsets.only(
+                                                    right: videoMarginRight,
+                                                    left: videoMarginLeft),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Container(
+                                                      height: deviceType ==
                                                               DeviceType.mobile
-                                                          ? videoWidth
-                                                          : tabVideoWidth,
-                                                      margin: EdgeInsets.only(
-                                                          right:
-                                                              videoMarginRight,
-                                                          left:
-                                                              videoMarginLeft),
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Container(
-                                                            height: deviceType ==
-                                                                    DeviceType
-                                                                        .mobile
-                                                                ? videoHeight
-                                                                : tabVideoHeight,
-                                                            width: videoWidth,
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          8.0),
-                                                            ),
-                                                            child: ClipRRect(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            5.0),
-                                                                child: Image(
-                                                                  image:
-                                                                      NetworkImage(
-                                                                          image),
-                                                                  fit: BoxFit
-                                                                      .fill,
-                                                                )),
-                                                          ),
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                            children: [
-                                                              Expanded(
-                                                                child: Text(
-                                                                  '',
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                  style: GoogleFonts
-                                                                      .poppins(
-                                                                    color: Colors
-                                                                        .white,
-                                                                    fontSize:
-                                                                        10,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              Expanded(
-                                                                child: Text(
-                                                                  subCategory ??
-                                                                      '',
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                  style: GoogleFonts
-                                                                      .poppins(
-                                                                    color: Colors
-                                                                        .white,
-                                                                    fontSize: deviceType ==
-                                                                            DeviceType.mobile
-                                                                        ? subCategorySize
-                                                                        : tabSubCategorySize,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500,
-                                                                  ),
-                                                                  textAlign:
-                                                                      TextAlign
-                                                                          .right,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          Expanded(
-                                                            child: Text(
-                                                              title ?? '',
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              style: GoogleFonts
-                                                                  .montserrat(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontSize: deviceType ==
-                                                                        DeviceType
-                                                                            .mobile
-                                                                    ? titleSize
-                                                                    : tabTitleSize,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w700,
-                                                              ),
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .left,
-                                                            ),
-                                                          ),
-                                                        ],
+                                                          ? videoHeight
+                                                          : tabVideoHeight,
+                                                      width: videoWidth,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8.0),
                                                       ),
+                                                      child: ClipRRect(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      5.0),
+                                                          child: Image(
+                                                            image: NetworkImage(
+                                                                image),
+                                                            fit: BoxFit.fill,
+                                                          )),
                                                     ),
-                                                  );
-                                                },
-                                              ),
-                                            ),
-                                          ),
-                                        //Todo: resume list end
-
-                                        //Todo: playlist start
-                                        Container(
-                                          child: FutureBuilder(
-                                            future: VideoService()
-                                                .getUserContentList(
-                                                    widget.userId, context),
-                                            builder: (context, snapshot) {
-                                              if (snapshot.hasData) {
-                                                return snapshot.data.length == 0
-                                                    ? Center(
-                                                        child: Text(
-                                                          'No Playlists',
-                                                          style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            fontSize:
-                                                                noVideosSize,
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Expanded(
+                                                          child: Text(
+                                                            '',
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            style: GoogleFonts
+                                                                .poppins(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 10,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                            ),
                                                           ),
                                                         ),
-                                                      )
-                                                    : Column(
-                                                        children: [
-                                                          ListView.builder(
-                                                            itemCount: snapshot
-                                                                .data.length,
-                                                            shrinkWrap: true,
-                                                            physics:
-                                                                NeverScrollableScrollPhysics(),
-                                                            itemBuilder:
-                                                                (context,
-                                                                    index) {
-                                                              var mainTitle =
-                                                                  snapshot.data[
-                                                                          index]
-                                                                      [
-                                                                      'content_type'];
-                                                              //id == 1 (categories)
-                                                              //id == 2 (playlists)
-                                                              //id == 3 (photo albums)
+                                                        Expanded(
+                                                          child: Text(
+                                                            subCategory ?? '',
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            style: GoogleFonts
+                                                                .poppins(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: deviceType ==
+                                                                      DeviceType
+                                                                          .mobile
+                                                                  ? subCategorySize
+                                                                  : tabSubCategorySize,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                            ),
+                                                            textAlign:
+                                                                TextAlign.right,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Expanded(
+                                                      child: Text(
+                                                        title ?? '',
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: GoogleFonts
+                                                            .montserrat(
+                                                          color: Colors.white,
+                                                          fontSize: deviceType ==
+                                                                  DeviceType
+                                                                      .mobile
+                                                              ? titleSize
+                                                              : tabTitleSize,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                        ),
+                                                        textAlign:
+                                                            TextAlign.left,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  //Todo: resume list end
 
-                                                              var photoAlbum = snapshot.data[index]['id'] == "3";
+                                  //Todo: playlist start
+                                  Container(
+                                    child: FutureBuilder(
+                                      future: VideoService().getUserContentList(
+                                          widget.userId, context),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasData) {
+                                          return snapshot.data.length == 0
+                                              ? Center(
+                                                  child: Text(
+                                                    'No Playlists',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontSize: noVideosSize,
+                                                    ),
+                                                  ),
+                                                )
+                                              : Column(
+                                                  children: [
+                                                    ListView.builder(
+                                                      itemCount:
+                                                          snapshot.data.length,
+                                                      shrinkWrap: true,
+                                                      physics:
+                                                          NeverScrollableScrollPhysics(),
+                                                      itemBuilder:
+                                                          (context, index) {
+                                                        var mainTitle = snapshot
+                                                                .data[index]
+                                                            ['content_type'];
+                                                        //id == 1 (categories)
+                                                        //id == 2 (playlists)
+                                                        //id == 3 (photo albums)
 
-                                                              return photoAlbum
-                                                                  ? Column(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .start,
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
-                                                                      children: [
-                                                                        snapshot.data[index]['content'].length ==
-                                                                                0
-                                                                            ? Container()
-                                                                            : Column(
-                                                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                children: [
-                                                                                  //videoTitle(name + "'s Photo Album"),
-                                                                                  //videoTitle('${widget.myVideos ? "Your" : name} Photo Album'),
-                                                                                  videoTitle(title: '$name Photo Album', deviceType: deviceType),
-                                                                                  Container(
-                                                                                    height: deviceType == DeviceType.mobile ?  height * 0.2
-                                                                                      : height * 0.25,
-                                                                                    child: ListView.builder(
-                                                                                      itemCount: snapshot.data[index]['content'].length,
-                                                                                      shrinkWrap: true,
-                                                                                      scrollDirection: Axis.horizontal,
-                                                                                      itemBuilder: (context, contentIndex) {
-                                                                                        var image = "", id = '', title = '';
+                                                        var photoAlbum =
+                                                            snapshot.data[index]
+                                                                    ['id'] ==
+                                                                "3";
 
-                                                                                        id = snapshot.data[index]['content'][contentIndex]['id'];
-                                                                                        image = snapshot.data[index]['content'][contentIndex]['icon'];
+                                                        return photoAlbum
+                                                            ? Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .start,
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  snapshot.data[index]['content']
+                                                                              .length ==
+                                                                          0
+                                                                      ? Container()
+                                                                      : Column(
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.start,
+                                                                          crossAxisAlignment:
+                                                                              CrossAxisAlignment.start,
+                                                                          children: [
+                                                                            //videoTitle(name + "'s Photo Album"),
+                                                                            //videoTitle('${widget.myVideos ? "Your" : name} Photo Album'),
+                                                                            videoTitle(
+                                                                                title: '$name Photo Album',
+                                                                                deviceType: deviceType),
+                                                                            Container(
+                                                                              height: deviceType == DeviceType.mobile ? height * 0.2 : height * 0.25,
+                                                                              child: ListView.builder(
+                                                                                itemCount: snapshot.data[index]['content'].length,
+                                                                                shrinkWrap: true,
+                                                                                scrollDirection: Axis.horizontal,
+                                                                                itemBuilder: (context, contentIndex) {
+                                                                                  var image = "", id = '', title = '';
 
-                                                                                        title = snapshot.data[index]['content'][contentIndex]['title'];
-                                                                                        return Container(
-                                                                                          child: InkWell(
-                                                                                            onTap: () {
-                                                                                              Navigator.push(
-                                                                                                context,
-                                                                                                MaterialPageRoute(
-                                                                                                  builder: (context) => AlbumDetailScreen(
-                                                                                                    albumId: id,
-                                                                                                  ),
-                                                                                                ),
-                                                                                              );
-                                                                                            },
-                                                                                            child: Container(
-                                                                                              width: deviceType == DeviceType.mobile ? albumWidth : tabAlbumWidth,
-                                                                                              margin: EdgeInsets.only(bottom: 4.0, right: videoMarginRight, left: videoMarginLeft, top: 10.0),
-                                                                                              child: Column(
-                                                                                                // mainAxisAlignment:
-                                                                                                //  MainAxisAlignment.center,
-                                                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                                children: [
-                                                                                                  Container(
-                                                                                                    height: deviceType == DeviceType.mobile ? albumHeight : tabAlbumHeight,
-                                                                                                    width: deviceType == DeviceType.mobile ? albumWidth : tabAlbumWidth,
-                                                                                                    child: ClipRRect(
-                                                                                                        borderRadius: BorderRadius.circular(10.0),
-                                                                                                        child: Image(
-                                                                                                          image: NetworkImage(image),
-                                                                                                          fit: BoxFit.fill,
-                                                                                                        )),
-                                                                                                  ),
-                                                                                                  SizedBox(
-                                                                                                    height: 3,
-                                                                                                  ),
-                                                                                                  Text(
-                                                                                                    '$title',
-                                                                                                    overflow: TextOverflow.ellipsis,
-                                                                                                    style: GoogleFonts.montserrat(
-                                                                                                      color: Colors.white,
-                                                                                                      fontSize: deviceType == DeviceType.mobile ? titleSize : tabTitleSize,
-                                                                                                      fontWeight: FontWeight.w700,
-                                                                                                    ),
-                                                                                                  ),
-                                                                                                ],
-                                                                                              ),
+                                                                                  id = snapshot.data[index]['content'][contentIndex]['id'];
+                                                                                  image = snapshot.data[index]['content'][contentIndex]['icon'];
+
+                                                                                  title = snapshot.data[index]['content'][contentIndex]['title'];
+                                                                                  return Container(
+                                                                                    child: InkWell(
+                                                                                      onTap: () {
+                                                                                        Navigator.push(
+                                                                                          context,
+                                                                                          MaterialPageRoute(
+                                                                                            builder: (context) => AlbumDetailScreen(
+                                                                                              albumId: id,
                                                                                             ),
                                                                                           ),
                                                                                         );
                                                                                       },
-                                                                                    ),
-                                                                                  )
-                                                                                ],
-                                                                              )
-                                                                      ],
-                                                                    )
-                                                                  : Container(
-                                                                      child: ListView
-                                                                          .builder(
-                                                                        itemCount: snapshot
-                                                                            .data[index]['content']
-                                                                            .length,
-                                                                        shrinkWrap:
-                                                                            true,
-                                                                        physics:
-                                                                            NeverScrollableScrollPhysics(),
-                                                                        itemBuilder:
-                                                                            (context,
-                                                                                contentIndex) {
-                                                                          var mainTitle =
-                                                                              snapshot.data[index]['content'][contentIndex]['title'];
-                                                                          var itemVideoCount = snapshot
-                                                                              .data[index]['content'][contentIndex]['videos']
-                                                                              .length;
-
-                                                                          return Visibility(
-                                                                            visible: itemVideoCount > 0
-                                                                                ? true
-                                                                                : false,
-                                                                            child:
-                                                                                Column(
-                                                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                                                              children: [
-                                                                                Align(
-                                                                                    alignment: Alignment.topLeft,
-                                                                                    child: Container(
-                                                                                      margin: EdgeInsets.only(left: 16.0, right: 16.0),
-                                                                                      child: Text(
-                                                                                        '$mainTitle',
-                                                                                        maxLines: 2,
-                                                                                        overflow: TextOverflow.ellipsis,
-                                                                                        style: GoogleFonts.montserrat(
-                                                                                          fontSize: deviceType == DeviceType.mobile ? mainTitleSize : tabMainTitleSize,
-                                                                                          color: Colors.white,
-                                                                                          fontWeight: FontWeight.w700,
+                                                                                      child: Container(
+                                                                                        width: deviceType == DeviceType.mobile ? albumWidth : tabAlbumWidth,
+                                                                                        margin: EdgeInsets.only(bottom: 4.0, right: videoMarginRight, left: videoMarginLeft, top: 10.0),
+                                                                                        child: Column(
+                                                                                          // mainAxisAlignment:
+                                                                                          //  MainAxisAlignment.center,
+                                                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                          children: [
+                                                                                            Container(
+                                                                                              height: deviceType == DeviceType.mobile ? albumHeight : tabAlbumHeight,
+                                                                                              width: deviceType == DeviceType.mobile ? albumWidth : tabAlbumWidth,
+                                                                                              child: ClipRRect(
+                                                                                                  borderRadius: BorderRadius.circular(10.0),
+                                                                                                  child: Image(
+                                                                                                    image: NetworkImage(image),
+                                                                                                    fit: BoxFit.fill,
+                                                                                                  )),
+                                                                                            ),
+                                                                                            SizedBox(
+                                                                                              height: 3,
+                                                                                            ),
+                                                                                            Text(
+                                                                                              '$title',
+                                                                                              overflow: TextOverflow.ellipsis,
+                                                                                              style: GoogleFonts.montserrat(
+                                                                                                color: Colors.white,
+                                                                                                fontSize: deviceType == DeviceType.mobile ? titleSize : tabTitleSize,
+                                                                                                fontWeight: FontWeight.w700,
+                                                                                              ),
+                                                                                            ),
+                                                                                          ],
                                                                                         ),
                                                                                       ),
-                                                                                    )),
-                                                                                SizedBox(
-                                                                                  height: 10,
+                                                                                    ),
+                                                                                  );
+                                                                                },
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        )
+                                                                ],
+                                                              )
+                                                            : Container(
+                                                                child: ListView
+                                                                    .builder(
+                                                                  itemCount: snapshot
+                                                                      .data[
+                                                                          index]
+                                                                          [
+                                                                          'content']
+                                                                      .length,
+                                                                  shrinkWrap:
+                                                                      true,
+                                                                  physics:
+                                                                      NeverScrollableScrollPhysics(),
+                                                                  itemBuilder:
+                                                                      (context,
+                                                                          contentIndex) {
+                                                                    var mainTitle =
+                                                                        snapshot.data[index]['content'][contentIndex]
+                                                                            [
+                                                                            'title'];
+                                                                    var itemVideoCount = snapshot
+                                                                        .data[
+                                                                            index]
+                                                                            [
+                                                                            'content']
+                                                                            [
+                                                                            contentIndex]
+                                                                            [
+                                                                            'videos']
+                                                                        .length;
+
+                                                                    return Visibility(
+                                                                      visible: itemVideoCount >
+                                                                              0
+                                                                          ? true
+                                                                          : false,
+                                                                      child:
+                                                                          Column(
+                                                                        crossAxisAlignment:
+                                                                            CrossAxisAlignment.start,
+                                                                        children: [
+                                                                          Align(
+                                                                              alignment: Alignment.topLeft,
+                                                                              child: Container(
+                                                                                margin: EdgeInsets.only(left: 16.0, right: 16.0),
+                                                                                child: Text(
+                                                                                  '$mainTitle',
+                                                                                  maxLines: 2,
+                                                                                  overflow: TextOverflow.ellipsis,
+                                                                                  style: GoogleFonts.montserrat(
+                                                                                    fontSize: deviceType == DeviceType.mobile ? mainTitleSize : tabMainTitleSize,
+                                                                                    color: Colors.white,
+                                                                                    fontWeight: FontWeight.w700,
+                                                                                  ),
                                                                                 ),
-                                                                                Container(
-                                                                                  height: deviceType == DeviceType.mobile ?  height * 0.2
-                                                                                  : height * 0.25,
-                                                                                  child: ListView.builder(
-                                                                                    itemCount: snapshot.data[index]['content'][contentIndex]['videos'].length,
-                                                                                    shrinkWrap: true,
-                                                                                    scrollDirection: Axis.horizontal,
-                                                                                    itemBuilder: (context, index1) {
-                                                                                      var image = "", id = '', title = '', subCategory;
-                                                                                      id = snapshot.data[index]['content'][contentIndex]['videos'][index1]['id'];
-                                                                                      image = snapshot.data[index]['content'][contentIndex]['videos'][index1]['thumbnails'];
-                                                                                      title = snapshot.data[index]['content'][contentIndex]['videos'][index1]['title'];
-                                                                                      subCategory = snapshot.data[index]['content'][contentIndex]['videos'][index1]['SubCategory'];
+                                                                              )),
+                                                                          SizedBox(
+                                                                            height:
+                                                                                10,
+                                                                          ),
+                                                                          Container(
+                                                                            height: deviceType == DeviceType.mobile
+                                                                                ? height * 0.2
+                                                                                : height * 0.25,
+                                                                            child:
+                                                                                ListView.builder(
+                                                                              itemCount: snapshot.data[index]['content'][contentIndex]['videos'].length,
+                                                                              shrinkWrap: true,
+                                                                              scrollDirection: Axis.horizontal,
+                                                                              itemBuilder: (context, index1) {
+                                                                                var image = "", id = '', title = '', subCategory;
+                                                                                id = snapshot.data[index]['content'][contentIndex]['videos'][index1]['id'];
+                                                                                image = snapshot.data[index]['content'][contentIndex]['videos'][index1]['thumbnails'];
+                                                                                title = snapshot.data[index]['content'][contentIndex]['videos'][index1]['title'];
+                                                                                subCategory = snapshot.data[index]['content'][contentIndex]['videos'][index1]['SubCategory'];
 
-                                                                                      return InkWell(
-                                                                                        onTap: () {
-                                                                                          _goToContentDetailScreen(
-                                                                                            videoId: id
-                                                                                          );
+                                                                                return InkWell(
+                                                                                  onTap: () {
+                                                                                    _goToContentDetailScreen(videoId: id);
 
-                                                                                          /*Navigator.push(
+                                                                                    /*Navigator.push(
                                                                                             context,
                                                                                             MaterialPageRoute(
                                                                                               builder: (context) => ContentDetailScreen(
@@ -1711,287 +1448,297 @@ class _NewContentViewScreenState extends State<NewContentViewScreen> {
                                                                                               ),
                                                                                             ),
                                                                                           );*/
-                                                                                        },
-                                                                                        child: Container(
-                                                                                          width: deviceType == DeviceType.mobile ? videoWidth : tabVideoWidth,
-                                                                                          margin: EdgeInsets.only(bottom: 4.0, right: videoMarginRight, left: videoMarginLeft),
-                                                                                          child: Column(
-                                                                                            // mainAxisAlignment:
-                                                                                            //  MainAxisAlignment.center,
-                                                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                            children: [
-                                                                                              Container(
-                                                                                                height: deviceType == DeviceType.mobile ? videoHeight : tabVideoHeight,
-                                                                                                width: videoWidth,
-                                                                                                child: ClipRRect(
-                                                                                                    borderRadius: BorderRadius.circular(8.0),
-                                                                                                    child: Image(
-                                                                                                      image: NetworkImage(image),
-                                                                                                      fit: BoxFit.fill,
-                                                                                                    )),
-                                                                                              ),
-                                                                                              Row(
-                                                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                                children: [
-                                                                                                  Expanded(
-                                                                                                    child: Text(
-                                                                                                      '',
-                                                                                                      overflow: TextOverflow.ellipsis,
-                                                                                                      style: GoogleFonts.poppins(
-                                                                                                        color: Colors.white,
-                                                                                                        fontSize: 10,
-                                                                                                        fontWeight: FontWeight.w500,
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                  ),
-                                                                                                  Expanded(
-                                                                                                    child: Text(
-                                                                                                      subCategory ?? '',
-                                                                                                      overflow: TextOverflow.ellipsis,
-                                                                                                      style: GoogleFonts.poppins(
-                                                                                                        color: Colors.white,
-                                                                                                        fontSize: deviceType == DeviceType.mobile ? subCategorySize : tabSubCategorySize,
-                                                                                                        fontWeight: FontWeight.w500,
-                                                                                                      ),
-                                                                                                      textAlign: TextAlign.right,
-                                                                                                    ),
-                                                                                                  ),
-                                                                                                ],
-                                                                                              ),
-                                                                                              Expanded(
-                                                                                                child: Text(
-                                                                                                  title ?? '',
-                                                                                                  overflow: TextOverflow.ellipsis,
-                                                                                                  style: GoogleFonts.montserrat(
-                                                                                                    color: Colors.white,
-                                                                                                    fontSize: deviceType == DeviceType.mobile ? titleSize : tabTitleSize,
-                                                                                                    fontWeight: FontWeight.w700,
-                                                                                                  ),
-                                                                                                  textAlign: TextAlign.left,
-                                                                                                ),
-                                                                                              )
-                                                                                            ],
-                                                                                          ),
+                                                                                  },
+                                                                                  child: Container(
+                                                                                    width: deviceType == DeviceType.mobile ? videoWidth : tabVideoWidth,
+                                                                                    margin: EdgeInsets.only(bottom: 4.0, right: videoMarginRight, left: videoMarginLeft),
+                                                                                    child: Column(
+                                                                                      // mainAxisAlignment:
+                                                                                      //  MainAxisAlignment.center,
+                                                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                      children: [
+                                                                                        Container(
+                                                                                          height: deviceType == DeviceType.mobile ? videoHeight : tabVideoHeight,
+                                                                                          width: videoWidth,
+                                                                                          child: ClipRRect(
+                                                                                              borderRadius: BorderRadius.circular(8.0),
+                                                                                              child: Image(
+                                                                                                image: NetworkImage(image),
+                                                                                                fit: BoxFit.fill,
+                                                                                              )),
                                                                                         ),
-                                                                                      );
-                                                                                    },
+                                                                                        Row(
+                                                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                          children: [
+                                                                                            Expanded(
+                                                                                              child: Text(
+                                                                                                '',
+                                                                                                overflow: TextOverflow.ellipsis,
+                                                                                                style: GoogleFonts.poppins(
+                                                                                                  color: Colors.white,
+                                                                                                  fontSize: 10,
+                                                                                                  fontWeight: FontWeight.w500,
+                                                                                                ),
+                                                                                              ),
+                                                                                            ),
+                                                                                            Expanded(
+                                                                                              child: Text(
+                                                                                                subCategory ?? '',
+                                                                                                overflow: TextOverflow.ellipsis,
+                                                                                                style: GoogleFonts.poppins(
+                                                                                                  color: Colors.white,
+                                                                                                  fontSize: deviceType == DeviceType.mobile ? subCategorySize : tabSubCategorySize,
+                                                                                                  fontWeight: FontWeight.w500,
+                                                                                                ),
+                                                                                                textAlign: TextAlign.right,
+                                                                                              ),
+                                                                                            ),
+                                                                                          ],
+                                                                                        ),
+                                                                                        Expanded(
+                                                                                          child: Text(
+                                                                                            title ?? '',
+                                                                                            overflow: TextOverflow.ellipsis,
+                                                                                            style: GoogleFonts.montserrat(
+                                                                                              color: Colors.white,
+                                                                                              fontSize: deviceType == DeviceType.mobile ? titleSize : tabTitleSize,
+                                                                                              fontWeight: FontWeight.w700,
+                                                                                            ),
+                                                                                            textAlign: TextAlign.left,
+                                                                                          ),
+                                                                                        )
+                                                                                      ],
+                                                                                    ),
                                                                                   ),
-                                                                                ),
-                                                                              ],
+                                                                                );
+                                                                              },
                                                                             ),
-                                                                          );
-                                                                        },
+                                                                          ),
+                                                                        ],
                                                                       ),
                                                                     );
-                                                            },
-                                                          )
-                                                        ],
-                                                      );
-                                              } else {
-                                                return playListLoading(
-                                                    deviceType ==
-                                                            DeviceType.mobile
-                                                        ? videoHeight
-                                                        : tabVideoHeight,
-                                                    deviceType ==
-                                                            DeviceType.mobile
-                                                        ? videoWidth
-                                                        : tabVideoWidth);
-                                              }
-                                            },
-                                          ),
-                                        ),
-                                        //Todo: playlist end
-
-                                        // Todo: All video list start
-                                        SizedBox(height: deviceType == DeviceType.mobile ? 0.0 : 10.0),
-                                        videoTitle(
-                                            title: 'All Videos',
-                                            deviceType: deviceType),
-                                        SizedBox(height: 10),
-                                        Container(
-                                          //padding: EdgeInsets.only(left: 16),
-                                          height: deviceType == DeviceType.mobile ?  height * 0.2: height * 0.25,
-                                          child: FutureBuilder(
-                                            future: VideoService()
-                                                .getUserAllVideoList(
-                                                    widget.userId),
-                                            builder: (context, snapshot) {
-                                              if (snapshot.hasData) {
-                                                return snapshot.data.length == 0
-                                                    ? Center(
-                                                        child: Text(
-                                                          'No Videos',
-                                                          style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            fontSize:
-                                                                noVideosSize,
-                                                          ),
-                                                        ),
-                                                      )
-                                                    : ListView.builder(
-                                                        itemCount: snapshot
-                                                            .data.length,
-                                                        shrinkWrap: true,
-                                                        scrollDirection:
-                                                            Axis.horizontal,
-                                                        // physics: SnappingListScrollPhysics(itemWidth: width),
-                                                        itemBuilder:
-                                                            (context, index) {
-                                                          var title = snapshot
-                                                                  .data[index]
-                                                              ['title'];
-                                                          var subCategory =
-                                                              snapshot.data[
-                                                                      index][
-                                                                  'SubCategory'];
-                                                          var image = snapshot
-                                                                  .data[index]
-                                                              ['thumbnails'];
-
-                                                          return InkWell(
-                                                            onTap: () {
-                                                              _goToContentDetailScreen(
-                                                                videoId: snapshot
-                                                                    .data[
-                                                                index]['id']
-                                                              );
-
-                                                            /*  navigate(
-                                                                context,
-                                                                ContentDetailScreen(
-                                                                  videoId: snapshot
-                                                                          .data[
-                                                                      index]['id'],
+                                                                  },
                                                                 ),
-                                                              );*/
+                                                              );
+                                                      },
+                                                    )
+                                                  ],
+                                                );
+                                        } else {
+                                          return playListLoading(
+                                              deviceType == DeviceType.mobile
+                                                  ? videoHeight
+                                                  : tabVideoHeight,
+                                              deviceType == DeviceType.mobile
+                                                  ? videoWidth
+                                                  : tabVideoWidth);
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                  //Todo: playlist end
 
-                                                            },
-                                                            child: Container(
-                                                              width: deviceType ==
+                                  // Todo: All video list start
+                                  SizedBox(
+                                      height: deviceType == DeviceType.mobile
+                                          ? 10.0
+                                          : 20.0),
+                                  Container(
+                                    //padding: EdgeInsets.only(left: 16),
+                                    height: deviceType == DeviceType.mobile
+                                        ? height * 0.3
+                                        : height * 0.35,
+                                    child: FutureBuilder(
+                                      future: VideoService()
+                                          .getUserAllVideoList(widget.userId),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasData) {
+                                          if (snapshot.data.length == 0) {
+                                            return Center(
+                                              child: Text(
+                                                'No Videos',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: noVideosSize,
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                          return Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              videoTitle(
+                                                  title: 'All Videos',
+                                                  deviceType: deviceType),
+                                              SizedBox(height: 8.0),
+                                              Expanded(
+                                                child: ListView.builder(
+                                                  itemCount:
+                                                      snapshot.data.length,
+                                                  shrinkWrap: true,
+                                                  scrollDirection:
+                                                      Axis.horizontal,
+                                                  // physics: SnappingListScrollPhysics(itemWidth: width),
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    var title = snapshot
+                                                        .data[index]['title'];
+                                                    var subCategory =
+                                                        snapshot.data[index]
+                                                            ['SubCategory'];
+                                                    var image =
+                                                        snapshot.data[index]
+                                                            ['thumbnails'];
+
+                                                    return InkWell(
+                                                      onTap: () {
+                                                        _goToContentDetailScreen(
+                                                            videoId: snapshot
+                                                                    .data[index]
+                                                                ['id']);
+
+                                                        /*  navigate(
+                                                                      context,
+                                                                      ContentDetailScreen(
+                                                                        videoId: snapshot
+                                                                                .data[
+                                                                            index]['id'],
+                                                                      ),
+                                                                    );*/
+                                                      },
+                                                      child: Container(
+                                                        width: deviceType ==
+                                                                DeviceType
+                                                                    .mobile
+                                                            ? videoWidth
+                                                            : tabVideoWidth,
+                                                        margin: EdgeInsets.only(
+                                                            right:
+                                                                videoMarginRight,
+                                                            left:
+                                                                videoMarginLeft),
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Container(
+                                                              height: deviceType ==
                                                                       DeviceType
                                                                           .mobile
-                                                                  ? videoWidth
-                                                                  : tabVideoWidth,
-                                                              margin: EdgeInsets.only(
-                                                                  right:
-                                                                      videoMarginRight,
-                                                                  left:
-                                                                      videoMarginLeft),
-                                                              child: Column(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  Container(
-                                                                    height: deviceType ==
-                                                                            DeviceType.mobile
-                                                                        ? videoHeight
-                                                                        : tabVideoHeight,
-                                                                    width:
-                                                                        videoWidth,
-                                                                    child: ClipRRect(
-                                                                        borderRadius: BorderRadius.circular(8.0),
-                                                                        child: Image(
-                                                                          image:
-                                                                              NetworkImage(image),
-                                                                          fit: BoxFit
-                                                                              .fill,
-                                                                        )),
-                                                                  ),
-                                                                  Row(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .spaceBetween,
-                                                                    children: [
-                                                                      Expanded(
-                                                                        child:
-                                                                            Text(
-                                                                          '',
-                                                                          overflow:
-                                                                              TextOverflow.ellipsis,
-                                                                          style:
-                                                                              GoogleFonts.poppins(
-                                                                            color:
-                                                                                Colors.white,
-                                                                            fontSize:
-                                                                                10,
-                                                                            fontWeight:
-                                                                                FontWeight.w500,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      Expanded(
-                                                                        child:
-                                                                            Text(
-                                                                          subCategory ??
-                                                                              '',
-                                                                          overflow:
-                                                                              TextOverflow.ellipsis,
-                                                                          style:
-                                                                              GoogleFonts.poppins(
-                                                                            color:
-                                                                                Colors.white,
-                                                                            fontSize: deviceType == DeviceType.mobile
-                                                                                ? subCategorySize
-                                                                                : tabSubCategorySize,
-                                                                            fontWeight:
-                                                                                FontWeight.w500,
-                                                                          ),
-                                                                          textAlign:
-                                                                              TextAlign.right,
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                  Expanded(
-                                                                    child: Text(
-                                                                      title ??
-                                                                          '',
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis,
-                                                                      style: GoogleFonts
-                                                                          .montserrat(
-                                                                        color: Colors
-                                                                            .white,
-                                                                        fontSize: deviceType ==
-                                                                                DeviceType.mobile
-                                                                            ? titleSize
-                                                                            : tabTitleSize,
-                                                                        fontWeight:
-                                                                            FontWeight.w700,
-                                                                      ),
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .left,
+                                                                  ? videoHeight
+                                                                  : tabVideoHeight,
+                                                              width: videoWidth,
+                                                              child: ClipRRect(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              8.0),
+                                                                  child: Image(
+                                                                    image: NetworkImage(
+                                                                        image),
+                                                                    fit: BoxFit
+                                                                        .fill,
+                                                                  )),
+                                                            ),
+                                                            Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceBetween,
+                                                              children: [
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    '',
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                    style: GoogleFonts
+                                                                        .poppins(
+                                                                      color: Colors
+                                                                          .white,
+                                                                      fontSize:
+                                                                          10,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
                                                                     ),
                                                                   ),
-                                                                ],
+                                                                ),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    subCategory ??
+                                                                        '',
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                    style: GoogleFonts
+                                                                        .poppins(
+                                                                      color: Colors
+                                                                          .white,
+                                                                      fontSize: deviceType ==
+                                                                              DeviceType.mobile
+                                                                          ? subCategorySize
+                                                                          : tabSubCategorySize,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                    ),
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .right,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            Expanded(
+                                                              child: Text(
+                                                                title ?? '',
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                style: GoogleFonts
+                                                                    .montserrat(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontSize: deviceType ==
+                                                                          DeviceType
+                                                                              .mobile
+                                                                      ? titleSize
+                                                                      : tabTitleSize,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700,
+                                                                ),
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .left,
                                                               ),
                                                             ),
-                                                          );
-                                                        },
-                                                      );
-                                              } else {
-                                                return videoLoading(
-                                                    deviceType ==
-                                                            DeviceType.mobile
-                                                        ? videoHeight
-                                                        : tabVideoHeight,
-                                                    deviceType ==
-                                                            DeviceType.mobile
-                                                        ? videoWidth
-                                                        : tabVideoWidth);
-                                              }
-                                            },
-                                          ),
-                                        ),
-                                        // Todo: All video list end
-                                      ],
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        } else {
+                                          return videoLoading(
+                                              deviceType == DeviceType.mobile
+                                                  ? videoHeight
+                                                  : tabVideoHeight,
+                                              deviceType == DeviceType.mobile
+                                                  ? videoWidth
+                                                  : tabVideoWidth);
+                                        }
+                                      },
                                     ),
+                                  ),
+                                  // Todo: All video list end
+                                ],
+                              ),
                             ],
                           ),
               ],

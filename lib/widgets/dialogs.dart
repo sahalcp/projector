@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:projector/apis/groupService.dart';
@@ -487,7 +486,7 @@ Future editDialog(context, height, width, edit, {groupId, title, grpimage}) {
                               // ignore: missing_return
                               onChanged: (val) async {
                                 email = val;
-                                var data = await GroupServcie()
+                                var data = await GroupService()
                                     .searchUserFriendList(email);
 
                                 // GrpModel model =
@@ -554,7 +553,7 @@ Future editDialog(context, height, width, edit, {groupId, title, grpimage}) {
                                     if (edit) {
                                       if (groupName ?? '' != '') {
                                         var data =
-                                            await GroupServcie().addNewGroup(
+                                            await GroupService().addNewGroup(
                                           controller.text,
                                           image,
                                         );
@@ -567,7 +566,7 @@ Future editDialog(context, height, width, edit, {groupId, title, grpimage}) {
                                         // if (EmailValidator.validate(email)) {
                                         if (data['success'] == true) {
                                           for (var item in selectedUser) {
-                                            var d = await GroupServcie()
+                                            var d = await GroupService()
                                                 .addMembersToGroup(
                                               groupId,
                                               item['id'],
@@ -605,7 +604,7 @@ Future editDialog(context, height, width, edit, {groupId, title, grpimage}) {
                                       //     .addMembersToGroup(groupId, userId);
                                       for (var item in selectedUser) {
                                         // print(item['id']);
-                                        var d = await GroupServcie()
+                                        var d = await GroupService()
                                             .addMembersToGroup(
                                                 groupId, item['id']);
                                         if (d['success'] != true) {

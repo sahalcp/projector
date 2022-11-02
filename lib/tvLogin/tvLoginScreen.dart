@@ -1,19 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:projector/apis/authService.dart';
-import 'package:projector/data/userData.dart';
-import 'package:projector/forgotPasswordPage.dart';
-// import 'package:google_fonts/google_fonts.dart';
-import 'package:projector/getStartedScreen.dart';
-import 'package:projector/sideDrawer/dashboard.dart';
-import 'package:projector/sideDrawer/listVideo.dart';
-import 'package:projector/startWatching.dart';
 import 'package:projector/style.dart';
-import 'package:projector/subscriptionScreen.dart';
-import 'package:projector/widgets/logo.dart';
-import 'package:projector/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
 
 class TVLoginScreen extends StatefulWidget {
@@ -32,10 +21,11 @@ class _TVLoginScreenState extends State<TVLoginScreen> {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return Sizer(builder: (context, orientation, deviceType) {
-      if(deviceType == DeviceType.mobile){
+      if (deviceType == DeviceType.mobile) {
         SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-      }else{
-        SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight]);
+      } else {
+        SystemChrome.setPreferredOrientations(
+            [DeviceOrientation.landscapeRight]);
       }
       return SafeArea(
         bottom: false,
@@ -54,7 +44,6 @@ class _TVLoginScreenState extends State<TVLoginScreen> {
                 } else {
                   SystemNavigator.pop();
                 }
-
               },
               icon: Icon(Icons.arrow_back_ios),
               color: Colors.white,
@@ -83,7 +72,9 @@ class _TVLoginScreenState extends State<TVLoginScreen> {
                     SizedBox(height: height * 0.10),
                     Center(
                       child: Image(
-                        height: deviceType == DeviceType.mobile? height * 0.09738 : 130,
+                        height: deviceType == DeviceType.mobile
+                            ? height * 0.09738
+                            : 130,
                         width: width,
                         image: AssetImage('images/newLogoText.png'),
                       ),
@@ -93,7 +84,8 @@ class _TVLoginScreenState extends State<TVLoginScreen> {
                       child: Text(
                         'Enter QR Code',
                         style: GoogleFonts.montserrat(
-                          fontSize: deviceType == DeviceType.mobile? 16.0: 28.0,
+                          fontSize:
+                              deviceType == DeviceType.mobile ? 16.0 : 28.0,
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
                         ),
@@ -106,9 +98,9 @@ class _TVLoginScreenState extends State<TVLoginScreen> {
                         focusNode: node,
                         style: GoogleFonts.montserrat(
                           color: Colors.white,
-                          fontSize: deviceType == DeviceType.mobile? 18.0 : 25.0,
+                          fontSize:
+                              deviceType == DeviceType.mobile ? 18.0 : 25.0,
                         ),
-
                         onChanged: (val) {
                           tvCode = val;
                         },
@@ -118,7 +110,8 @@ class _TVLoginScreenState extends State<TVLoginScreen> {
                           hintText: 'QR Code',
                           hintStyle: GoogleFonts.montserrat(
                             color: Color(0xff8E8E8E),
-                            fontSize: deviceType == DeviceType.mobile? 13.0 : 20.0,
+                            fontSize:
+                                deviceType == DeviceType.mobile ? 13.0 : 20.0,
                             fontWeight: FontWeight.w400,
                           ),
                           enabledBorder: OutlineInputBorder(
@@ -143,7 +136,6 @@ class _TVLoginScreenState extends State<TVLoginScreen> {
                         ),
                       ),
                     ),
-
                     SizedBox(height: 20),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 2),
@@ -153,11 +145,9 @@ class _TVLoginScreenState extends State<TVLoginScreen> {
                             setState(() {
                               loading = true;
                             });
-                            var data = await AuthService()
-                                .tvLogin(code: tvCode);
+                            var data =
+                                await AuthService().tvLogin(code: tvCode);
                             if (data['success'] == true) {
-
-
                             } else {
                               setState(() {
                                 loading = false;
@@ -165,8 +155,7 @@ class _TVLoginScreenState extends State<TVLoginScreen> {
 
                               scaffoldKey.currentState.showSnackBar(
                                 SnackBar(
-                                  content: Text(
-                                      '${data['message']}'),
+                                  content: Text('${data['message']}'),
                                 ),
                               );
                             }
@@ -176,7 +165,9 @@ class _TVLoginScreenState extends State<TVLoginScreen> {
                           }
                         },
                         child: Container(
-                          height:deviceType == DeviceType.mobile? height * 0.06 : height * 0.08,
+                          height: deviceType == DeviceType.mobile
+                              ? height * 0.06
+                              : height * 0.08,
                           width: width,
                           decoration: BoxDecoration(
                             color: Color(0xff5AA5EF),
@@ -187,16 +178,19 @@ class _TVLoginScreenState extends State<TVLoginScreen> {
                             child: Center(
                               child: loading
                                   ? CircularProgressIndicator(
-                                backgroundColor: Colors.white,
-                              )
+                                      backgroundColor: Colors.white,
+                                    )
                                   : Text(
-                                'ADD DEVICE',
-                                style: GoogleFonts.montserrat(
-                                  fontSize: deviceType == DeviceType.mobile? 14.0 : 20.0,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
+                                      'ADD DEVICE',
+                                      style: GoogleFonts.montserrat(
+                                        fontSize:
+                                            deviceType == DeviceType.mobile
+                                                ? 14.0
+                                                : 20.0,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                             ),
                           ),
                         ),
@@ -210,6 +204,5 @@ class _TVLoginScreenState extends State<TVLoginScreen> {
         ),
       );
     });
-
   }
 }

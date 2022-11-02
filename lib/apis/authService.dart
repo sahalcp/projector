@@ -25,7 +25,7 @@ class AuthService {
       Uri.parse('$serverUrl/signinEmail'),
       body: body,
     );
-    print("sign in email --->"+res.body);
+    print("sign in email --->" + res.body);
     if (res.statusCode == 200) {
       return json.decode(res.body);
     } else {
@@ -44,7 +44,7 @@ class AuthService {
       Uri.parse('$serverUrl/v4/signup'),
       body: body,
     );
-    print("signup-->"+res.body);
+    print("signup-->" + res.body);
     if (res.statusCode == 200) {
       return json.decode(res.body);
     } else {
@@ -65,7 +65,7 @@ class AuthService {
       Uri.parse('$serverUrl/v4/signin'),
       body: body,
     );
-    print("signin-->"+res.body);
+    print("signin-->" + res.body);
     return json.decode(res.body);
     // if (res.statusCode == 200) {
     //   return json.decode(res.body);
@@ -81,7 +81,7 @@ class AuthService {
       Uri.parse('$serverUrl/v4/getEmailVerifyStatus'),
       body: body,
     );
-    print("generateVerify status-->"+res.body);
+    print("generateVerify status-->" + res.body);
     return json.decode(res.body);
   }
 
@@ -91,7 +91,7 @@ class AuthService {
       Uri.parse('$serverUrl/v2/generateVerificationCode'),
       body: body,
     );
-    print("generateVerificationCode-->"+res.body);
+    print("generateVerificationCode-->" + res.body);
     return json.decode(res.body);
   }
 
@@ -136,7 +136,24 @@ class AuthService {
       Uri.parse('$serverUrl/getUserDetFrmCode'),
       body: body,
     );
-    print("code from web--"+res.body);
+    print("code from web--" + res.body);
+    if (res.statusCode == 200) {
+      return json.decode(res.body);
+    } else {
+      return null;
+    }
+  }
+
+  tvLogin({code}) async {
+    var token = await UserData().getUserToken();
+    var body = json.encode({
+      'token': token,
+      'code': code,
+    });
+    var res = await http.post(
+      Uri.parse('$serverUrl/registerTv'),
+      body: body,
+    );
     if (res.statusCode == 200) {
       return json.decode(res.body);
     } else {

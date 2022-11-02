@@ -582,7 +582,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
     //CheckConnectionService().init(_scaffoldKey);
     getUserId();
 
-    ViewService().getAllViewRequestSent('1',context).then((val) {
+    ViewService().getAllViewRequestSent('1', context).then((val) {
       reqCon.add(val);
     });
 
@@ -601,10 +601,11 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return Sizer(builder: (context, orientation, deviceType) {
-      if(deviceType == DeviceType.mobile){
+      if (deviceType == DeviceType.mobile) {
         SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-      }else{
-        SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight]);
+      } else {
+        SystemChrome.setPreferredOrientations(
+            [DeviceOrientation.landscapeRight]);
       }
       return SafeArea(
         top: false,
@@ -642,10 +643,13 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                       if (snapshot.hasData) {
                         return Container(
                           // color:Colors.green
-                          height: deviceType == DeviceType.mobile ? height * 0.14 : height * 0.23,
+                          height: deviceType == DeviceType.mobile
+                              ? height * 0.14
+                              : height * 0.23,
                           // color: Colors.green,
                           width: width * 0.90,
-                          margin: EdgeInsets.symmetric(horizontal: width * 0.04),
+                          margin:
+                              EdgeInsets.symmetric(horizontal: width * 0.04),
                           child: ListView.builder(
                             // gridDelegate:
                             //     SliverGridDelegateWithFixedCrossAxisCount(
@@ -705,7 +709,6 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                                         userId: userId,
                                         userEmail: userName,
                                         userImage: image,
-
                                       ),
                                     );
                                   }
@@ -714,52 +717,67 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                                   children: [
                                     Container(
                                       margin: EdgeInsets.all(6.0),
-                                      height: deviceType == DeviceType.mobile ? height * 0.10 : 130,
-                                      width: deviceType == DeviceType.mobile ? width * 0.21 : 130,
+                                      height: deviceType == DeviceType.mobile
+                                          ? height * 0.10
+                                          : 130,
+                                      width: deviceType == DeviceType.mobile
+                                          ? width * 0.21
+                                          : 130,
                                       decoration: BoxDecoration(
                                         color: Colors.transparent,
                                         border: Border.all(
                                           color: Color(0xff51515D),
                                           width: 3.0,
                                         ),
-                                        borderRadius: BorderRadius.circular(20.0),
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
                                       ),
                                       child: Center(
                                         child: snapshot.data.length == index
                                             ? CircleAvatar(
-                                          radius: deviceType == DeviceType.mobile ? 16.0 : 20,
-                                          backgroundColor: Colors.white70,
-                                          child: Icon(
-                                            Icons.add,
-                                            color: Colors.black,
-                                          ),
-                                        )
+                                                radius: deviceType ==
+                                                        DeviceType.mobile
+                                                    ? 16.0
+                                                    : 20,
+                                                backgroundColor: Colors.white70,
+                                                child: Icon(
+                                                  Icons.add,
+                                                  color: Colors.black,
+                                                ),
+                                              )
                                             : image != null
-                                            ? CircleAvatar(
-                                          radius: deviceType == DeviceType.mobile ? 20 : 30,
-                                          backgroundImage:
-                                          NetworkImage(image),
-                                        )
-                                            : Container(
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                                color: Colors.white70),
-                                          ),
-                                          child: Padding(
-                                            padding:
-                                            const EdgeInsets.all(
-                                                4.0),
-                                            child: Image(
-                                              height: deviceType == DeviceType.mobile ? 20.0 : 30,
-                                              image: AssetImage(
-                                                  'images/person.png'),
-                                            ),
-                                          ),
-                                        ),
+                                                ? CircleAvatar(
+                                                    radius: deviceType ==
+                                                            DeviceType.mobile
+                                                        ? 20
+                                                        : 30,
+                                                    backgroundImage:
+                                                        NetworkImage(image),
+                                                  )
+                                                : Container(
+                                                    decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      border: Border.all(
+                                                          color:
+                                                              Colors.white70),
+                                                    ),
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              4.0),
+                                                      child: Image(
+                                                        height: deviceType ==
+                                                                DeviceType
+                                                                    .mobile
+                                                            ? 20.0
+                                                            : 30,
+                                                        image: AssetImage(
+                                                            'images/person.png'),
+                                                      ),
+                                                    ),
+                                                  ),
                                       ),
                                     ),
-
                                     Container(
                                       //  margin: EdgeInsets.only(left: 30,right: 30),
                                       child: Text(
@@ -770,13 +788,15 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                                         overflow: TextOverflow.ellipsis,
                                         style: GoogleFonts.montserrat(
                                           color: Colors.white,
-                                          fontSize: deviceType == DeviceType.mobile ? 11.0 : 14,
+                                          fontSize:
+                                              deviceType == DeviceType.mobile
+                                                  ? 11.0
+                                                  : 14,
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
                                       //width: width * 0.15,
                                     ),
-
                                   ],
                                 ),
                               );
@@ -784,8 +804,13 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                           ),
                         );
                       } else {
-                        return Center(
-                          child: CircularProgressIndicator(),
+                        return Container(
+                          height: deviceType == DeviceType.mobile
+                              ? height * 0.14
+                              : height * 0.23,
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
                         );
                       }
                     },
@@ -894,7 +919,8 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                           child: Text(
                             'View My Projector',
                             style: GoogleFonts.montserrat(
-                              fontSize: deviceType == DeviceType.mobile ? 13.0 : 18.0,
+                              fontSize:
+                                  deviceType == DeviceType.mobile ? 13.0 : 18.0,
                               color: Colors.white30,
                               fontWeight: FontWeight.bold,
                               // color: Color(0xff6D6F76),
@@ -934,7 +960,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                                   textAlign: TextAlign.left,
                                   style: GoogleFonts.montserrat(
                                     color: Colors.white70,
-                                    fontSize: deviceType == DeviceType.mobile ? 13 : 18,
+                                    fontSize: deviceType == DeviceType.mobile
+                                        ? 13
+                                        : 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -944,7 +972,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                                           0.01),
                                   child: Icon(
                                     Icons.arrow_forward_ios,
-                                    size: deviceType == DeviceType.mobile ? 20 : 25,
+                                    size: deviceType == DeviceType.mobile
+                                        ? 20
+                                        : 25,
                                     color: Colors.white.withOpacity(0.5),
                                   ),
                                 ),
@@ -952,8 +982,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                             ),
                           ),
                         ),
-                        SizedBox(height: MediaQuery.of(context).size.height * 0.007),
-                        /*InkWell(
+                        SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.007),
+                        InkWell(
                           onTap: () {
                             //NewListVideo()
                             //ContentDashboardScreen()
@@ -974,11 +1005,13 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                   "Content Dashboard",
+                                  "Content Dashboard",
                                   textAlign: TextAlign.left,
                                   style: GoogleFonts.montserrat(
                                     color: Colors.white70,
-                                    fontSize: deviceType == DeviceType.mobile ? 13 : 18,
+                                    fontSize: deviceType == DeviceType.mobile
+                                        ? 13
+                                        : 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -988,7 +1021,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                                           0.01),
                                   child: Icon(
                                     Icons.arrow_forward_ios,
-                                    size: deviceType == DeviceType.mobile ? 20 : 25,
+                                    size: deviceType == DeviceType.mobile
+                                        ? 20
+                                        : 25,
                                     color: Colors.white.withOpacity(0.5),
                                   ),
                                 ),
@@ -996,8 +1031,8 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                             ),
                           ),
                         ),
-                        SizedBox(height: MediaQuery.of(context).size.height * 0.007),*/
-
+                        SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.007),
 
                         InkWell(
                           onTap: () {
@@ -1021,7 +1056,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                                   textAlign: TextAlign.left,
                                   style: GoogleFonts.montserrat(
                                     color: Colors.white70,
-                                    fontSize: deviceType == DeviceType.mobile ? 13 :18,
+                                    fontSize: deviceType == DeviceType.mobile
+                                        ? 13
+                                        : 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -1031,7 +1068,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                                           0.01),
                                   child: Icon(
                                     Icons.arrow_forward_ios,
-                                    size: deviceType == DeviceType.mobile ? 20 : 25,
+                                    size: deviceType == DeviceType.mobile
+                                        ? 20
+                                        : 25,
                                     color: Colors.white.withOpacity(0.5),
                                   ),
                                 ),
@@ -1079,7 +1118,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                                   textAlign: TextAlign.right,
                                   style: GoogleFonts.montserrat(
                                     color: Colors.white70,
-                                    fontSize: deviceType == DeviceType.mobile ? 13 : 18,
+                                    fontSize: deviceType == DeviceType.mobile
+                                        ? 13
+                                        : 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -1089,7 +1130,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                                           0.01),
                                   child: Icon(
                                     Icons.arrow_forward_ios,
-                                    size: deviceType == DeviceType.mobile ? 20 :25,
+                                    size: deviceType == DeviceType.mobile
+                                        ? 20
+                                        : 25,
                                     color: Colors.white.withOpacity(0.5),
                                   ),
                                 ),
@@ -1101,8 +1144,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                             height: MediaQuery.of(context).size.height * 0.007),
                         InkWell(
                           onTap: () {
-                            launch(
-                                privacyUrl);
+                            launch(privacyUrl);
                             // navigate(context, ProfileScreen());
                           },
                           child: Container(
@@ -1123,7 +1165,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                                   textAlign: TextAlign.right,
                                   style: GoogleFonts.montserrat(
                                     color: Colors.white70,
-                                    fontSize: deviceType == DeviceType.mobile ? 13 :18,
+                                    fontSize: deviceType == DeviceType.mobile
+                                        ? 13
+                                        : 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -1133,7 +1177,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                                           0.01),
                                   child: Icon(
                                     Icons.arrow_forward_ios,
-                                    size: deviceType == DeviceType.mobile ? 20 : 25,
+                                    size: deviceType == DeviceType.mobile
+                                        ? 20
+                                        : 25,
                                     color: Colors.white.withOpacity(0.5),
                                   ),
                                 ),
@@ -1182,7 +1228,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                                   textAlign: TextAlign.right,
                                   style: GoogleFonts.montserrat(
                                     color: Colors.white70,
-                                    fontSize: deviceType == DeviceType.mobile ? 13 : 18,
+                                    fontSize: deviceType == DeviceType.mobile
+                                        ? 13
+                                        : 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -1192,7 +1240,57 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                                           0.01),
                                   child: Icon(
                                     Icons.arrow_forward_ios,
-                                    size: deviceType == DeviceType.mobile ? 20 : 25,
+                                    size: deviceType == DeviceType.mobile
+                                        ? 20
+                                        : 25,
+                                    color: Colors.white.withOpacity(0.5),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.007),
+
+                        InkWell(
+                          onTap: () {
+                            navigate(context, TVLoginScreen());
+                          },
+                          child: Container(
+                            height: height * 0.05,
+                            decoration: BoxDecoration(
+                              color: Color(0xff2E2E2E),
+                              border: Border.all(
+                                color: Color(0xff3E4243),
+                                width: 2,
+                              ),
+                            ),
+                            padding: EdgeInsets.only(left: 10, right: 20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Log Into TV",
+                                  textAlign: TextAlign.right,
+                                  style: GoogleFonts.montserrat(
+                                    color: Colors.white70,
+                                    fontSize: deviceType == DeviceType.mobile
+                                        ? 13
+                                        : 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.only(
+                                      right: MediaQuery.of(context).size.width *
+                                          0.01),
+                                  child: Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: deviceType == DeviceType.mobile
+                                        ? 20
+                                        : 25,
                                     color: Colors.white.withOpacity(0.5),
                                   ),
                                 ),
@@ -1289,9 +1387,10 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                       ),*/
                         SizedBox(
                             height: MediaQuery.of(context).size.height * 0.03),
-                        SizedBox(height: deviceType == DeviceType.mobile ? 20 : 1.0),
+                        SizedBox(
+                            height: deviceType == DeviceType.mobile ? 20 : 1.0),
                         InkWell(
-                          onTap: ()  {
+                          onTap: () {
                             UserData().deleteUserLogged();
                             //navigateReplace(context, SignInScreen());
                             navigateReplace(context, GuideScreens());
@@ -1302,14 +1401,15 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                               textAlign: TextAlign.right,
                               style: GoogleFonts.montserrat(
                                 color: Colors.white70,
-                                fontSize: deviceType == DeviceType.mobile ? 15 : 20,
+                                fontSize:
+                                    deviceType == DeviceType.mobile ? 15 : 20,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
                         ),
-                        SizedBox(height: deviceType == DeviceType.mobile ? 50 : 10),
-
+                        SizedBox(
+                            height: deviceType == DeviceType.mobile ? 50 : 10),
 
                         // Center(
                         //     child: LogoExpanded(
@@ -1319,7 +1419,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
 
                         Center(
                           child: Image(
-                            height: deviceType == DeviceType.mobile ? height * 0.05 : height * 0.07,
+                            height: deviceType == DeviceType.mobile
+                                ? height * 0.05
+                                : height * 0.07,
                             image: AssetImage('images/newLogoText.png'),
                           ),
 

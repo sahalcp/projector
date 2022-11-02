@@ -1,29 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_uploader/flutter_uploader.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:projector/apis/groupService.dart';
-
+import 'package:projector/apis/photoService.dart';
+import 'package:projector/constant.dart';
 import 'package:projector/data/userData.dart';
 import 'package:projector/sideDrawer/newListVideo.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:projector/apis/photoService.dart';
-// import 'package:projector/uploading/selectVideo.dart';
 import 'package:projector/widgets/dialogs.dart';
 import 'package:projector/widgets/widgets.dart';
-
-import 'package:percent_indicator/circular_percent_indicator.dart';
-
-import 'package:projector/constant.dart';
 
 import '../bgUpload/backgroundUploader.dart';
 import '../widgets/widgets.dart';
@@ -65,11 +58,11 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
   bool details = true,
       category = false,
       visibilty = false,
-      checked1 = false, // checked radio button 1
+      checked1 = true, // Default checked radio button 1 in visibility: Public
       checked2 = false,
       checked3 = false,
       titleBool = false,
-      visibilityBool = false,
+      visibilityBool = true,
       descritionBool = false,
       thumbnailBool = false,
       categoryBool = false,
@@ -101,7 +94,8 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
       subCategoryId,
       playlistId,
       groupId;
-  int visibilityId, groupIndex, selectedIndex;
+  int visibilityId = 2;
+  int groupIndex, selectedIndex;
   double percentageUpload = 0;
   List playlistIds = [], playlistNames = [];
   TextEditingController titleController = TextEditingController(),
@@ -147,7 +141,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
       descriptionController = TextEditingController(
           text:
               selectedAlbumDescription != null ? selectedAlbumDescription : "");
-     // imageFile = widget.imageList[0];
+      // imageFile = widget.imageList[0];
       imageFile = widget.imageFileFirst;
     });
   }
@@ -169,7 +163,6 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
           await MultipartFile.fromFile(widget.imageList[i].path);
       newList.add(imageFile);
     }
-
 
     var token = await UserData().getUserToken();
     setState(() {
@@ -193,7 +186,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
             "group_id": groupSelectedId,
           }), onSendProgress: (sent, total) {
         final progressTotal = sent / total * 100;
-         totalProgressValue = progressTotal.round();
+        totalProgressValue = progressTotal.round();
 
         setState(() {
           if (totalProgressValue > 100) {
@@ -201,8 +194,6 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
           }
           totalProgressValue = totalProgressValue;
         });
-
-
 
         // setCallbackCount(totalProgressValue);
 
@@ -213,8 +204,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
           circleLoadingPercentageValue = 1.0;
         }
 
-        print("loading value"+totalProgressValue.toString());
-
+        print("loading value" + totalProgressValue.toString());
 
         if (totalProgressValue == 100) {
           /*setState(() {
@@ -229,23 +219,20 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
       if (data.data['success']) {
         // print("response --->" + data.toString());
 
+        navigate(context, NewListVideo());
 
-
-          navigate(context, NewListVideo());
-
-          Fluttertoast.showToast(
-            msg: 'Photo Published',
-            textColor: Colors.black,
-            backgroundColor: Colors.white,
-          );
-          setState(() {
-            loading = false;
-            IsvideoUploading = false;
-            progressLoading = false;
-            //Navigator.pop(context);
-            // videoUploaded = false;
-          });
-
+        Fluttertoast.showToast(
+          msg: 'Photo Published',
+          textColor: Colors.black,
+          backgroundColor: Colors.white,
+        );
+        setState(() {
+          loading = false;
+          IsvideoUploading = false;
+          progressLoading = false;
+          //Navigator.pop(context);
+          // videoUploaded = false;
+        });
       } else {
         setState(() {
           IsvideoUploading = false;
@@ -265,7 +252,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
     }
   }
 
-  bgUploadPhotos() async{
+  bgUploadPhotos() async {
     var token = await UserData().getUserToken();
 
     var groupSelectedId = '';
@@ -274,9 +261,9 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
           groupListIds.reduce((value, element) => value + ',' + element);
     }
 
-
     _prepareMediaUploadListener();
-    String taskId = await BackgroundUploader.uploadEnqueue(file:widget.imageList,
+    String taskId = await BackgroundUploader.uploadEnqueue(
+      file: widget.imageList,
       token: token,
       visibility: visibilityId,
       albumId: selectedAlbumId,
@@ -286,7 +273,6 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
     } else {
       BackgroundUploader.uploader.cancelAll();
     }
-
   }
 
   static void _prepareMediaUploadListener() {
@@ -433,7 +419,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
                         //   IsvideoUploading = true;
                         // });
 
-                       // uploadPhotos();
+                        // uploadPhotos();
                         bgUploadPhotos();
                         navigate(context, NewListVideo());
                       } else {
@@ -448,7 +434,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
                       // setState(() {
                       //   IsvideoUploading = true;
                       // });
-                    //  uploadPhotos();
+                      //  uploadPhotos();
                       bgUploadPhotos();
                       navigate(context, NewListVideo());
                     }
@@ -509,911 +495,939 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
           ),
         ),
         body: GestureDetector(
-          onTap: () {
-            FocusScope.of(context).requestFocus(new FocusNode());
-          },
-          child: IsvideoUploading
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
-              : ModalProgressHUD(inAsyncCall: progressLoading,
-              progressIndicator: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  // borderRadius: BorderRadius.all(Radius.circular(20))
-                ),
-                width: width,
-                height: height,
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      totalProgressValue == 100
-                          ? Container(
-                        width: 70,
-                        height: 70,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 8,
-                        ),
-                      )
-                          : CircularPercentIndicator(
-                        radius: 50.0,
-                        lineWidth: 10.0,
-                        percent: circleLoadingPercentageValue,
-                        center: Text(
-                          '$totalProgressValue%',
-                          style: GoogleFonts.poppins(
-                            fontSize: 22.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                        circularStrokeCap: CircularStrokeCap.round,
-                        progressColor: Colors.blue,
+            onTap: () {
+              FocusScope.of(context).requestFocus(new FocusNode());
+            },
+            child: IsvideoUploading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : ModalProgressHUD(
+                    inAsyncCall: progressLoading,
+                    progressIndicator: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        // borderRadius: BorderRadius.all(Radius.circular(20))
                       ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      Text(
-                        totalProgressValue == 100
-                            ? "Please wait while we optimise the content"
-                            : '',
-                        style: GoogleFonts.poppins(
-                          fontSize: 13.0,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                      ),
-
-                    ],
-                  ),
-
-                ),
-              ),
-              child: SingleChildScrollView(
-                child: Container(
-                  padding: EdgeInsets.only(left: 16, right: 16),
-                  color: Colors.white,
-                  // height: height,
-                  //width: width,
-                  child: ListView(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    children: [
-                      Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      width: width,
+                      height: height,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            SizedBox(height: height * 0.03),
-                            //----Upload video label
-                            //---Image view
-                            Container(
-                              width: width,
-                              height: 200,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  //image: FileImage(imageFile ?? widget.imageList.first),
-                                  image: FileImage(widget.imageFileFirst),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              // child: Card(
-                              //   color: Colors.black,
-                              // ),
+                            totalProgressValue == 100
+                                ? Container(
+                                    width: 70,
+                                    height: 70,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 8,
+                                    ),
+                                  )
+                                : CircularPercentIndicator(
+                                    radius: 50.0,
+                                    lineWidth: 10.0,
+                                    percent: circleLoadingPercentageValue,
+                                    center: Text(
+                                      '$totalProgressValue%',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 22.0,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    circularStrokeCap: CircularStrokeCap.round,
+                                    progressColor: Colors.blue,
+                                  ),
+                            SizedBox(
+                              height: 15,
                             ),
-                            Container(),
-                            SizedBox(height: height * 0.02),
-                            //---Download thumbnail
-                            //--Tumbnail
-                            Container(
-                              padding: EdgeInsets.all(6.0),
-                              width: width,
-                              child: Text(
-                                'Thumbnail',
-                                style: GoogleFonts.poppins(
-                                    fontSize: 14.0,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w500),
-                                textAlign: TextAlign.start,
+                            Text(
+                              totalProgressValue == 100
+                                  ? "Please wait while we optimise the content"
+                                  : '',
+                              style: GoogleFonts.poppins(
+                                fontSize: 13.0,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
                               ),
                             ),
-
-                            ///---Thumnails list view
-                            // Container(
-                            //   height: height * 0.15,
-                            //   child: ListView(
-                            //     shrinkWrap: true,
-                            //     scrollDirection: Axis.horizontal,
-                            //     children:
-                            //         List.generate(widget.imageList.length, (index) {
-                            //       imageFile = widget.imageList[index];
-
-                            //       return InkWell(
-                            //         onTap: () {
-                            //           setState(() {
-                            //             //print("valueee --->"+titleController.text.toString());
-                            //             selectedThumbnail = index;
-                            //             imageFile = widget.imageList[index];
-                            //           });
-                            //         },
-                            //         child: Container(
-                            //           width: width * 0.25,
-                            //           height: height * 0.14,
-                            //           margin: EdgeInsets.only(
-                            //             top: 7.0,
-                            //             left: 5.0,
-                            //             right: 5.0,
-                            //           ),
-                            //           padding: EdgeInsets.all(3.0),
-                            //           decoration: BoxDecoration(
-                            //             border: Border.all(
-                            //                 color: selectedThumbnail == index
-                            //                     ? Colors.blue
-                            //                     : Colors.transparent,
-                            //                 width: 2),
-                            //           ),
-                            //           child: Container(
-                            //             decoration: BoxDecoration(
-                            //               image: DecorationImage(
-                            //                   image: FileImage(imageFile),
-                            //                   fit: BoxFit.cover),
-                            //             ),
-                            //           ),
-                            //         ),
-                            //       );
-                            //     }),
-                            //   ),
-                            // ),
-                            Container(
-                              height: height * 0.13,
-                              child: ListView(
-                                scrollDirection: Axis.horizontal,
+                          ],
+                        ),
+                      ),
+                    ),
+                    child: SingleChildScrollView(
+                      child: Container(
+                        padding: EdgeInsets.only(left: 16, right: 16),
+                        color: Colors.white,
+                        // height: height,
+                        //width: width,
+                        child: ListView(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          children: [
+                            Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                    children: [
-                                      InkWell(
-                                        onTap: () {
-                                          getImage();
-                                        },
-                                        child: Container(
-                                          width: width * 0.26,
-                                          height: height * 0.12,
-                                          color: Colors.grey,
-                                          child: Center(
-                                              child: Icon(
-                                                Icons.add_rounded,
-                                                size: 70.0,
-                                                color: Colors.white,
-                                              )),
-                                        ),
+                                  SizedBox(height: height * 0.03),
+                                  //----Upload video label
+                                  //---Image view
+                                  Container(
+                                    width: width,
+                                    height: 200,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        //image: FileImage(imageFile ?? widget.imageList.first),
+                                        image: FileImage(widget.imageFileFirst),
+                                        fit: BoxFit.cover,
                                       ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Visibility(
-                                        visible:
-                                        _image != null ? true : false,
-                                        child: InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              selectedThumbnailLocal = 1;
-                                              selectedThumbnail = 0;
-                                              localThumbanilSelected = true;
-                                              imageFile = _image;
-                                            });
-                                          },
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color:
-                                                  selectedThumbnailLocal ==
-                                                      1
-                                                      ? Colors.blue
-                                                      : Colors
-                                                      .transparent,
-                                                  width: 2),
-                                            ),
-                                            width: width * 0.25,
-                                            height: height * 0.14,
-                                            margin: EdgeInsets.only(
-                                              top: 7.0,
-                                              left: 5.0,
-                                              right: 5.0,
-                                            ),
-                                            child: _image != null
-                                                ? Image.file(
-                                              _image,
-                                              fit: BoxFit.fill,
-                                            )
-                                                : Container(),
-                                          ),
-                                        ),
-                                      ),
+                                    ),
+                                    // child: Card(
+                                    //   color: Colors.black,
+                                    // ),
+                                  ),
+                                  Container(),
+                                  SizedBox(height: height * 0.02),
+                                  //---Download thumbnail
+                                  //--Tumbnail
+                                  Container(
+                                    padding: EdgeInsets.all(6.0),
+                                    width: width,
+                                    child: Text(
+                                      'Thumbnail',
+                                      style: GoogleFonts.poppins(
+                                          fontSize: 14.0,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w500),
+                                      textAlign: TextAlign.start,
+                                    ),
+                                  ),
 
-                                      /// list thumbnail loading all
-                                      Container(
-                                        height: height * 0.15,
-                                        child: ListView.builder(
-                                          itemCount: widget.imageList.take(4).length,
-                                          shrinkWrap: true,
-                                          scrollDirection: Axis.horizontal,
-                                          itemBuilder: (context, index) {
-                                            return InkWell(
+                                  ///---Thumnails list view
+                                  // Container(
+                                  //   height: height * 0.15,
+                                  //   child: ListView(
+                                  //     shrinkWrap: true,
+                                  //     scrollDirection: Axis.horizontal,
+                                  //     children:
+                                  //         List.generate(widget.imageList.length, (index) {
+                                  //       imageFile = widget.imageList[index];
+
+                                  //       return InkWell(
+                                  //         onTap: () {
+                                  //           setState(() {
+                                  //             //print("valueee --->"+titleController.text.toString());
+                                  //             selectedThumbnail = index;
+                                  //             imageFile = widget.imageList[index];
+                                  //           });
+                                  //         },
+                                  //         child: Container(
+                                  //           width: width * 0.25,
+                                  //           height: height * 0.14,
+                                  //           margin: EdgeInsets.only(
+                                  //             top: 7.0,
+                                  //             left: 5.0,
+                                  //             right: 5.0,
+                                  //           ),
+                                  //           padding: EdgeInsets.all(3.0),
+                                  //           decoration: BoxDecoration(
+                                  //             border: Border.all(
+                                  //                 color: selectedThumbnail == index
+                                  //                     ? Colors.blue
+                                  //                     : Colors.transparent,
+                                  //                 width: 2),
+                                  //           ),
+                                  //           child: Container(
+                                  //             decoration: BoxDecoration(
+                                  //               image: DecorationImage(
+                                  //                   image: FileImage(imageFile),
+                                  //                   fit: BoxFit.cover),
+                                  //             ),
+                                  //           ),
+                                  //         ),
+                                  //       );
+                                  //     }),
+                                  //   ),
+                                  // ),
+                                  Container(
+                                    height: height * 0.13,
+                                    child: ListView(
+                                      scrollDirection: Axis.horizontal,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            InkWell(
                                               onTap: () {
-                                                setState(() {
-                                                  selectedThumbnail = index;
-                                                  selectedThumbnailLocal = 0;
-                                                  localThumbanilSelected =
-                                                  false;
-                                                  imageFile =
-                                                  widget.imageList[index];
-                                                });
+                                                getImage();
                                               },
                                               child: Container(
-                                                width: width * 0.25,
-                                                height: height * 0.14,
-                                                margin: EdgeInsets.only(
-                                                  top: 7.0,
-                                                  left: 5.0,
-                                                  right: 5.0,
-                                                ),
-                                                padding: EdgeInsets.all(5.0),
-                                                decoration: BoxDecoration(
+                                                width: width * 0.26,
+                                                height: height * 0.12,
+                                                color: Colors.grey,
+                                                child: Center(
+                                                    child: Icon(
+                                                  Icons.add_rounded,
+                                                  size: 70.0,
+                                                  color: Colors.white,
+                                                )),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            Visibility(
+                                              visible:
+                                                  _image != null ? true : false,
+                                              child: InkWell(
+                                                onTap: () {
+                                                  setState(() {
+                                                    selectedThumbnailLocal = 1;
+                                                    selectedThumbnail = 0;
+                                                    localThumbanilSelected =
+                                                        true;
+                                                    imageFile = _image;
+                                                  });
+                                                },
+                                                child: Container(
+                                                  decoration: BoxDecoration(
                                                     border: Border.all(
-                                                        color: selectedThumbnail ==
-                                                            index
-                                                            ? Colors.blue
-                                                            : Colors
-                                                            .transparent,
+                                                        color:
+                                                            selectedThumbnailLocal ==
+                                                                    1
+                                                                ? Colors.blue
+                                                                : Colors
+                                                                    .transparent,
                                                         width: 2),
-                                                    image: DecorationImage(
-                                                      image: FileImage(
-                                                        widget
-                                                            .imageList[index],
-                                                      ),
-                                                      fit: BoxFit.fill,
-                                                    )
-                                                  // image: DecorationImage(
-                                                  //   image: AssetImage('images/2.png'),
-                                                  //   fit: BoxFit.fill,
-                                                  // ),
-
-                                                  // image: DecorationImage(
-                                                  //   image: AssetImage(
-                                                  //     'images/unsplash.png',
-                                                  //   ),
-                                                  //   fit: BoxFit.fill,
-                                                  // ),
+                                                  ),
+                                                  width: width * 0.25,
+                                                  height: height * 0.14,
+                                                  margin: EdgeInsets.only(
+                                                    top: 7.0,
+                                                    left: 5.0,
+                                                    right: 5.0,
+                                                  ),
+                                                  child: _image != null
+                                                      ? Image.file(
+                                                          _image,
+                                                          fit: BoxFit.fill,
+                                                        )
+                                                      : Container(),
                                                 ),
                                               ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: height * 0.02),
-                            //---Details Header
-                            InkWell(
-                              onTap: () {
-                                // if (!isDetailsShown) {
-                                //   _scrollController.animateTo(160,
-                                //       duration: const Duration(milliseconds: 500),
-                                //       curve: Curves.easeOut);
-                                // }
-
-                                // setState(() => isDetailsShown = !isDetailsShown);
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(12.0),
-                                width: width,
-                                color: (titleBool && descritionBool)
-                                    ? Color(0xff5AA5EF)
-                                    : Colors.black, //Color(0xff5AA5EF),
-                                child: Text(
-                                  'Details',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14.0,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ),
-                            ),
-
-                            SizedBox(height: height * 0.02),
-                            if (isDetailsShown) ...[
-                              // These children are only visible if condition is true
-                              Container(
-                                padding: EdgeInsets.all(6.0),
-                                width: width,
-                                child: Text(
-                                  'Title',
-                                  style: GoogleFonts.poppins(
-                                      fontSize: 14.0,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w500),
-                                  textAlign: TextAlign.start,
-                                ),
-                              ),
-                              //----Text filed
-                              SizedBox(height: height * 0.02),
-                              Container(
-                                // height: height * 0.06,
-                                child: TextFormField(
-                                  focusNode: titleNode,
-                                  controller: titleController
-                                    ..selection = TextSelection.collapsed(
-                                        offset: titleController.text.length),
-                                  inputFormatters: [
-                                    LengthLimitingTextInputFormatter(40),
-                                  ],
-                                  style: GoogleFonts.montserrat(
-                                    color: Colors.black,
-                                    fontSize: 13.0,
-                                  ),
-                                  // validator: (val) {
-                                  //   if (!EmailValidator.validate(email))
-                                  //     return 'Not a valid email';
-                                  //   return null;
-                                  // },
-                                  onChanged: (val) {
-                                    if (val.length < 40) {
-                                      if (val == '' || title == '') {
-                                        setState(() {
-                                          titleBool = false;
-                                        });
-                                      } else {
-                                        setState(() {
-                                          titleBool = true;
-                                        });
-                                      }
-                                      title = val;
-                                      titleController =
-                                          TextEditingController(text: val);
-                                    } else {
-                                      Fluttertoast.showToast(
-                                        backgroundColor: Colors.black,
-                                        gravity: ToastGravity.CENTER,
-                                        textColor: Colors.white,
-                                        msg:
-                                        'Should not exceed 40 characters',
-                                      );
-                                    }
-                                  },
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    hintText: 'Title',
-                                    hintStyle: GoogleFonts.montserrat(
-                                      color: Color(0xff8E8E8E),
-                                      fontSize: 13.0,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.grey,
-                                      ),
-                                      borderRadius: BorderRadius.zero,
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Color(0xff5AA5EF),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    // errorBorder: OutlineInputBorder(
-                                    //   borderRadius: BorderRadius.circular(5.0),
-                                    // ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: height * 0.03),
-                              Container(
-                                padding: EdgeInsets.all(6.0),
-                                width: width,
-                                child: Text(
-                                  'Description',
-                                  style: GoogleFonts.poppins(
-                                      fontSize: 14.0,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w500),
-                                  textAlign: TextAlign.start,
-                                ),
-                              ),
-                              //----Text filed
-                              SizedBox(height: height * 0.02),
-                              Container(
-                                // height: height * 0.06,
-                                child: TextFormField(
-                                  focusNode: descriptionNode,
-                                  controller: descriptionController
-                                    ..selection = TextSelection.collapsed(
-                                        offset: descriptionController
-                                            .text.length),
-                                  inputFormatters: [
-                                    LengthLimitingTextInputFormatter(120),
-                                  ],
-                                  style: GoogleFonts.montserrat(
-                                    color: Colors.black,
-                                    fontSize: 13.0,
-                                  ),
-                                  // validator: (val) {
-                                  //   if (!EmailValidator.validate(email))
-                                  //     return 'Not a valid email';
-                                  //   return null;
-                                  // },
-                                  onChanged: (val) {
-                                    if (val.length < 120) {
-                                      if (val == '') {
-                                        setState(() {
-                                          descritionBool = false;
-                                          thumbnailBool = false;
-                                        });
-                                      } else {
-                                        setState(() {
-                                          descritionBool = true;
-                                          thumbnailBool = true;
-                                        });
-                                      }
-                                      description = val;
-                                      descriptionController =
-                                          TextEditingController(text: val);
-                                    } else {
-                                      Fluttertoast.showToast(
-                                        backgroundColor: Colors.black,
-                                        gravity: ToastGravity.CENTER,
-                                        textColor: Colors.white,
-                                        msg:
-                                        'Should not exceed 120 characters',
-                                      );
-                                    }
-                                  },
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    hintText: 'Add Description',
-                                    hintStyle: GoogleFonts.montserrat(
-                                      color: Color(0xff8E8E8E),
-                                      fontSize: 13.0,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.grey,
-                                      ),
-                                      borderRadius: BorderRadius.zero,
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Color(0xff5AA5EF),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    // errorBorder: OutlineInputBorder(
-                                    //   borderRadius: BorderRadius.circular(5.0),
-                                    // ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: height * 0.02),
-                            ],
-
-                            ///--Categories title
-                            ///
-                            ///
-                            ///
-                            ///
-                            //----Visiblity
-                            InkWell(
-                              onTap: () {
-                                // if (!isVisibilityShown) {
-                                //   _scrollController.animateTo(250,
-                                //       duration: const Duration(milliseconds: 500),
-                                //       curve: Curves.easeOut);
-                                // }
-                                // setState(
-                                //     () => isVisibilityShown = !isVisibilityShown);
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(12.0),
-                                width: width,
-                                color: (checked1 || checked2 || checked3)
-                                    ? Color(0xff5AA5EF)
-                                    : Colors.black, //Color(0xff5AA5EF),
-                                child: Text(
-                                  'Visibility',
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14.0,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: height * 0.02),
-                            if (isVisibilityShown) ...[
-                              Container(
-                                padding: EdgeInsets.only(
-                                  left: 13.0,
-                                  top: 16.0,
-                                  right: 10.0,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  color: Colors.white,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          visibilityId = 2;
-                                          checked2 = false;
-                                          checked1 = true;
-                                          checked3 = false;
-                                          visibilityBool = true;
-                                        });
-                                      },
-                                      child: Row(
-                                        children: [
-                                          checkBox(height, width, checked1),
-                                          Flexible(
-                                            child: Text(
-                                              'Anyone can view on Projector',
-                                              style: TextStyle(
-                                                fontSize: 15.0,
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.w400,
-                                              ),
                                             ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                    SizedBox(height: height * 0.02),
-                                    InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          visibilityId = 1;
-                                          checked2 = true;
-                                          checked1 = false;
-                                          checked3 = false;
-                                          visibilityBool = true;
-                                        });
-                                      },
-                                      child: Row(
-                                        children: [
-                                          checkBox(height, width, checked2),
-                                          Text(
-                                            'Only I can view',
-                                            style: TextStyle(
-                                              fontSize: 16.0,
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                    SizedBox(height: height * 0.02),
-                                    InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          visibilityId = 3;
-                                          checked2 = false;
-                                          checked1 = false;
-                                          checked3 = true;
-                                          visibilityBool = true;
-                                        });
-                                      },
-                                      child: Row(
-                                        children: [
-                                          checkBox(height, width, checked3),
-                                          Text(
-                                            'Choose a group to share with',
-                                            style: TextStyle(
-                                              fontSize: 16.0,
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                    SizedBox(height: 32),
-                                    checked3
-                                        ? FutureBuilder(
-                                      future:
-                                      GroupServcie().getMyGroups(),
-                                      builder: (context, snapshot) {
-                                        if (snapshot.hasData) {
-                                          // final userData = new Map<String,dynamic>.from(snapshot.data);
-                                          // _isChecked = List<bool>.filled(snapshot.data.length, false);
-                                          return Container(
-                                            width: width,
-                                            height: height * 0.15,
-                                            padding: EdgeInsets.only(
-                                                top: 8.0, left: 8.0),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                              BorderRadius.circular(
-                                                  5.0),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Color(
-                                                      0xff000000)
-                                                      .withAlpha(29),
-                                                  blurRadius: 6.0,
-                                                  // spreadRadius: 6.0,
-                                                ),
-                                              ],
-                                            ),
-                                            margin: EdgeInsets.only(
-                                              left: 10.0,
-                                              right: 10.0,
-                                            ),
-                                            child: ListView(
-                                              // crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                ListView.builder(
-                                                  itemCount: snapshot
-                                                      .data.length,
-                                                  shrinkWrap: true,
-                                                  physics:
-                                                  NeverScrollableScrollPhysics(),
-                                                  itemBuilder:
-                                                      (context, index) {
-                                                    groupSelected
-                                                        .add(false);
-                                                    return InkWell(
-                                                      onTap: () {
-                                                        // setState(
-                                                        //         () {
-                                                        //       groupId =
-                                                        //       snapshot.data[index]
-                                                        //       [
-                                                        //       'id'];
-                                                        //     });
-                                                      },
-                                                      child: Container(
-                                                        margin: EdgeInsets
-                                                            .only(
-                                                            left:
-                                                            10.0,
-                                                            right:
-                                                            10.0,
-                                                            top:
-                                                            10.0),
-                                                        child: Row(
-                                                          children: [
-                                                            // groupId ==
-                                                            //     snapshot.data[index]['id']
-                                                            //     ? Icon(
-                                                            //   Icons.check,
-                                                            //   size: 16,
-                                                            // )
-                                                            //     : Container(
-                                                            //   width: 16,
-                                                            // ),
 
-                                                            SizedBox(
-                                                              height:
-                                                              24.0,
-                                                              width:
-                                                              24.0,
-                                                              child: Checkbox(
-                                                                  value: groupSelected[index],
-                                                                  onChanged: (val) {
-                                                                    setState(() {
-                                                                      groupSelected[index] = !groupSelected[index];
-
-                                                                      if (groupSelected[index]) {
-                                                                        groupListIds.add(snapshot.data[index]['id']);
-
-                                                                        //print("groupid add --->" + groupListIds.toString());
-                                                                      } else {
-                                                                        groupListIds.remove(snapshot.data[index]['id']);
-
-                                                                        //print("groupid remove --->" + groupListIds.toString());
-                                                                      }
-                                                                    });
-                                                                  }),
-                                                            ),
-                                                            SizedBox(
-                                                              width:
-                                                              5.0,
-                                                            ),
-
-                                                            Text(
-                                                              snapshot.data[
-                                                              index]
-                                                              [
-                                                              'title'],
-                                                              style:
-                                                              TextStyle(
-                                                                color: Colors
-                                                                    .black,
-                                                                fontWeight:
-                                                                FontWeight.bold,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                ),
-                                                Container(
-                                                  margin:
-                                                  EdgeInsets.all(
-                                                      10.0),
-                                                  child: InkWell(
+                                            /// list thumbnail loading all
+                                            Container(
+                                              height: height * 0.15,
+                                              child: ListView.builder(
+                                                itemCount: widget.imageList
+                                                    .take(4)
+                                                    .length,
+                                                shrinkWrap: true,
+                                                scrollDirection:
+                                                    Axis.horizontal,
+                                                itemBuilder: (context, index) {
+                                                  return InkWell(
                                                     onTap: () {
-                                                      editDialog(
-                                                        context,
-                                                        height,
-                                                        width,
-                                                        true,
-                                                      ).then((value) {
-                                                        setState(() {});
+                                                      setState(() {
+                                                        selectedThumbnail =
+                                                            index;
+                                                        selectedThumbnailLocal =
+                                                            0;
+                                                        localThumbanilSelected =
+                                                            false;
+                                                        imageFile = widget
+                                                            .imageList[index];
                                                       });
                                                     },
-                                                    child: Text(
-                                                      'New Group',
-                                                      style: TextStyle(
-                                                        color: Color(
-                                                            0xff5AA5EF),
-                                                        fontWeight:
-                                                        FontWeight
-                                                            .w600,
+                                                    child: Container(
+                                                      width: width * 0.25,
+                                                      height: height * 0.14,
+                                                      margin: EdgeInsets.only(
+                                                        top: 7.0,
+                                                        left: 5.0,
+                                                        right: 5.0,
                                                       ),
+                                                      padding:
+                                                          EdgeInsets.all(5.0),
+                                                      decoration: BoxDecoration(
+                                                          border: Border.all(
+                                                              color: selectedThumbnail ==
+                                                                      index
+                                                                  ? Colors.blue
+                                                                  : Colors
+                                                                      .transparent,
+                                                              width: 2),
+                                                          image:
+                                                              DecorationImage(
+                                                            image: FileImage(
+                                                              widget.imageList[
+                                                                  index],
+                                                            ),
+                                                            fit: BoxFit.fill,
+                                                          )
+                                                          // image: DecorationImage(
+                                                          //   image: AssetImage('images/2.png'),
+                                                          //   fit: BoxFit.fill,
+                                                          // ),
+
+                                                          // image: DecorationImage(
+                                                          //   image: AssetImage(
+                                                          //     'images/unsplash.png',
+                                                          //   ),
+                                                          //   fit: BoxFit.fill,
+                                                          // ),
+                                                          ),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(height: height * 0.02),
+                                  //---Details Header
+                                  InkWell(
+                                    onTap: () {
+                                      // if (!isDetailsShown) {
+                                      //   _scrollController.animateTo(160,
+                                      //       duration: const Duration(milliseconds: 500),
+                                      //       curve: Curves.easeOut);
+                                      // }
+
+                                      // setState(() => isDetailsShown = !isDetailsShown);
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.all(12.0),
+                                      width: width,
+                                      color: (titleBool && descritionBool)
+                                          ? Color(0xff5AA5EF)
+                                          : Colors.black, //Color(0xff5AA5EF),
+                                      child: Text(
+                                        'Details',
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 14.0,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                    ),
+                                  ),
+
+                                  SizedBox(height: height * 0.02),
+                                  if (isDetailsShown) ...[
+                                    // These children are only visible if condition is true
+                                    Container(
+                                      padding: EdgeInsets.all(6.0),
+                                      width: width,
+                                      child: Text(
+                                        'Title',
+                                        style: GoogleFonts.poppins(
+                                            fontSize: 14.0,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w500),
+                                        textAlign: TextAlign.start,
+                                      ),
+                                    ),
+                                    //----Text filed
+                                    SizedBox(height: height * 0.02),
+                                    Container(
+                                      // height: height * 0.06,
+                                      child: TextFormField(
+                                        focusNode: titleNode,
+                                        controller: titleController
+                                          ..selection = TextSelection.collapsed(
+                                              offset:
+                                                  titleController.text.length),
+                                        inputFormatters: [
+                                          LengthLimitingTextInputFormatter(40),
+                                        ],
+                                        style: GoogleFonts.montserrat(
+                                          color: Colors.black,
+                                          fontSize: 13.0,
+                                        ),
+                                        // validator: (val) {
+                                        //   if (!EmailValidator.validate(email))
+                                        //     return 'Not a valid email';
+                                        //   return null;
+                                        // },
+                                        onChanged: (val) {
+                                          if (val.length < 40) {
+                                            if (val == '' || title == '') {
+                                              setState(() {
+                                                titleBool = false;
+                                              });
+                                            } else {
+                                              setState(() {
+                                                titleBool = true;
+                                              });
+                                            }
+                                            title = val;
+                                            titleController =
+                                                TextEditingController(
+                                                    text: val);
+                                          } else {
+                                            Fluttertoast.showToast(
+                                              backgroundColor: Colors.black,
+                                              gravity: ToastGravity.CENTER,
+                                              textColor: Colors.white,
+                                              msg:
+                                                  'Should not exceed 40 characters',
+                                            );
+                                          }
+                                        },
+                                        decoration: InputDecoration(
+                                          filled: true,
+                                          fillColor: Colors.white,
+                                          hintText: 'Title',
+                                          hintStyle: GoogleFonts.montserrat(
+                                            color: Color(0xff8E8E8E),
+                                            fontSize: 13.0,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Colors.grey,
+                                            ),
+                                            borderRadius: BorderRadius.zero,
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Color(0xff5AA5EF),
+                                              width: 2,
+                                            ),
+                                          ),
+                                          // errorBorder: OutlineInputBorder(
+                                          //   borderRadius: BorderRadius.circular(5.0),
+                                          // ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: height * 0.03),
+                                    Container(
+                                      padding: EdgeInsets.all(6.0),
+                                      width: width,
+                                      child: Text(
+                                        'Description',
+                                        style: GoogleFonts.poppins(
+                                            fontSize: 14.0,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w500),
+                                        textAlign: TextAlign.start,
+                                      ),
+                                    ),
+                                    //----Text filed
+                                    SizedBox(height: height * 0.02),
+                                    Container(
+                                      // height: height * 0.06,
+                                      child: TextFormField(
+                                        focusNode: descriptionNode,
+                                        controller: descriptionController
+                                          ..selection = TextSelection.collapsed(
+                                              offset: descriptionController
+                                                  .text.length),
+                                        inputFormatters: [
+                                          LengthLimitingTextInputFormatter(120),
+                                        ],
+                                        style: GoogleFonts.montserrat(
+                                          color: Colors.black,
+                                          fontSize: 13.0,
+                                        ),
+                                        // validator: (val) {
+                                        //   if (!EmailValidator.validate(email))
+                                        //     return 'Not a valid email';
+                                        //   return null;
+                                        // },
+                                        onChanged: (val) {
+                                          if (val.length < 120) {
+                                            if (val == '') {
+                                              setState(() {
+                                                descritionBool = false;
+                                                thumbnailBool = false;
+                                              });
+                                            } else {
+                                              setState(() {
+                                                descritionBool = true;
+                                                thumbnailBool = true;
+                                              });
+                                            }
+                                            description = val;
+                                            descriptionController =
+                                                TextEditingController(
+                                                    text: val);
+                                          } else {
+                                            Fluttertoast.showToast(
+                                              backgroundColor: Colors.black,
+                                              gravity: ToastGravity.CENTER,
+                                              textColor: Colors.white,
+                                              msg:
+                                                  'Should not exceed 120 characters',
+                                            );
+                                          }
+                                        },
+                                        decoration: InputDecoration(
+                                          filled: true,
+                                          fillColor: Colors.white,
+                                          hintText: 'Add Description',
+                                          hintStyle: GoogleFonts.montserrat(
+                                            color: Color(0xff8E8E8E),
+                                            fontSize: 13.0,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Colors.grey,
+                                            ),
+                                            borderRadius: BorderRadius.zero,
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Color(0xff5AA5EF),
+                                              width: 2,
+                                            ),
+                                          ),
+                                          // errorBorder: OutlineInputBorder(
+                                          //   borderRadius: BorderRadius.circular(5.0),
+                                          // ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: height * 0.02),
+                                  ],
+
+                                  ///--Categories title
+                                  ///
+                                  ///
+                                  ///
+                                  ///
+                                  //----Visiblity
+                                  InkWell(
+                                    onTap: () {
+                                      // if (!isVisibilityShown) {
+                                      //   _scrollController.animateTo(250,
+                                      //       duration: const Duration(milliseconds: 500),
+                                      //       curve: Curves.easeOut);
+                                      // }
+                                      // setState(
+                                      //     () => isVisibilityShown = !isVisibilityShown);
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.all(12.0),
+                                      width: width,
+                                      color: (checked1 || checked2 || checked3)
+                                          ? Color(0xff5AA5EF)
+                                          : Colors.black, //Color(0xff5AA5EF),
+                                      child: Text(
+                                        'Visibility',
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 14.0,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: height * 0.02),
+                                  if (isVisibilityShown) ...[
+                                    Container(
+                                      padding: EdgeInsets.only(
+                                        left: 13.0,
+                                        top: 16.0,
+                                        right: 10.0,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        color: Colors.white,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                visibilityId = 2;
+                                                checked2 = false;
+                                                checked1 = true;
+                                                checked3 = false;
+                                                visibilityBool = true;
+                                              });
+                                            },
+                                            child: Row(
+                                              children: [
+                                                checkBox(
+                                                    height, width, checked1),
+                                                Flexible(
+                                                  child: Text(
+                                                    'Anyone can view on Projector',
+                                                    style: TextStyle(
+                                                      fontSize: 15.0,
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.w400,
                                                     ),
                                                   ),
                                                 )
                                               ],
                                             ),
-                                          );
-                                        } else {
-                                          return Text('Loading');
-                                        }
-                                      },
-                                    )
-                                        : Container(),
-                                    SizedBox(height: height * 0.05),
-                                  ],
-                                ),
-                              ),
-                            ],
-                            SizedBox(height: height * 0.02),
-                            Container(
-                              height: 70,
-                              width: width,
-                              color: Colors.white,
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 20.0, horizontal: 5.0),
-                              child: Container(
-                                width: width,
-                                height: 35,
-                                child: ElevatedButton(
-                                    onPressed: () async {
-                                      if (thumbnailBool &&
-                                          titleBool &&
-                                          descritionBool &&
-                                          visibilityBool) {
-                                        if (visibilityId == 3 &&
-                                            visibilityId != null) {
-                                          if (groupListIds != null &&
-                                              groupListIds.length > 0) {
-                                            // todo: upload photo api with group
-                                          //  uploadPhotos();
-                                            bgUploadPhotos();
-                                            navigate(context, NewListVideo());
-                                          } else {
-                                            key.currentState.showSnackBar(
-                                              SnackBar(
-                                                content: Text(
-                                                    'Select any group from list'),
-                                              ),
-                                            );
-                                          }
-                                        } else if (visibilityId != null) {
-                                          // todo : upload api call
-                                         // uploadPhotos();
-                                          bgUploadPhotos();
-                                          navigate(context, NewListVideo());
-                                        }
+                                          ),
+                                          SizedBox(height: height * 0.02),
+                                          InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                visibilityId = 1;
+                                                checked2 = true;
+                                                checked1 = false;
+                                                checked3 = false;
+                                                visibilityBool = true;
+                                              });
+                                            },
+                                            child: Row(
+                                              children: [
+                                                checkBox(
+                                                    height, width, checked2),
+                                                Text(
+                                                  'Only I can view',
+                                                  style: TextStyle(
+                                                    fontSize: 16.0,
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(height: height * 0.02),
+                                          InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                visibilityId = 3;
+                                                checked2 = false;
+                                                checked1 = false;
+                                                checked3 = true;
+                                                visibilityBool = true;
+                                              });
+                                            },
+                                            child: Row(
+                                              children: [
+                                                checkBox(
+                                                    height, width, checked3),
+                                                Text(
+                                                  'Choose a group to share with',
+                                                  style: TextStyle(
+                                                    fontSize: 16.0,
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(height: 32),
+                                          checked3
+                                              ? FutureBuilder(
+                                                  future: GroupService()
+                                                      .getMyGroups(),
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot.hasData) {
+                                                      // final userData = new Map<String,dynamic>.from(snapshot.data);
+                                                      // _isChecked = List<bool>.filled(snapshot.data.length, false);
+                                                      return Container(
+                                                        width: width,
+                                                        height: height * 0.15,
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                top: 8.0,
+                                                                left: 8.0),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: Colors.white,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      5.0),
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                              color: Color(
+                                                                      0xff000000)
+                                                                  .withAlpha(
+                                                                      29),
+                                                              blurRadius: 6.0,
+                                                              // spreadRadius: 6.0,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        margin: EdgeInsets.only(
+                                                          left: 10.0,
+                                                          right: 10.0,
+                                                        ),
+                                                        child: ListView(
+                                                          // crossAxisAlignment: CrossAxisAlignment.start,
+                                                          children: [
+                                                            ListView.builder(
+                                                              itemCount:
+                                                                  snapshot.data
+                                                                      .length,
+                                                              shrinkWrap: true,
+                                                              physics:
+                                                                  NeverScrollableScrollPhysics(),
+                                                              itemBuilder:
+                                                                  (context,
+                                                                      index) {
+                                                                groupSelected
+                                                                    .add(false);
+                                                                return InkWell(
+                                                                  onTap: () {
+                                                                    // setState(
+                                                                    //         () {
+                                                                    //       groupId =
+                                                                    //       snapshot.data[index]
+                                                                    //       [
+                                                                    //       'id'];
+                                                                    //     });
+                                                                  },
+                                                                  child:
+                                                                      Container(
+                                                                    margin: EdgeInsets.only(
+                                                                        left:
+                                                                            10.0,
+                                                                        right:
+                                                                            10.0,
+                                                                        top:
+                                                                            10.0),
+                                                                    child: Row(
+                                                                      children: [
+                                                                        // groupId ==
+                                                                        //     snapshot.data[index]['id']
+                                                                        //     ? Icon(
+                                                                        //   Icons.check,
+                                                                        //   size: 16,
+                                                                        // )
+                                                                        //     : Container(
+                                                                        //   width: 16,
+                                                                        // ),
 
-                                        if (imageFile != null) {
-                                          setState(() {
-                                            loading = true;
-                                            circleLoading = true;
-                                          });
-                                          List<int> imageBytes =
-                                          imageFile.readAsBytesSync();
-                                          String base64Image =
-                                          base64Encode(imageBytes);
-                                          String finalBase64Image =
-                                              "data:image/jpeg;base64," +
-                                                  base64Image;
-                                          var createAlbum =
-                                          await PhotoService().addAlbum(
-                                              title: titleController.text
-                                                  .toString(),
-                                              description:
-                                              descriptionController
-                                                  .text
-                                                  .toString(),
-                                              icon: finalBase64Image,
-                                              albumId: selectedAlbumId
-                                                  .toString());
-                                          if (createAlbum['success'] ==
-                                              true) {
-                                            setState(() {
-                                              loading = false;
-                                              circleLoading = false;
-                                            });
-                                            Fluttertoast.showToast(
-                                              msg: 'Album details updated',
-                                              textColor: Colors.black,
-                                              backgroundColor: Colors.white,
-                                            );
-                                          }
-                                          setState(() {
-                                            loading = false;
-                                            circleLoading = false;
-                                          });
-                                        }
-                                      } else {
-                                        Fluttertoast.showToast(
-                                          msg: 'All fields are necessary',
-                                          textColor: Colors.white,
-                                        );
-                                      }
-                                    },
-                                    child: Center(
-                                      child: circleLoading?
-                                      CircularProgressIndicator(
-                                        backgroundColor: Colors.white,
-                                      ):
-                                      Text(
-                                        'PUBLISH',
-                                        style: TextStyle(
-                                          fontSize: 16.0,
-                                          color: Colors.white,
-                                        ),
+                                                                        SizedBox(
+                                                                          height:
+                                                                              24.0,
+                                                                          width:
+                                                                              24.0,
+                                                                          child: Checkbox(
+                                                                              value: groupSelected[index],
+                                                                              onChanged: (val) {
+                                                                                setState(() {
+                                                                                  groupSelected[index] = !groupSelected[index];
+
+                                                                                  if (groupSelected[index]) {
+                                                                                    groupListIds.add(snapshot.data[index]['id']);
+
+                                                                                    //print("groupid add --->" + groupListIds.toString());
+                                                                                  } else {
+                                                                                    groupListIds.remove(snapshot.data[index]['id']);
+
+                                                                                    //print("groupid remove --->" + groupListIds.toString());
+                                                                                  }
+                                                                                });
+                                                                              }),
+                                                                        ),
+                                                                        SizedBox(
+                                                                          width:
+                                                                              5.0,
+                                                                        ),
+
+                                                                        Text(
+                                                                          snapshot.data[index]
+                                                                              [
+                                                                              'title'],
+                                                                          style:
+                                                                              TextStyle(
+                                                                            color:
+                                                                                Colors.black,
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                );
+                                                              },
+                                                            ),
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .all(10.0),
+                                                              child: InkWell(
+                                                                onTap: () {
+                                                                  editDialog(
+                                                                    context,
+                                                                    height,
+                                                                    width,
+                                                                    true,
+                                                                  ).then(
+                                                                      (value) {
+                                                                    setState(
+                                                                        () {});
+                                                                  });
+                                                                },
+                                                                child: Text(
+                                                                  'New Group',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Color(
+                                                                        0xff5AA5EF),
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      );
+                                                    } else {
+                                                      return Text('Loading');
+                                                    }
+                                                  },
+                                                )
+                                              : Container(),
+                                          SizedBox(height: height * 0.05),
+                                        ],
                                       ),
                                     ),
-                                    style: ElevatedButton.styleFrom(
-                                      primary: (thumbnailBool == true &&
-                                          titleBool == true &&
-                                          descritionBool == true &&
-                                          visibilityBool == true)
+                                  ],
+                                  SizedBox(height: height * 0.02),
+                                  Container(
+                                    height: 70,
+                                    width: width,
+                                    color: Colors.white,
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 20.0, horizontal: 5.0),
+                                    child: Container(
+                                      width: width,
+                                      height: 35,
+                                      child: ElevatedButton(
+                                          onPressed: () async {
+                                            if (thumbnailBool &&
+                                                titleBool &&
+                                                descritionBool &&
+                                                visibilityBool) {
+                                              if (visibilityId == 3 &&
+                                                  visibilityId != null) {
+                                                if (groupListIds != null &&
+                                                    groupListIds.length > 0) {
+                                                  // todo: upload photo api with group
+                                                  //  uploadPhotos();
+                                                  bgUploadPhotos();
+                                                  navigate(
+                                                      context, NewListVideo());
+                                                } else {
+                                                  key.currentState.showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                          'Select any group from list'),
+                                                    ),
+                                                  );
+                                                }
+                                              } else if (visibilityId != null) {
+                                                // todo : upload api call
+                                                // uploadPhotos();
+                                                bgUploadPhotos();
+                                                navigate(
+                                                    context, NewListVideo());
+                                              }
+
+                                              if (imageFile != null) {
+                                                setState(() {
+                                                  loading = true;
+                                                  circleLoading = true;
+                                                });
+                                                List<int> imageBytes =
+                                                    imageFile.readAsBytesSync();
+                                                String base64Image =
+                                                    base64Encode(imageBytes);
+                                                String finalBase64Image =
+                                                    "data:image/jpeg;base64," +
+                                                        base64Image;
+                                                var createAlbum =
+                                                    await PhotoService().addAlbum(
+                                                        title: titleController
+                                                            .text
+                                                            .toString(),
+                                                        description:
+                                                            descriptionController
+                                                                .text
+                                                                .toString(),
+                                                        icon: finalBase64Image,
+                                                        albumId: selectedAlbumId
+                                                            .toString());
+                                                if (createAlbum['success'] ==
+                                                    true) {
+                                                  setState(() {
+                                                    loading = false;
+                                                    circleLoading = false;
+                                                  });
+                                                  Fluttertoast.showToast(
+                                                    msg:
+                                                        'Album details updated',
+                                                    textColor: Colors.black,
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                  );
+                                                }
+                                                setState(() {
+                                                  loading = false;
+                                                  circleLoading = false;
+                                                });
+                                              }
+                                            } else {
+                                              Fluttertoast.showToast(
+                                                msg: 'All fields are necessary',
+                                                textColor: Colors.white,
+                                              );
+                                            }
+                                          },
+                                          child: Center(
+                                            child: circleLoading
+                                                ? CircularProgressIndicator(
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                  )
+                                                : Text(
+                                                    'PUBLISH',
+                                                    style: TextStyle(
+                                                      fontSize: 16.0,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                          ),
+                                          style: ElevatedButton.styleFrom(
+                                            primary: (thumbnailBool == true &&
+                                                    titleBool == true &&
+                                                    descritionBool == true &&
+                                                    visibilityBool == true)
+                                                ? Color(0xff5AA5EF)
+                                                : Colors.black,
+                                          )),
+                                      color: (thumbnailBool &&
+                                              titleBool &&
+                                              descritionBool &&
+                                              visibilityBool)
                                           ? Color(0xff5AA5EF)
                                           : Colors.black,
-                                    )),
-                                color: (thumbnailBool &&
-                                    titleBool &&
-                                    descritionBool &&
-                                    visibilityBool)
-                                    ? Color(0xff5AA5EF)
-                                    : Colors.black,
-                              ),
-                            ),
-                            SizedBox(height: height * 0.02),
-                          ]),
-                    ],
-                    controller: _scrollController,
-                  ),
-                ),
-              ))
-        ),
+                                    ),
+                                  ),
+                                  SizedBox(height: height * 0.02),
+                                ]),
+                          ],
+                          controller: _scrollController,
+                        ),
+                      ),
+                    ))),
       ),
     );
   }
@@ -1711,7 +1725,7 @@ Future editDialog(context, height, width, edit, {groupId, title, grpimage}) {
                               // ignore: missing_return
                               onChanged: (val) async {
                                 email = val;
-                                var data = await GroupServcie()
+                                var data = await GroupService()
                                     .searchUserFriendList(email);
 
                                 // GrpModel model =
@@ -1778,7 +1792,7 @@ Future editDialog(context, height, width, edit, {groupId, title, grpimage}) {
                                     if (edit) {
                                       if (groupName != '') {
                                         var data =
-                                            await GroupServcie().addNewGroup(
+                                            await GroupService().addNewGroup(
                                           controller.text,
                                           image,
                                         );
@@ -1791,7 +1805,7 @@ Future editDialog(context, height, width, edit, {groupId, title, grpimage}) {
                                         // if (EmailValidator.validate(email)) {
                                         if (data['success'] == true) {
                                           for (var item in selectedUser) {
-                                            var d = await GroupServcie()
+                                            var d = await GroupService()
                                                 .addMembersToGroup(
                                               groupId,
                                               item['id'],
@@ -1829,7 +1843,7 @@ Future editDialog(context, height, width, edit, {groupId, title, grpimage}) {
                                       //     .addMembersToGroup(groupId, userId);
                                       for (var item in selectedUser) {
                                         // print(item['id']);
-                                        var d = await GroupServcie()
+                                        var d = await GroupService()
                                             .addMembersToGroup(
                                                 groupId, item['id']);
                                         if (d['success'] != true) {

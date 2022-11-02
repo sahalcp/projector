@@ -1,23 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:projector/apis/videoService.dart';
 import 'package:projector/contents/contentViewScreen.dart';
-import 'package:projector/data/checkConnection.dart';
-import 'package:projector/editVideo.dart';
 import 'package:projector/shimmer/shimmerLoading.dart';
 import 'package:projector/sideDrawer/viewProfiePage.dart';
 import 'package:projector/startWatching.dart';
 import 'package:projector/uploading/summaryScreen.dart';
-import 'package:projector/uploading/selectVideo.dart';
 import 'package:sizer/sizer.dart';
 
-// import '../getStartedScreen.dart';
-import '../signInScreen.dart';
 import '../widgets/widgets.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class ContentNewListVideo extends StatefulWidget {
   ContentNewListVideo({
@@ -46,33 +39,26 @@ class _ContentNewListVideoState extends State<ContentNewListVideo> {
 
     //"https://picsum.photos/seed/picsum/200/300"
 
-
     //print("SOOR status---${widget.videoId}");
 
-
-
-    if(widget.videoId !=null && widget.videoId!=""){
-
+    if (widget.videoId != null && widget.videoId != "") {
       timer = Timer.periodic(Duration(seconds: 3), (timer) async {
 // call Api here
-        VideoService().getVideoStatus(videoId: widget.videoId).then((response){
+        VideoService().getVideoStatus(videoId: widget.videoId).then((response) {
           if (response['success'] == true) {
-
             var videos = response['videos'][0];
 
             processingThumbnail = videos['thumbnails'][0];
             var status = videos['status'];
-            if(status=="Completed"){
+            if (status == "Completed") {
               setState(() {
                 isVideoProcessing = false;
                 timer.cancel();
               });
-
-            }else{
+            } else {
               setState(() {
                 isVideoProcessing = true;
               });
-
             }
 
             print("SOOR status---$isVideoProcessing");
@@ -84,12 +70,11 @@ class _ContentNewListVideoState extends State<ContentNewListVideo> {
           }
         });
       });
-
     }
-
 
     super.initState();
   }
+
   @override
   void dispose() {
     timer.cancel();
@@ -130,8 +115,9 @@ class _ContentNewListVideoState extends State<ContentNewListVideo> {
                           filterText = data[index];
                         });
 
-                        VideoService().getMyContentsAll(sortBy:
-                        filterText).then((val) {
+                        VideoService()
+                            .getMyContentsAll(sortBy: filterText)
+                            .then((val) {
                           streamContentList.add(val);
                         });
                         Navigator.pop(context);
@@ -166,6 +152,7 @@ class _ContentNewListVideoState extends State<ContentNewListVideo> {
         ],
       );
     }
+
     return Sizer(builder: (context, orientation, deviceType) {
       return SafeArea(
         bottom: false,
@@ -322,14 +309,19 @@ class _ContentNewListVideoState extends State<ContentNewListVideo> {
                                           ),
                                           SizedBox(height: 19),
                                           Container(
-                                            padding: EdgeInsets.only(left: 39.0),
+                                            padding:
+                                                EdgeInsets.only(left: 39.0),
                                             child: Column(
                                               crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 viewData(
                                                     '',
-                                                    ['date', 'name', 'category'],
+                                                    [
+                                                      'date',
+                                                      'name',
+                                                      'category'
+                                                    ],
                                                     'Cancel',
                                                     context),
                                               ],
@@ -356,22 +348,18 @@ class _ContentNewListVideoState extends State<ContentNewListVideo> {
                           right: 10.0,
                         ),
                         child: FutureBuilder(
-                          future: VideoService().getMyContentsAll(
-                            sortBy: filterText
-                          ),
+                          future: VideoService()
+                              .getMyContentsAll(sortBy: filterText),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
                               var videoContent = [];
                               var photoContent = [];
-
 
                               var videosList = snapshot.data['video'];
                               videoContent = videosList;
 
                               var albumList = snapshot.data['album'];
                               photoContent = albumList;
-
-
 
                               /* for (var item in snapshot.data) {
                         if (item['type'] == "album") {
@@ -382,263 +370,311 @@ class _ContentNewListVideoState extends State<ContentNewListVideo> {
                       }*/
 
                               return (isVideoSelected
-                                  ? videoContent.isEmpty
-                                  : photoContent.isEmpty)
+                                      ? videoContent.isEmpty
+                                      : photoContent.isEmpty)
                                   ? Container(
-                                height: height * 0.2,
-                                alignment: Alignment.center,
-                                child: Text(
-                                  'No Contents',
-                                  style: TextStyle(
-                                    fontSize: 15.0,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              )
+                                      height: height * 0.2,
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        'No Contents',
+                                        style: TextStyle(
+                                          fontSize: 15.0,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    )
                                   : Column(
-                                children: [
-                                  ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: isVideoSelected
-                                        ? videoContent.length
-                                        : photoContent.length,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    itemBuilder: (context, index) {
-                                      var contextData = isVideoSelected
-                                          ? videoContent
-                                          : photoContent;
-                                      var contentId =
-                                      contextData[index]['content_id'];
+                                      children: [
+                                        ListView.builder(
+                                          shrinkWrap: true,
+                                          itemCount: isVideoSelected
+                                              ? videoContent.length
+                                              : photoContent.length,
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          itemBuilder: (context, index) {
+                                            var contextData = isVideoSelected
+                                                ? videoContent
+                                                : photoContent;
+                                            var contentId = contextData[index]
+                                                ['content_id'];
 
-                                      String type = contextData[index]['type'];
+                                            String type =
+                                                contextData[index]['type'];
 
-                                      var image = contextData[index]['thumbnail'];
-                                      var description =
-                                      contextData[index]['description'];
-                                      var title = contextData[index]['title'];
-                                      var status = contextData[index]['status'];
-                                      var visibility =
-                                      contextData[index]['visibility'];
+                                            var image =
+                                                contextData[index]['thumbnail'];
+                                            var description = contextData[index]
+                                                ['description'];
+                                            var title =
+                                                contextData[index]['title'];
+                                            var status =
+                                                contextData[index]['status'];
+                                            var visibility = contextData[index]
+                                                ['visibility'];
 
-                                      return type == "album"
-                                          ? Container(
-                                          child: InkWell(
-                                            onTap: () {
-                                              navigate(
-                                                context,
-                                                SummaryScreen(
-                                                  type: type,
-                                                  contentId: contentId,
-                                                  pageType: "profile",
-                                                  title: title,
-                                                ),
-                                              );
-                                            },
-                                            child: Container(
-                                              margin: EdgeInsets.symmetric(
-                                                  vertical: 8),
-                                              child: Row(
-                                                crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .spaceBetween,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      SizedBox(
-                                                        width: width * 0.17,
-                                                      ),
-                                                      Container(
-                                                        height: 85,
-                                                        width: 85,
-                                                        decoration:
-                                                        BoxDecoration(
-                                                          borderRadius:
-                                                          BorderRadius
-                                                              .circular(10),
-                                                          image:
-                                                          DecorationImage(
-                                                            fit: BoxFit.fill,
-                                                            image: image != null
-                                                                ? NetworkImage(
-                                                              image,
-                                                            )
-                                                                : AssetImage(
-                                                                ''),
+                                            return type == "album"
+                                                ? Container(
+                                                    child: InkWell(
+                                                    onTap: () {
+                                                      navigate(
+                                                        context,
+                                                        SummaryScreen(
+                                                          type: type,
+                                                          contentId: contentId,
+                                                          pageType: "profile",
+                                                          title: title,
+                                                        ),
+                                                      );
+                                                    },
+                                                    child: Container(
+                                                      margin:
+                                                          EdgeInsets.symmetric(
+                                                              vertical: 8),
+                                                      child: Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              SizedBox(
+                                                                width: width *
+                                                                    0.17,
+                                                              ),
+                                                              Container(
+                                                                height: 85,
+                                                                width: 85,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10),
+                                                                  image:
+                                                                      DecorationImage(
+                                                                    fit: BoxFit
+                                                                        .fill,
+                                                                    image: image !=
+                                                                            null
+                                                                        ? NetworkImage(
+                                                                            image,
+                                                                          )
+                                                                        : AssetImage(
+                                                                            ''),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              SizedBox(
+                                                                width: width *
+                                                                    0.03,
+                                                              ),
+                                                              Container(
+                                                                width:
+                                                                    width * 0.3,
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    // SizedBox(height: 15),
+                                                                    Text(
+                                                                      title !=
+                                                                              null
+                                                                          ? title
+                                                                          : "",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            14.0,
+                                                                        color: Colors
+                                                                            .black,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                      ),
+                                                                    ),
+                                                                    Text(
+                                                                      description !=
+                                                                              null
+                                                                          ? description
+                                                                          : "",
+                                                                      maxLines:
+                                                                          2,
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            10.0,
+                                                                        color: Colors
+                                                                            .black,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ],
                                                           ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        width: width * 0.03,
-                                                      ),
-                                                      Container(
-                                                        width: width * 0.3,
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                          children: [
-                                                            // SizedBox(height: 15),
-                                                            Text(
-                                                              title != null
-                                                                  ? title
-                                                                  : "",
+                                                          Padding(
+                                                            padding:
+                                                                EdgeInsets.only(
+                                                                    top: 8.0),
+                                                            child: Text(
+                                                              _checkVisibilityStatus(
+                                                                  visibility),
                                                               style: TextStyle(
-                                                                fontSize: 14.0,
-                                                                color: Colors
-                                                                    .black,
+                                                                fontSize: 13.0,
                                                                 fontWeight:
-                                                                FontWeight
-                                                                    .bold,
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                              description !=
-                                                                  null
-                                                                  ? description
-                                                                  : "",
-                                                              maxLines: 2,
-                                                              style: TextStyle(
-                                                                fontSize: 10.0,
+                                                                    FontWeight
+                                                                        .w600,
                                                                 color: Colors
                                                                     .black,
                                                               ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Padding(
-                                                    padding: EdgeInsets.only(
-                                                        top: 8.0),
-                                                    child: Text(
-                                                      _checkVisibilityStatus(
-                                                          visibility),
-                                                      style: TextStyle(
-                                                        fontSize: 13.0,
-                                                        fontWeight:
-                                                        FontWeight.w600,
-                                                        color: Colors.black,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ))
-                                          : Container(
-                                          child: InkWell(
-                                            onTap: () {
-                                              navigate(
-                                                context,
-                                                SummaryScreen(
-                                                  type: type,
-                                                  contentId: contentId,
-                                                  pageType: "profile",
-                                                  title: title,
-                                                ),
-                                              );
-                                            },
-                                            child: Container(
-                                              margin: EdgeInsets.symmetric(
-                                                  vertical: 8),
-                                              child: Row(
-                                                crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .spaceBetween,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Container(
-                                                        height: deviceType == DeviceType.mobile ? height * 0.10 : height * 0.12,
-                                                        width: deviceType == DeviceType.mobile ?  width * 0.37 : width * 0.20 ,
-                                                        decoration:
-                                                        BoxDecoration(
-                                                          borderRadius:
-                                                          BorderRadius
-                                                              .circular(10),
-                                                          image:
-                                                          DecorationImage(
-                                                            fit: BoxFit.fill,
-                                                            image: NetworkImage(
-                                                              image,
                                                             ),
                                                           ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        width: width * 0.03,
-                                                      ),
-                                                      Container(
-                                                        width: width * 0.3,
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                          children: [
-                                                            // SizedBox(height: 15),
-                                                            Text(
-                                                              title != null
-                                                                  ? title
-                                                                  : "",
-                                                              style: TextStyle(
-                                                                fontSize: 14.0,
-                                                                color: Colors
-                                                                    .black,
-                                                                fontWeight:
-                                                                FontWeight
-                                                                    .bold,
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                              description !=
-                                                                  null
-                                                                  ? description
-                                                                  : "",
-                                                              maxLines: 2,
-                                                              style: TextStyle(
-                                                                fontSize: 10.0,
-                                                                color: Colors
-                                                                    .black,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  status == '0'
-                                                      ? Padding(
-                                                    padding:
-                                                    EdgeInsets.only(
-                                                        top: 8.0),
-                                                    child: Text(
-                                                      'DRAFT',
-                                                      style: TextStyle(
-                                                        fontSize: 13.0,
-                                                        fontWeight:
-                                                        FontWeight
-                                                            .w600,
-                                                        color:
-                                                        Colors.black,
+                                                        ],
                                                       ),
                                                     ),
-                                                  )
-                                                      : Container(),
-                                                ],
-                                              ),
-                                            ),
-                                          ));
-                                    },
-                                  ),
-                                  SizedBox(height: 30),
-                                ],
-                              );
+                                                  ))
+                                                : Container(
+                                                    child: InkWell(
+                                                    onTap: () {
+                                                      navigate(
+                                                        context,
+                                                        SummaryScreen(
+                                                          type: type,
+                                                          contentId: contentId,
+                                                          pageType: "profile",
+                                                          title: title,
+                                                        ),
+                                                      );
+                                                    },
+                                                    child: Container(
+                                                      margin:
+                                                          EdgeInsets.symmetric(
+                                                              vertical: 8),
+                                                      child: Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              Container(
+                                                                height: deviceType ==
+                                                                        DeviceType
+                                                                            .mobile
+                                                                    ? height *
+                                                                        0.10
+                                                                    : height *
+                                                                        0.12,
+                                                                width: deviceType ==
+                                                                        DeviceType
+                                                                            .mobile
+                                                                    ? width *
+                                                                        0.37
+                                                                    : width *
+                                                                        0.20,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10),
+                                                                  image:
+                                                                      DecorationImage(
+                                                                    fit: BoxFit
+                                                                        .fill,
+                                                                    image:
+                                                                        NetworkImage(
+                                                                      image,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              SizedBox(
+                                                                width: width *
+                                                                    0.03,
+                                                              ),
+                                                              Container(
+                                                                width:
+                                                                    width * 0.3,
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    // SizedBox(height: 15),
+                                                                    Text(
+                                                                      title !=
+                                                                              null
+                                                                          ? title
+                                                                          : "",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            14.0,
+                                                                        color: Colors
+                                                                            .black,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                      ),
+                                                                    ),
+                                                                    Text(
+                                                                      description !=
+                                                                              null
+                                                                          ? description
+                                                                          : "",
+                                                                      maxLines:
+                                                                          2,
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            10.0,
+                                                                        color: Colors
+                                                                            .black,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          status == '0'
+                                                              ? Padding(
+                                                                  padding:
+                                                                      EdgeInsets
+                                                                          .only(
+                                                                              top: 8.0),
+                                                                  child: Text(
+                                                                    'DRAFT',
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          13.0,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w600,
+                                                                      color: Colors
+                                                                          .black,
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                              : Container(),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ));
+                                          },
+                                        ),
+                                        SizedBox(height: 30),
+                                      ],
+                                    );
                             } else {
                               return contentLoading(height, width);
                             }
@@ -647,79 +683,75 @@ class _ContentNewListVideoState extends State<ContentNewListVideo> {
                       ),
                     ],
                   ),
-
-                  isVideoProcessing == true && widget.videoId !=null && widget.videoId!=""?
-                  Positioned(
-                    bottom: 40,
-                    child: Container(
-                      color: Colors.grey,
-                      height: 75,
-                      width: width,
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Container(
-
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                SizedBox(width: 10,),
-                                Container(
-                                  height: 50,
-                                  width: 80,
-                                  decoration:
-                                  BoxDecoration(
-                                    borderRadius:
-                                    BorderRadius
-                                        .circular(10),
-                                    image:
-                                    DecorationImage(
-                                      fit: BoxFit.fill,
-                                      image: processingThumbnail !=null ? NetworkImage(processingThumbnail):
-                                      AssetImage(''),
+                  isVideoProcessing == true &&
+                          widget.videoId != null &&
+                          widget.videoId != ""
+                      ? Positioned(
+                          bottom: 40,
+                          child: Container(
+                            color: Colors.grey,
+                            height: 75,
+                            width: width,
+                            child: Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Container(
+                                  child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Container(
+                                    height: 50,
+                                    width: 80,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      image: DecorationImage(
+                                        fit: BoxFit.fill,
+                                        image: processingThumbnail != null
+                                            ? NetworkImage(processingThumbnail)
+                                            : AssetImage(''),
+                                      ),
                                     ),
                                   ),
-
-                                ),
-
-                                SizedBox(width: 10,),
-
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'File Processing',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 13.0,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w600,
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'File Processing',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 13.0,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
-                                    ),
-
-                                    Text(
-                                      'Your file will be completed soon and will show in your contents tab.',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 8.0,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w400,
+                                      Text(
+                                        'Your file will be completed soon and will show in your contents tab.',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 8.0,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w400,
+                                        ),
                                       ),
-                                    ),
-
-
-                                  ],
-                                ),
-                                SizedBox(width: 10,),
-                              ],
-                            )
-                        ),
-                      ),
-                    ),
-                  )
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                ],
+                              )),
+                            ),
+                          ),
+                        )
                       : Container()
                 ],
-              )
-          ),
+              )),
         ),
       );
     });

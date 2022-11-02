@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -6,17 +7,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:projector/apis/videoService.dart';
-import 'package:projector/contents/newContentViewScreen.dart';
 import 'package:projector/startWatching.dart';
 import 'package:projector/uploading/addDetailsVideo.dart';
-import 'package:projector/uploading/selectFileMainScreen.dart';
 import 'package:projector/widgets/dialogs.dart';
-
 // import 'package:projector/sideDrawer/listVideo.dart';
 import 'package:projector/widgets/widgets.dart';
 
 import 'apis/groupService.dart';
-import 'data/checkConnection.dart';
 
 class EditVideo extends StatefulWidget {
   EditVideo({
@@ -1190,7 +1187,7 @@ class _EditVideoState extends State<EditVideo> {
                             SizedBox(height: 32),
                             checked3
                                 ? FutureBuilder(
-                                    future: GroupServcie().getMyGroups(),
+                                    future: GroupService().getMyGroups(),
                                     builder: (context, snapshot) {
                                       if (snapshot.hasData) {
                                         return Container(

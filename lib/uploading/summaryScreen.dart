@@ -1,9 +1,7 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -357,137 +355,134 @@ class _SummaryScreenState extends State<SummaryScreen> {
 
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
-      return Container(
-        // height: height * 0.6,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '$title',
-              style: GoogleFonts.poppins(
-                fontSize: 16.0,
-                fontWeight: FontWeight.w600,
-              ),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '$title',
+            style: GoogleFonts.poppins(
+              fontSize: 16.0,
+              fontWeight: FontWeight.w600,
             ),
-            SizedBox(height: 15),
-            Container(
-              padding: EdgeInsets.only(left: 11.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    height: data.length == 0 ? 0 : height * 0.04 * data.length,
-                    child: ListView.separated(
-                      separatorBuilder: (context, index) =>
-                          SizedBox(height: 11.0),
-                      itemCount: title == 'Category'
-                          ? categoryData.length
-                          : data.length,
-                      physics: AlwaysScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        // print(categoryData);
-                        // print(categoryData[index]);
-                        return FutureBuilder(
-                          builder: (BuildContext context, snapshot) {
-                            return InkWell(
-                              onTap: () async {
-                                setState(() {
-                                  selectedIndex = index;
-                                });
-                                // setSelectedIndex(index);
-                                if (title != 'Playlists') {
-                                  if (title == 'Category') {
-                                    parentId = data[index]['id'];
-                                    // print(parentId);
-                                    categorySelected[index] = true;
-                                    if (categoryPrevious != null)
-                                      categorySelected[categoryPrevious] =
-                                          false;
-                                    categoryPrevious = index;
-                                    // subSelected = [];
-                                    // subCategoryData = [];
-                                    // var res = await VideoService()
-                                    //     .getMySubCategory(parentId: parentId);
-                                    // if (res['success'] == true) {
-                                    //   subCategoryData = res['data'];
-                                    //   subCategoryText = '';
-                                    //   subCategoryId = '';
-                                    //   subCategoryBool = false;
-                                    //   List.generate(subCategoryData.length,
-                                    //       (index) {
-                                    //     subSelected.add(false);
-                                    //   });
-                                    // }
-                                  } else {
-                                    subCategoryId = data[index]['id'];
-                                    subSelected[index] = true;
-                                    if (subPrevious != null)
-                                      subSelected[subPrevious] = false;
-                                    subPrevious = index;
-                                    setState(() {
-                                      selectedIndex = null;
-                                    });
-                                  }
+          ),
+          SizedBox(height: 15),
+          Container(
+            padding: EdgeInsets.only(left: 11.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: data.length == 0 ? 0 : height * 0.042 * data.length,
+                  child: ListView.separated(
+                    separatorBuilder: (context, index) =>
+                        SizedBox(height: 11.0),
+                    itemCount:
+                        title == 'Category' ? categoryData.length : data.length,
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      // print(categoryData);
+                      // print(categoryData[index]);
+                      return FutureBuilder(
+                        builder: (BuildContext context, snapshot) {
+                          return InkWell(
+                            onTap: () async {
+                              setState(() {
+                                selectedIndex = index;
+                              });
+                              // setSelectedIndex(index);
+                              if (title != 'Playlists') {
+                                if (title == 'Category') {
+                                  parentId = data[index]['id'];
+                                  // print(parentId);
+                                  categorySelected[index] = true;
+                                  if (categoryPrevious != null)
+                                    categorySelected[categoryPrevious] = false;
+                                  categoryPrevious = index;
+                                  // subSelected = [];
+                                  // subCategoryData = [];
+                                  // var res = await VideoService()
+                                  //     .getMySubCategory(parentId: parentId);
+                                  // if (res['success'] == true) {
+                                  //   subCategoryData = res['data'];
+                                  //   subCategoryText = '';
+                                  //   subCategoryId = '';
+                                  //   subCategoryBool = false;
+                                  //   List.generate(subCategoryData.length,
+                                  //       (index) {
+                                  //     subSelected.add(false);
+                                  //   });
+                                  // }
+                                } else {
+                                  subCategoryId = data[index]['id'];
+                                  subSelected[index] = true;
+                                  if (subPrevious != null)
+                                    subSelected[subPrevious] = false;
+                                  subPrevious = index;
                                   setState(() {
                                     selectedIndex = null;
                                   });
-
-                                  /// setting value category and sub category
-                                  setData(
-                                      title == 'Category'
-                                          ? categoryData[index]['title']
-                                          : data[index]['title'],
-                                      title);
-                                  Navigator.pop(context);
                                 }
-                              },
-                              child: title == 'Category'
-                                  ? Text(
-                                      categoryData[index]['title'],
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 13.0,
-                                        color: selectedIndex == index ||
-                                                categorySelected[index]
-                                            ? Color(0xff5AA5EF)
-                                            : Colors.black,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    )
-                                  : title == 'Sub-Category'
-                                      ? Text(
-                                          data[index]['title'],
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 13.0,
-                                            color: selectedIndex == index ||
-                                                    subSelected[index]
-                                                ? Color(0xff5AA5EF)
-                                                : Colors.black,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        )
-                                      : InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              playlistSelected[index] =
-                                                  !playlistSelected[index];
-                                              if (playlistSelected[index]) {
-                                                playlistNames.add(
-                                                    playlistData[index]
-                                                        ['title']);
-                                                playlistIds.add(
-                                                    playlistData[index]['id']);
-                                                setPlaylist(playlistNames);
-                                              } else {
-                                                playlistNames.remove(
-                                                    playlistData[index]
-                                                        ['title']);
-                                                playlistIds.remove(
-                                                    playlistData[index]['id']);
-                                                setPlaylist(playlistNames);
-                                              }
-                                            });
-                                          },
+                                setState(() {
+                                  selectedIndex = null;
+                                });
+
+                                /// setting value category and sub category
+                                setData(
+                                    title == 'Category'
+                                        ? categoryData[index]['title']
+                                        : data[index]['title'],
+                                    title);
+                                Navigator.pop(context);
+                              }
+                            },
+                            child: title == 'Category'
+                                ? Text(
+                                    categoryData[index]['title'],
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 13.0,
+                                      color: selectedIndex == index ||
+                                              categorySelected[index]
+                                          ? Color(0xff5AA5EF)
+                                          : Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  )
+                                : title == 'Sub-Category'
+                                    ? Text(
+                                        data[index]['title'],
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 13.0,
+                                          color: selectedIndex == index ||
+                                                  subSelected[index]
+                                              ? Color(0xff5AA5EF)
+                                              : Colors.black,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      )
+                                    : InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            playlistSelected[index] =
+                                                !playlistSelected[index];
+                                            if (playlistSelected[index]) {
+                                              playlistNames.add(
+                                                  playlistData[index]['title']);
+                                              playlistIds.add(
+                                                  playlistData[index]['id']);
+                                              setPlaylist(playlistNames);
+                                            } else {
+                                              playlistNames.remove(
+                                                  playlistData[index]['title']);
+                                              playlistIds.remove(
+                                                  playlistData[index]['id']);
+                                              setPlaylist(playlistNames);
+                                            }
+                                          });
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
                                           child: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
@@ -544,40 +539,41 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                             ],
                                           ),
                                         ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                  SizedBox(height: 11.0),
-                  InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                      addData(
-                          title == 'Category'
-                              ? 1
-                              : title == 'Sub-Category'
-                                  ? 2
-                                  : 3,
-                          title,
-                          context,
-                          setState);
+                                      ),
+                          );
+                        },
+                      );
                     },
-                    child: Text(
-                      '$addOn',
-                      style: GoogleFonts.poppins(
-                        fontSize: 13.0,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xff5AA5EF),
-                      ),
+                  ),
+                ),
+                SizedBox(height: 11.0),
+                InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                    addData(
+                        title == 'Category'
+                            ? 1
+                            : title == 'Sub-Category'
+                                ? 2
+                                : 3,
+                        title,
+                        context,
+                        setState);
+                  },
+                  child: Text(
+                    '$addOn',
+                    style: GoogleFonts.poppins(
+                      fontSize: 13.0,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xff5AA5EF),
                     ),
                   ),
-                ],
-              ),
+                ),
+                SizedBox(height: 24.0),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       );
     });
   }
@@ -833,6 +829,11 @@ class _SummaryScreenState extends State<SummaryScreen> {
                             color: Colors.blue,
                             onPressed: () async {
                               if (val.length != 0) {
+                                Navigator.pop(context);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text(
+                                            'Please wait while adding $title')));
                                 setState(() {
                                   loading = true;
                                 });
@@ -858,7 +859,15 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                       categorySelected.add(false);
                                       categoryBool = true;
                                     });
-                                    Navigator.pop(context);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                '$title: $val added successfully')));
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content:
+                                                Text('Failed to add $title')));
                                   }
                                 } else if (id == 2) {
                                   var subCategoryAdded = await VideoService()
@@ -881,7 +890,15 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                       loading = false;
                                       subCategoryBool = true;
                                     });
-                                    Navigator.pop(context);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                '$title: $val added successfully')));
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content:
+                                                Text('Failed to add $title')));
                                   }
                                 } else {
                                   var addPlaylist = await VideoService()
@@ -896,7 +913,15 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                       playlistData = data;
                                       playlistSelected.add(false);
                                     });
-                                    Navigator.pop(context);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                '$title: $val added successfully')));
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content:
+                                                Text('Failed to add $title')));
                                   }
                                 }
                               }
@@ -1342,7 +1367,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                 // ignore: missing_return
                                 onChanged: (val) async {
                                   email = val;
-                                  var data = await GroupServcie()
+                                  var data = await GroupService()
                                       .searchUserFriendList(email);
 
                                   // GrpModel model =
@@ -1409,7 +1434,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                       if (edit) {
                                         if (groupName != '') {
                                           var data =
-                                              await GroupServcie().addNewGroup(
+                                              await GroupService().addNewGroup(
                                             controller.text,
                                             image,
                                           );
@@ -1422,7 +1447,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                           // if (EmailValidator.validate(email)) {
                                           if (data['success'] == true) {
                                             for (var item in selectedUser) {
-                                              var d = await GroupServcie()
+                                              var d = await GroupService()
                                                   .addMembersToGroup(
                                                 groupId,
                                                 item['id'],
@@ -1460,7 +1485,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                         //     .addMembersToGroup(groupId, userId);
                                         for (var item in selectedUser) {
                                           // print(item['id']);
-                                          var d = await GroupServcie()
+                                          var d = await GroupService()
                                               .addMembersToGroup(
                                                   groupId, item['id']);
                                           if (d['success'] != true) {
@@ -1646,7 +1671,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                             children: [
                                               SizedBox(height: height * 0.03),
                                               Container(
-                                                padding: EdgeInsets.only(left: 16, right: 16),
+                                                padding: EdgeInsets.only(
+                                                    left: 16, right: 16),
                                                 width: width,
                                                 height: 200,
                                                 decoration: BoxDecoration(
@@ -1671,7 +1697,10 @@ class _SummaryScreenState extends State<SummaryScreen> {
 
                                               //--Tumbnail
                                               Container(
-                                                padding: EdgeInsets.only(top: 6.0,left: 16.0,right: 16.0),
+                                                padding: EdgeInsets.only(
+                                                    top: 6.0,
+                                                    left: 16.0,
+                                                    right: 16.0),
                                                 width: width,
                                                 child: Text(
                                                   'Thumbnail',
@@ -1686,7 +1715,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
 
                                               ///---Thumbnail liSt
                                               Container(
-                                                padding: EdgeInsets.only(left: 16, right: 16),
+                                                padding: EdgeInsets.only(
+                                                    left: 16, right: 16),
                                                 height: height * 0.13,
                                                 child: ListView(
                                                   scrollDirection:
@@ -1886,7 +1916,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                               if (isDetailsShown) ...[
                                                 // These children are only visible if condition is true
                                                 Container(
-                                                  padding: EdgeInsets.only(left: 16, right: 16),
+                                                  padding: EdgeInsets.only(
+                                                      left: 16, right: 16),
                                                   width: width,
                                                   child: Text(
                                                     'Title',
@@ -1901,7 +1932,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                                 //----Text filed
                                                 SizedBox(height: height * 0.02),
                                                 Container(
-                                                  padding: EdgeInsets.only(left: 16, right: 16),
+                                                  padding: EdgeInsets.only(
+                                                      left: 16, right: 16),
                                                   // height: height * 0.06,
                                                   child: TextFormField(
                                                     focusNode: titleNode,
@@ -1991,7 +2023,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                                 ),
                                                 SizedBox(height: height * 0.03),
                                                 Container(
-                                                  padding: EdgeInsets.only(left: 16, right: 16),
+                                                  padding: EdgeInsets.only(
+                                                      left: 16, right: 16),
                                                   width: width,
                                                   child: Text(
                                                     'Description',
@@ -2006,7 +2039,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                                 //----Text filed
                                                 SizedBox(height: height * 0.02),
                                                 Container(
-                                                  padding: EdgeInsets.only(left: 16, right: 16),
+                                                  padding: EdgeInsets.only(
+                                                      left: 16, right: 16),
                                                   // height: height * 0.06,
                                                   child: TextFormField(
                                                     focusNode: descriptionNode,
@@ -2142,7 +2176,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                               SizedBox(height: height * 0.02),
                                               if (isVisibilityShown) ...[
                                                 Container(
-                                                  margin: EdgeInsets.only(left: 10.0),
+                                                  margin: EdgeInsets.only(
+                                                      left: 10.0),
                                                   padding: EdgeInsets.only(
                                                     left: 13.0,
                                                     top: 16.0,
@@ -2265,7 +2300,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                                       SizedBox(height: 32),
                                                       checked3
                                                           ? FutureBuilder(
-                                                              future: GroupServcie()
+                                                              future: GroupService()
                                                                   .getMyGroups(),
                                                               builder: (context,
                                                                   snapshot) {
@@ -2482,8 +2517,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                                   // isVideoView = false
                                                   // photo view
 
-                                                  removeDialog(context, height, width, false );
-
+                                                  removeDialog(context, height,
+                                                      width, false);
                                                 },
                                                 child: Container(
                                                     padding:
@@ -2527,119 +2562,154 @@ class _SummaryScreenState extends State<SummaryScreen> {
                       if (snapshot.hasData) {
                         if (IsUploading) {
                           return Center(
-                                child: CircularProgressIndicator(),
-                              );
+                            child: CircularProgressIndicator(),
+                          );
                         } else {
                           return SingleChildScrollView(
-                                child: Container(
-                                 // padding: EdgeInsets.only(left: 16, right: 16),
-                                  color: Colors.white,
-                                  // height: height,
-                                  // width: width,
-                                  child: ListView(
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.vertical,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    children: [
-                                      Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            SizedBox(height: height * 0.03),
-                                            //---Image view
-                                            Container(
-                                              width: width,
-                                              height: 200,
-                                              decoration: BoxDecoration(
-                                                image: DecorationImage(
-                                                  image: localThumbanilSelected
-                                                      ? FileImage(imageFile)
-                                                      : NetworkImage(widget
-                                                              .image[
-                                                          selectedThumbnail ??
-                                                              0]),
-                                                  fit: BoxFit.fitHeight,
-                                                ),
-                                              ),
-                                              // child: Card(
-                                              //   color: Colors.black,
-                                              // ),
+                            child: Container(
+                              // padding: EdgeInsets.only(left: 16, right: 16),
+                              color: Colors.white,
+                              // height: height,
+                              // width: width,
+                              child: ListView(
+                                shrinkWrap: true,
+                                scrollDirection: Axis.vertical,
+                                physics: NeverScrollableScrollPhysics(),
+                                children: [
+                                  Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        SizedBox(height: height * 0.03),
+                                        //---Image view
+                                        Container(
+                                          width: width,
+                                          height: 200,
+                                          decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                              image: localThumbanilSelected
+                                                  ? FileImage(imageFile)
+                                                  : NetworkImage(widget.image[
+                                                      selectedThumbnail ?? 0]),
+                                              fit: BoxFit.fitHeight,
                                             ),
-                                            Container(),
-                                            SizedBox(height: height * 0.03),
-                                            //--Tumbnail
-                                            Container(
-                                              padding: EdgeInsets.only(top: 6, left: 16, right: 16),
-                                              width: width,
-                                              child: Text(
-                                                'Thumbnail',
-                                                style: GoogleFonts.poppins(
-                                                    fontSize: 14.0,
-                                                    color: Colors.black,
-                                                    fontWeight:
-                                                        FontWeight.w500),
-                                                textAlign: TextAlign.start,
-                                              ),
-                                            ),
+                                          ),
+                                          // child: Card(
+                                          //   color: Colors.black,
+                                          // ),
+                                        ),
+                                        Container(),
+                                        SizedBox(height: height * 0.03),
+                                        //--Tumbnail
+                                        Container(
+                                          padding: EdgeInsets.only(
+                                              top: 6, left: 16, right: 16),
+                                          width: width,
+                                          child: Text(
+                                            'Thumbnail',
+                                            style: GoogleFonts.poppins(
+                                                fontSize: 14.0,
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w500),
+                                            textAlign: TextAlign.start,
+                                          ),
+                                        ),
 
-                                            ///---Thumnails list view
-                                            Container(
-                                              padding: EdgeInsets.only(left: 16, right: 16),
-                                              height: height * 0.13,
-                                              child: ListView(
-                                                scrollDirection:
-                                                    Axis.horizontal,
+                                        ///---Thumnails list view
+                                        Container(
+                                          padding: EdgeInsets.only(
+                                              left: 16, right: 16),
+                                          height: height * 0.13,
+                                          child: ListView(
+                                            scrollDirection: Axis.horizontal,
+                                            children: [
+                                              Row(
                                                 children: [
-                                                  Row(
-                                                    children: [
-                                                      InkWell(
-                                                        onTap: () {
-                                                          getImage();
-                                                        },
-                                                        child: Container(
-                                                          width: width * 0.26,
-                                                          height: height * 0.12,
-                                                          color: Colors.grey,
-                                                          child: Center(
-                                                              child: Icon(
-                                                            Icons.add_rounded,
-                                                            size: 70.0,
-                                                            color: Colors.white,
-                                                          )),
+                                                  InkWell(
+                                                    onTap: () {
+                                                      getImage();
+                                                    },
+                                                    child: Container(
+                                                      width: width * 0.26,
+                                                      height: height * 0.12,
+                                                      color: Colors.grey,
+                                                      child: Center(
+                                                          child: Icon(
+                                                        Icons.add_rounded,
+                                                        size: 70.0,
+                                                        color: Colors.white,
+                                                      )),
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  Visibility(
+                                                    visible: _image != null
+                                                        ? true
+                                                        : false,
+                                                    child: InkWell(
+                                                      onTap: () {
+                                                        setState(() {
+                                                          selectedThumbnailLocal =
+                                                              1;
+                                                          selectedThumbnail =
+                                                              100;
+                                                          localThumbanilSelected =
+                                                              true;
+                                                          imageFile = _image;
+                                                        });
+                                                      },
+                                                      child: Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          border: Border.all(
+                                                              color: selectedThumbnailLocal ==
+                                                                      1
+                                                                  ? Colors.blue
+                                                                  : Colors
+                                                                      .transparent,
+                                                              width: 2),
                                                         ),
+                                                        width: width * 0.25,
+                                                        height: height * 0.14,
+                                                        margin: EdgeInsets.only(
+                                                          top: 7.0,
+                                                          left: 5.0,
+                                                          right: 5.0,
+                                                        ),
+                                                        child: _image != null
+                                                            ? Image.file(
+                                                                _image,
+                                                                fit:
+                                                                    BoxFit.fill,
+                                                              )
+                                                            : Container(),
                                                       ),
-                                                      SizedBox(
-                                                        width: 10,
-                                                      ),
-                                                      Visibility(
-                                                        visible: _image != null
-                                                            ? true
-                                                            : false,
-                                                        child: InkWell(
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    height: height * 0.15,
+                                                    child: ListView.builder(
+                                                      itemCount:
+                                                          widget.image.length,
+                                                      shrinkWrap: true,
+                                                      scrollDirection:
+                                                          Axis.horizontal,
+                                                      itemBuilder:
+                                                          (context, index) {
+                                                        return InkWell(
                                                           onTap: () {
                                                             setState(() {
-                                                              selectedThumbnailLocal =
-                                                                  1;
                                                               selectedThumbnail =
-                                                                  100;
+                                                                  index;
+                                                              selectedThumbnailLocal =
+                                                                  0;
                                                               localThumbanilSelected =
-                                                                  true;
-                                                              imageFile =
-                                                                  _image;
+                                                                  false;
                                                             });
                                                           },
                                                           child: Container(
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              border: Border.all(
-                                                                  color: selectedThumbnailLocal ==
-                                                                          1
-                                                                      ? Colors
-                                                                          .blue
-                                                                      : Colors
-                                                                          .transparent,
-                                                                  width: 2),
-                                                            ),
                                                             width: width * 0.25,
                                                             height:
                                                                 height * 0.14,
@@ -2649,57 +2719,22 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                                               left: 5.0,
                                                               right: 5.0,
                                                             ),
-                                                            child: _image !=
-                                                                    null
-                                                                ? Image.file(
-                                                                    _image,
-                                                                    fit: BoxFit
-                                                                        .fill,
-                                                                  )
-                                                                : Container(),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Container(
-                                                        height: height * 0.15,
-                                                        child: ListView.builder(
-                                                          itemCount: widget
-                                                              .image.length,
-                                                          shrinkWrap: true,
-                                                          scrollDirection:
-                                                              Axis.horizontal,
-                                                          itemBuilder:
-                                                              (context, index) {
-                                                            return InkWell(
-                                                              onTap: () {
-                                                                setState(() {
-                                                                  selectedThumbnail =
-                                                                      index;
-                                                                  selectedThumbnailLocal =
-                                                                      0;
-                                                                  localThumbanilSelected =
-                                                                      false;
-                                                                });
-                                                              },
-                                                              child: Container(
-                                                                width: width *
-                                                                    0.25,
-                                                                height: height *
-                                                                    0.14,
-                                                                margin:
-                                                                    EdgeInsets
-                                                                        .only(
-                                                                  top: 7.0,
-                                                                  left: 5.0,
-                                                                  right: 5.0,
-                                                                ),
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .all(
-                                                                            5.0),
-                                                                decoration: BoxDecoration(
-                                                                    border: Border.all(color: selectedThumbnail == index ? Colors.blue : Colors.transparent, width: 2),
-                                                                    image: DecorationImage(
+                                                            padding:
+                                                                EdgeInsets.all(
+                                                                    5.0),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                                    border: Border.all(
+                                                                        color: selectedThumbnail ==
+                                                                                index
+                                                                            ? Colors
+                                                                                .blue
+                                                                            : Colors
+                                                                                .transparent,
+                                                                        width:
+                                                                            2),
+                                                                    image:
+                                                                        DecorationImage(
                                                                       image:
                                                                           NetworkImage(
                                                                         widget.image[
@@ -2720,581 +2755,570 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                                                     //   fit: BoxFit.fill,
                                                                     // ),
                                                                     ),
-                                                              ),
-                                                            );
-                                                          },
-                                                        ),
-                                                      ),
-                                                    ],
+                                                          ),
+                                                        );
+                                                      },
+                                                    ),
                                                   ),
                                                 ],
                                               ),
-                                            ),
-                                            SizedBox(height: height * 0.02),
-                                            //---Details Header
-                                            InkWell(
-                                              onTap: () {
-                                                // if (!isDetailsShown) {
-                                                //   _scrollController.animateTo(170,
-                                                //       duration: const Duration(
-                                                //           milliseconds: 500),
-                                                //       curve: Curves.easeOut);
-                                                // }
-
-                                                // setState(() =>
-                                                //     isDetailsShown = !isDetailsShown);
-                                              },
-                                              child: Container(
-                                                padding: EdgeInsets.all(12.0),
-                                                width: width,
-                                                color: (titleBool &&
-                                                        descritionBool)
-                                                    ? Color(0xff5AA5EF)
-                                                    : Colors
-                                                        .black, //Color(0xff5AA5EF),
-                                                child: Text(
-                                                  'Details',
-                                                  textAlign: TextAlign.start,
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 14.0,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                              ),
-                                            ),
-
-                                            SizedBox(height: height * 0.02),
-                                            if (isDetailsShown) ...[
-                                              // These children are only visible if condition is true
-                                              Container(
-                                                padding: EdgeInsets.only(left: 16, right: 16),
-                                                width: width,
-                                                child: Text(
-                                                  'Title',
-                                                  style: GoogleFonts.poppins(
-                                                      fontSize: 14.0,
-                                                      color: Colors.black,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                  textAlign: TextAlign.start,
-                                                ),
-                                              ),
-                                              //----Text filed
-                                              SizedBox(height: height * 0.02),
-                                              Container(
-                                                padding: EdgeInsets.only(left: 16, right: 16),
-                                                // height: height * 0.06,
-                                                child: TextFormField(
-                                                  focusNode: titleNode,
-                                                  controller: titleController
-                                                    ..selection =
-                                                        TextSelection.collapsed(
-                                                            offset:
-                                                                titleController
-                                                                    .text
-                                                                    .length),
-                                                  inputFormatters: [
-                                                    LengthLimitingTextInputFormatter(
-                                                        40),
-                                                  ],
-                                                  style: GoogleFonts.montserrat(
-                                                    color: Colors.black,
-                                                    fontSize: 13.0,
-                                                  ),
-                                                  // validator: (val) {
-                                                  //   if (!EmailValidator.validate(email))
-                                                  //     return 'Not a valid email';
-                                                  //   return null;
-                                                  // },
-                                                  onChanged: (val) {
-                                                    if (val.length < 40) {
-                                                      if (val == '') {
-                                                        setState(() {
-                                                          titleBool = false;
-                                                        });
-                                                      } else {
-                                                        setState(() {
-                                                          titleBool = true;
-                                                        });
-                                                      }
-                                                      title = val;
-                                                      titleController =
-                                                          TextEditingController(
-                                                              text: val);
-                                                    } else {
-                                                      Fluttertoast.showToast(
-                                                        backgroundColor:
-                                                            Colors.black,
-                                                        gravity:
-                                                            ToastGravity.CENTER,
-                                                        textColor: Colors.white,
-                                                        msg:
-                                                            'Should not exceed 40 characters',
-                                                      );
-                                                    }
-                                                  },
-                                                  decoration: InputDecoration(
-                                                    filled: true,
-                                                    fillColor: Colors.white,
-                                                    hintText: 'Title',
-                                                    hintStyle:
-                                                        GoogleFonts.montserrat(
-                                                      color: Color(0xff8E8E8E),
-                                                      fontSize: 13.0,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                    ),
-                                                    enabledBorder:
-                                                        OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                        color: Colors.grey,
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.zero,
-                                                    ),
-                                                    focusedBorder:
-                                                        OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                        color:
-                                                            Color(0xff5AA5EF),
-                                                        width: 2,
-                                                      ),
-                                                    ),
-                                                    // errorBorder: OutlineInputBorder(
-                                                    //   borderRadius: BorderRadius.circular(5.0),
-                                                    // ),
-                                                  ),
-                                                ),
-                                              ),
-                                              SizedBox(height: height * 0.03),
-                                              Container(
-                                                padding: EdgeInsets.only(left: 16, right: 16),
-                                                width: width,
-                                                child: Text(
-                                                  'Description',
-                                                  style: GoogleFonts.poppins(
-                                                      fontSize: 14.0,
-                                                      color: Colors.black,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                  textAlign: TextAlign.start,
-                                                ),
-                                              ),
-                                              //----Text filed
-                                              SizedBox(height: height * 0.02),
-                                              Container(
-                                                padding: EdgeInsets.only(left: 16, right: 16),
-                                                // height: height * 0.06,
-                                                child: TextFormField(
-                                                  focusNode: descriptionNode,
-                                                  controller: descriptionController
-                                                    ..selection =
-                                                        TextSelection.collapsed(
-                                                            offset:
-                                                                descriptionController
-                                                                    .text
-                                                                    .length),
-                                                  inputFormatters: [
-                                                    LengthLimitingTextInputFormatter(
-                                                        120),
-                                                  ],
-                                                  style: GoogleFonts.montserrat(
-                                                    color: Colors.black,
-                                                    fontSize: 13.0,
-                                                  ),
-                                                  // validator: (val) {
-                                                  //   if (!EmailValidator.validate(email))
-                                                  //     return 'Not a valid email';
-                                                  //   return null;
-                                                  // },
-                                                  onChanged: (val) {
-                                                    if (val.length < 120) {
-                                                      if (val == '') {
-                                                        setState(() {
-                                                          descritionBool =
-                                                              false;
-                                                          thumbnailBool = false;
-                                                        });
-                                                      } else {
-                                                        setState(() {
-                                                          descritionBool = true;
-                                                          thumbnailBool = true;
-                                                        });
-                                                      }
-                                                      description = val;
-                                                      descriptionController =
-                                                          TextEditingController(
-                                                              text: val);
-                                                    } else {
-                                                      Fluttertoast.showToast(
-                                                        backgroundColor:
-                                                            Colors.black,
-                                                        gravity:
-                                                            ToastGravity.CENTER,
-                                                        textColor: Colors.white,
-                                                        msg:
-                                                            'Should not exceed 120 characters',
-                                                      );
-                                                    }
-                                                  },
-                                                  decoration: InputDecoration(
-                                                    filled: true,
-                                                    fillColor: Colors.white,
-                                                    hintText: 'Add Description',
-                                                    hintStyle:
-                                                        GoogleFonts.montserrat(
-                                                      color: Color(0xff8E8E8E),
-                                                      fontSize: 13.0,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                    ),
-                                                    enabledBorder:
-                                                        OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                        color: Colors.grey,
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.zero,
-                                                    ),
-                                                    focusedBorder:
-                                                        OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                        color:
-                                                            Color(0xff5AA5EF),
-                                                        width: 2,
-                                                      ),
-                                                    ),
-                                                    // errorBorder: OutlineInputBorder(
-                                                    //   borderRadius: BorderRadius.circular(5.0),
-                                                    // ),
-                                                  ),
-                                                ),
-                                              ),
-                                              SizedBox(height: height * 0.02),
                                             ],
+                                          ),
+                                        ),
+                                        SizedBox(height: height * 0.02),
+                                        //---Details Header
+                                        InkWell(
+                                          onTap: () {
+                                            // if (!isDetailsShown) {
+                                            //   _scrollController.animateTo(170,
+                                            //       duration: const Duration(
+                                            //           milliseconds: 500),
+                                            //       curve: Curves.easeOut);
+                                            // }
 
-                                            ///--Categories title
-                                            InkWell(
-                                              onTap: () {
-                                                // if (!isCategoriesSHown) {
-                                                //   _scrollController.animateTo(500,
-                                                //       duration: const Duration(
-                                                //           milliseconds: 500),
-                                                //       curve: Curves.easeOut);
-                                                // }
-                                                // setState(() => isCategoriesSHown =
-                                                //     !isCategoriesSHown);
+                                            // setState(() =>
+                                            //     isDetailsShown = !isDetailsShown);
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.all(12.0),
+                                            width: width,
+                                            color: (titleBool && descritionBool)
+                                                ? Color(0xff5AA5EF)
+                                                : Colors
+                                                    .black, //Color(0xff5AA5EF),
+                                            child: Text(
+                                              'Details',
+                                              textAlign: TextAlign.start,
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14.0,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                          ),
+                                        ),
+
+                                        SizedBox(height: height * 0.02),
+                                        if (isDetailsShown) ...[
+                                          // These children are only visible if condition is true
+                                          Container(
+                                            padding: EdgeInsets.only(
+                                                left: 16, right: 16),
+                                            width: width,
+                                            child: Text(
+                                              'Title',
+                                              style: GoogleFonts.poppins(
+                                                  fontSize: 14.0,
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.w500),
+                                              textAlign: TextAlign.start,
+                                            ),
+                                          ),
+                                          //----Text filed
+                                          SizedBox(height: height * 0.02),
+                                          Container(
+                                            padding: EdgeInsets.only(
+                                                left: 16, right: 16),
+                                            // height: height * 0.06,
+                                            child: TextFormField(
+                                              focusNode: titleNode,
+                                              controller: titleController
+                                                ..selection =
+                                                    TextSelection.collapsed(
+                                                        offset: titleController
+                                                            .text.length),
+                                              inputFormatters: [
+                                                LengthLimitingTextInputFormatter(
+                                                    40),
+                                              ],
+                                              style: GoogleFonts.montserrat(
+                                                color: Colors.black,
+                                                fontSize: 13.0,
+                                              ),
+                                              // validator: (val) {
+                                              //   if (!EmailValidator.validate(email))
+                                              //     return 'Not a valid email';
+                                              //   return null;
+                                              // },
+                                              onChanged: (val) {
+                                                if (val.length < 40) {
+                                                  if (val == '') {
+                                                    setState(() {
+                                                      titleBool = false;
+                                                    });
+                                                  } else {
+                                                    setState(() {
+                                                      titleBool = true;
+                                                    });
+                                                  }
+                                                  title = val;
+                                                  titleController =
+                                                      TextEditingController(
+                                                          text: val);
+                                                } else {
+                                                  Fluttertoast.showToast(
+                                                    backgroundColor:
+                                                        Colors.black,
+                                                    gravity:
+                                                        ToastGravity.CENTER,
+                                                    textColor: Colors.white,
+                                                    msg:
+                                                        'Should not exceed 40 characters',
+                                                  );
+                                                }
                                               },
-                                              child: Container(
-                                                padding: EdgeInsets.all(12.0),
-                                                width: width,
-                                                color: (categoryBool &&
-                                                        subCategoryBool)
-                                                    ? Color(0xff5AA5EF)
-                                                    : Colors
-                                                        .black, //Color(0xff5AA5EF),
-                                                child: Text(
-                                                  'Categories',
-                                                  textAlign: TextAlign.start,
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 14.0,
-                                                      fontWeight:
-                                                          FontWeight.w500),
+                                              decoration: InputDecoration(
+                                                filled: true,
+                                                fillColor: Colors.white,
+                                                hintText: 'Title',
+                                                hintStyle:
+                                                    GoogleFonts.montserrat(
+                                                  color: Color(0xff8E8E8E),
+                                                  fontSize: 13.0,
+                                                  fontWeight: FontWeight.w400,
                                                 ),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    color: Colors.grey,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.zero,
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    color: Color(0xff5AA5EF),
+                                                    width: 2,
+                                                  ),
+                                                ),
+                                                // errorBorder: OutlineInputBorder(
+                                                //   borderRadius: BorderRadius.circular(5.0),
+                                                // ),
                                               ),
                                             ),
-                                            SizedBox(height: height * 0.02),
-                                            if (isCategoriesSHown) ...[
-                                              ///--- category
-                                              InkWell(
-                                                onTap: (){
-                                                  setState(() {
-                                                    if (categoryPrevious !=
-                                                        null)
-                                                      categorySelected[
-                                                      categoryPrevious] =
-                                                      true;
-                                                  });
-
-                                                  /// bottom sheet for category
-                                                  showModalBottomSheet(
-                                                    context: context,
-                                                    shape:
-                                                    RoundedRectangleBorder(
-                                                      borderRadius:
-                                                      BorderRadius
-                                                          .only(
-                                                        topLeft: Radius
-                                                            .circular(
-                                                            32.0),
-                                                        topRight: Radius
-                                                            .circular(
-                                                            32.0),
-                                                      ),
-                                                    ),
-                                                    builder:
-                                                        (context) {
-                                                      return StatefulBuilder(builder:
-                                                          (BuildContext
-                                                      context,
-                                                          StateSetter
-                                                          setState) {
-                                                        return Container(
-                                                          height: categoryData.length !=
-                                                              0
-                                                              ? height *
-                                                              0.3 *
-                                                              categoryData
-                                                                  .length
-                                                              : height *
-                                                              0.15,
-                                                          padding:
-                                                          EdgeInsets
-                                                              .only(
-                                                            top: 11.0,
-                                                          ),
-                                                          child:
-                                                          Column(
-                                                            children: [
-                                                              Center(
-                                                                child: Container(
-                                                                    height: 3,
-                                                                    width: 60,
-                                                                    color: Colors.black),
-                                                              ),
-                                                              SizedBox(
-                                                                  height:
-                                                                  19),
-                                                              Container(
-                                                                padding:
-                                                                EdgeInsets.only(left: 39.0),
-                                                                child:
-                                                                Column(
-                                                                  crossAxisAlignment:
-                                                                  CrossAxisAlignment.start,
-                                                                  children: [
-                                                                    viewData(
-                                                                      'Category',
-                                                                      categoryData,
-                                                                      categorySelected,
-                                                                      'Add New Category',
-                                                                      context,
-                                                                    ),
-                                                                    SizedBox(height: 10),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        );
-                                                      });
-                                                    },
+                                          ),
+                                          SizedBox(height: height * 0.03),
+                                          Container(
+                                            padding: EdgeInsets.only(
+                                                left: 16, right: 16),
+                                            width: width,
+                                            child: Text(
+                                              'Description',
+                                              style: GoogleFonts.poppins(
+                                                  fontSize: 14.0,
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.w500),
+                                              textAlign: TextAlign.start,
+                                            ),
+                                          ),
+                                          //----Text filed
+                                          SizedBox(height: height * 0.02),
+                                          Container(
+                                            padding: EdgeInsets.only(
+                                                left: 16, right: 16),
+                                            // height: height * 0.06,
+                                            child: TextFormField(
+                                              focusNode: descriptionNode,
+                                              controller: descriptionController
+                                                ..selection =
+                                                    TextSelection.collapsed(
+                                                        offset:
+                                                            descriptionController
+                                                                .text.length),
+                                              inputFormatters: [
+                                                LengthLimitingTextInputFormatter(
+                                                    120),
+                                              ],
+                                              style: GoogleFonts.montserrat(
+                                                color: Colors.black,
+                                                fontSize: 13.0,
+                                              ),
+                                              // validator: (val) {
+                                              //   if (!EmailValidator.validate(email))
+                                              //     return 'Not a valid email';
+                                              //   return null;
+                                              // },
+                                              onChanged: (val) {
+                                                if (val.length < 120) {
+                                                  if (val == '') {
+                                                    setState(() {
+                                                      descritionBool = false;
+                                                      thumbnailBool = false;
+                                                    });
+                                                  } else {
+                                                    setState(() {
+                                                      descritionBool = true;
+                                                      thumbnailBool = true;
+                                                    });
+                                                  }
+                                                  description = val;
+                                                  descriptionController =
+                                                      TextEditingController(
+                                                          text: val);
+                                                } else {
+                                                  Fluttertoast.showToast(
+                                                    backgroundColor:
+                                                        Colors.black,
+                                                    gravity:
+                                                        ToastGravity.CENTER,
+                                                    textColor: Colors.white,
+                                                    msg:
+                                                        'Should not exceed 120 characters',
                                                   );
+                                                }
+                                              },
+                                              decoration: InputDecoration(
+                                                filled: true,
+                                                fillColor: Colors.white,
+                                                hintText: 'Add Description',
+                                                hintStyle:
+                                                    GoogleFonts.montserrat(
+                                                  color: Color(0xff8E8E8E),
+                                                  fontSize: 13.0,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    color: Colors.grey,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.zero,
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    color: Color(0xff5AA5EF),
+                                                    width: 2,
+                                                  ),
+                                                ),
+                                                // errorBorder: OutlineInputBorder(
+                                                //   borderRadius: BorderRadius.circular(5.0),
+                                                // ),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: height * 0.02),
+                                        ],
+
+                                        ///--Categories title
+                                        InkWell(
+                                          onTap: () {
+                                            // if (!isCategoriesSHown) {
+                                            //   _scrollController.animateTo(500,
+                                            //       duration: const Duration(
+                                            //           milliseconds: 500),
+                                            //       curve: Curves.easeOut);
+                                            // }
+                                            // setState(() => isCategoriesSHown =
+                                            //     !isCategoriesSHown);
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.all(12.0),
+                                            width: width,
+                                            color: (categoryBool &&
+                                                    subCategoryBool)
+                                                ? Color(0xff5AA5EF)
+                                                : Colors
+                                                    .black, //Color(0xff5AA5EF),
+                                            child: Text(
+                                              'Categories',
+                                              textAlign: TextAlign.start,
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14.0,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(height: height * 0.02),
+                                        if (isCategoriesSHown) ...[
+                                          ///--- category
+                                          InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                if (categoryPrevious != null)
+                                                  categorySelected[
+                                                      categoryPrevious] = true;
+                                              });
+
+                                              /// bottom sheet for category
+                                              showModalBottomSheet(
+                                                context: context,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(32.0),
+                                                    topRight:
+                                                        Radius.circular(32.0),
+                                                  ),
+                                                ),
+                                                builder: (context) {
+                                                  return StatefulBuilder(
+                                                      builder:
+                                                          (BuildContext context,
+                                                              StateSetter
+                                                                  setState) {
+                                                    return Container(
+                                                      height:
+                                                          categoryData.length !=
+                                                                  0
+                                                              ? height *
+                                                                  0.3 *
+                                                                  categoryData
+                                                                      .length
+                                                              : height * 0.15,
+                                                      padding: EdgeInsets.only(
+                                                        top: 11.0,
+                                                      ),
+                                                      child:
+                                                          SingleChildScrollView(
+                                                        physics:
+                                                            AlwaysScrollableScrollPhysics(),
+                                                        child: Column(
+                                                          children: [
+                                                            Center(
+                                                              child: Container(
+                                                                  height: 3,
+                                                                  width: 60,
+                                                                  color: Colors
+                                                                      .black),
+                                                            ),
+                                                            SizedBox(
+                                                                height: 19),
+                                                            Container(
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                      left:
+                                                                          39.0),
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  viewData(
+                                                                    'Category',
+                                                                    categoryData,
+                                                                    categorySelected,
+                                                                    'Add New Category',
+                                                                    context,
+                                                                  ),
+                                                                  SizedBox(
+                                                                      height:
+                                                                          10),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    );
+                                                  });
                                                 },
-                                                child: Container(
-                                                  margin: EdgeInsets.only(left: 16.0,right: 16.0),
-                                                  height: height * 0.12,
-                                                  padding: EdgeInsets.only(
-                                                    top: 13.0,
-                                                    left: 11.0,
-                                                    // bottom: 11.0,
-                                                    right: 15.0,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                    BorderRadius.circular(
-                                                        5.0),
-                                                    border: Border.all(
-                                                      color: Color(0xffE8E8E8),
-                                                    ),
-                                                  ),
-                                                  child: Column(
+                                              );
+                                            },
+                                            child: Container(
+                                              margin: EdgeInsets.symmetric(
+                                                  horizontal: 16.0),
+                                              height: height * 0.12,
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 12.0,
+                                                  vertical: 4.0),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(5.0),
+                                                border: Border.all(
+                                                  color: Color(0xffE8E8E8),
+                                                ),
+                                              ),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
                                                     crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+                                                        CrossAxisAlignment
+                                                            .start,
                                                     children: [
                                                       Text(
                                                         'Category',
                                                         style: titleStyle,
                                                       ),
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                        children: [
-                                                          Visibility(
-                                                            visible:
-                                                            categoryText != ''
-                                                                ? false
-                                                                : true,
-                                                            child: Text(
-                                                              'Select a main category that\nyour video fits into.',
-                                                              style: GoogleFonts
-                                                                  .poppins(
-                                                                fontSize: 12.0,
-                                                                fontWeight:
-                                                                FontWeight
-                                                                    .w400,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Container(
-                                                            width: width * 0.06,
-                                                            decoration:
-                                                            BoxDecoration(
-                                                              shape: BoxShape
-                                                                  .circle,
-                                                              border:
-                                                              Border.all(
+                                                      SizedBox(height: 4.0),
+                                                      Container(
+                                                        //height: height * 0.02,
+                                                        width: width * 0.75,
+                                                        color: Colors.white,
+                                                        child:
+                                                            (categoryText != '')
+                                                                ? Text(
+                                                                    categoryText,
+                                                                    style:
+                                                                        TextStyle(
+                                                                      color: Colors
+                                                                          .black,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                    ),
+                                                                    maxLines: 2,
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                  )
+                                                                : Text(
+                                                                    'Select a main category that\nyour video fits into.',
+                                                                    style: GoogleFonts
+                                                                        .poppins(
+                                                                      fontSize:
+                                                                          12.0,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w400,
+                                                                    ),
+                                                                  ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                  Container(
+                                                    width: width * 0.06,
+                                                    decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      border: Border.all(
+                                                        color: Colors.black,
+                                                      ),
+                                                    ),
+                                                    child: Center(
+                                                      child: Icon(
+                                                        Icons.arrow_drop_down,
+                                                        size: 16.0,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+
+                                          ///---Sub category
+                                          SizedBox(height: height * 0.02),
+                                          InkWell(
+                                            onTap: () async {
+                                              // if (parentId != null) {
+                                              // if (subCategoryData.length !=
+                                              //     0) {
+                                              setState(() {
+                                                if (subPrevious != null)
+                                                  subSelected[subPrevious] =
+                                                      true;
+                                              });
+                                              // }
+                                              /// bottom sheet for sub category
+                                              showModalBottomSheet(
+                                                context: context,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(32.0),
+                                                    topRight:
+                                                        Radius.circular(32.0),
+                                                  ),
+                                                ),
+                                                builder: (context) {
+                                                  return StatefulBuilder(
+                                                      builder:
+                                                          (BuildContext context,
+                                                              StateSetter
+                                                                  setState) {
+                                                    return Container(
+                                                      height: subCategoryData
+                                                                  .length !=
+                                                              0
+                                                          ? height *
+                                                              0.3 *
+                                                              subCategoryData
+                                                                  .length
+                                                          : height * 0.30,
+                                                      padding: EdgeInsets.only(
+                                                        top: 11.0,
+                                                      ),
+                                                      child:
+                                                          SingleChildScrollView(
+                                                        physics:
+                                                            AlwaysScrollableScrollPhysics(),
+                                                        child: Column(
+                                                          children: [
+                                                            Center(
+                                                              child: Container(
+                                                                height: 3,
+                                                                width: 60,
                                                                 color: Colors
                                                                     .black,
                                                               ),
                                                             ),
-                                                            child: Center(
-                                                              child: Icon(
-                                                                Icons
-                                                                    .arrow_drop_down,
-                                                                size: 16.0,
+                                                            SizedBox(
+                                                                height: 19),
+                                                            Container(
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                      left:
+                                                                          39.0),
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  viewData(
+                                                                    'Sub-Category',
+                                                                    subCategoryData,
+                                                                    subSelected,
+                                                                    'Add Sub Category',
+                                                                    context,
+                                                                  ),
+                                                                  SizedBox(
+                                                                      height:
+                                                                          10),
+                                                                ],
                                                               ),
                                                             ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      categoryText != '' || categoryText !=null
-                                                          ? Container(
-                                                        height:
-                                                        height * 0.02,
-                                                        width: width * 0.25,
-                                                        color: Colors.white,
-                                                        child: Center(
-                                                          child: Text(
-                                                            categoryText != null ? categoryText : "",
-                                                            style:
-                                                            TextStyle(
-                                                              color: Colors
-                                                                  .black,
-                                                              fontWeight:
-                                                              FontWeight
-                                                                  .w500,
-                                                            ),
-                                                          ),
+                                                          ],
                                                         ),
-                                                      )
-                                                          : Container(),
-                                                    ],
-                                                  ),
+                                                      ),
+                                                    );
+                                                  });
+                                                },
+                                              );
+                                              // }
+                                            },
+                                            child: Container(
+                                              margin: EdgeInsets.symmetric(
+                                                  horizontal: 16.0),
+                                              height: height * 0.1,
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 4.0,
+                                                  horizontal: 12.0),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(5.0),
+                                                border: Border.all(
+                                                  color: Color(0xffE8E8E8),
                                                 ),
                                               ),
-                                              ///---Sub category
-                                              SizedBox(height: height * 0.02),
-                                              InkWell(
-                                                onTap: () async {
-                                                  // if (parentId != null) {
-                                                  // if (subCategoryData.length !=
-                                                  //     0) {
-                                                  setState(() {
-                                                    if (subPrevious != null)
-                                                      subSelected[subPrevious] =
-                                                          true;
-                                                  });
-                                                  // }
-                                                  /// bottom sheet for sub category
-                                                  showModalBottomSheet(
-                                                    context: context,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.only(
-                                                        topLeft:
-                                                            Radius.circular(
-                                                                32.0),
-                                                        topRight:
-                                                            Radius.circular(
-                                                                32.0),
-                                                      ),
-                                                    ),
-                                                    builder: (context) {
-                                                      return StatefulBuilder(
-                                                          builder: (BuildContext
-                                                                  context,
-                                                              StateSetter
-                                                                  setState) {
-                                                        return Container(
-                                                          height: subCategoryData
-                                                                      .length !=
-                                                                  0
-                                                              ? height *
-                                                                  0.3 *
-                                                                  subCategoryData
-                                                                      .length
-                                                              : height * 0.30,
-                                                          padding:
-                                                              EdgeInsets.only(
-                                                            top: 11.0,
-                                                          ),
-                                                          child: Column(
-                                                            children: [
-                                                              Center(
-                                                                child:
-                                                                    Container(
-                                                                  height: 3,
-                                                                  width: 60,
-                                                                  color: Colors
-                                                                      .black,
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                  height: 19),
-                                                              Container(
-                                                                padding: EdgeInsets
-                                                                    .only(
-                                                                        left:
-                                                                            39.0),
-                                                                child: Column(
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                  children: [
-                                                                    viewData(
-                                                                      'Sub-Category',
-                                                                      subCategoryData,
-                                                                      subSelected,
-                                                                      'Add Sub Category',
-                                                                      context,
-                                                                    ),
-                                                                    SizedBox(
-                                                                        height:
-                                                                            10),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        );
-                                                      });
-                                                    },
-                                                  );
-                                                  // }
-                                                },
-                                                child: Container(
-                                                  margin: EdgeInsets.only(left: 16.0,right: 16.0),
-                                                  height: height * 0.1,
-                                                  padding: EdgeInsets.only(
-                                                    top: 13.0,
-                                                    left: 11.0,
-                                                    // bottom: 11.0,
-                                                    right: 15.0,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5.0),
-                                                    border: Border.all(
-                                                      color: Color(0xffE8E8E8),
-                                                    ),
-                                                  ),
-                                                  child: Column(
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
                                                     crossAxisAlignment:
                                                         CrossAxisAlignment
                                                             .start,
@@ -3303,19 +3327,119 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                                         'Sub-Category',
                                                         style: titleStyle,
                                                       ),
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Visibility(
-                                                            visible:
-                                                                subCategoryText !=
-                                                                        ''
-                                                                    ? false
-                                                                    : true,
-                                                            child: Text(
-                                                              'Better sort your video for your viewers.',
+                                                      SizedBox(height: 4.0),
+                                                      Container(
+                                                        //height: height * 0.02,
+                                                        width: width * 0.75,
+                                                        color: Colors.white,
+                                                        child:
+                                                            (subCategoryText !=
+                                                                    '')
+                                                                ? Text(
+                                                                    subCategoryText,
+                                                                    style:
+                                                                        TextStyle(
+                                                                      color: Colors
+                                                                          .black,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                    ),
+                                                                    maxLines: 1,
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                  )
+                                                                : Text(
+                                                                    'Better sort your video for your viewers.',
+                                                                    style: GoogleFonts
+                                                                        .poppins(
+                                                                      fontSize:
+                                                                          12.0,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w400,
+                                                                    ),
+                                                                    maxLines: 1,
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                  ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                  Container(
+                                                    width: width * 0.06,
+                                                    decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      border: Border.all(
+                                                        color: Colors.black,
+                                                      ),
+                                                    ),
+                                                    child: Center(
+                                                      child: Icon(
+                                                        Icons.arrow_drop_down,
+                                                        size: 16.0,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.only(
+                                                left: 16.0,
+                                                right: 16.0,
+                                                bottom: 20,
+                                                top: 16.0),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: Color(0xffD9D9DA),
+                                                width: 2.0,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                            ),
+                                            padding: EdgeInsets.all(12.0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'Playlist',
+                                                      style: titleStyle,
+                                                    ),
+                                                    Container(
+                                                      padding: EdgeInsets.only(
+                                                          top: 4.0),
+                                                      width: width * 0.75,
+                                                      child: (playlistText !=
+                                                              '')
+                                                          ? Text(
+                                                              playlistText,
+                                                              maxLines: 3,
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 16.0,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                              ),
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                            )
+                                                          : Text(
+                                                              'Add your video to one or more playlist.\nPlaylist’s can help your audience view\nspecial collections.',
                                                               style: GoogleFonts
                                                                   .poppins(
                                                                 fontSize: 12.0,
@@ -3324,544 +3448,446 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                                                         .w400,
                                                               ),
                                                             ),
+                                                    )
+                                                  ],
+                                                ),
+                                                Align(
+                                                  alignment:
+                                                      Alignment.bottomRight,
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      // print(playlistData);
+                                                      setState(() {
+                                                        if (playlistPrevious !=
+                                                            null)
+                                                          playlistSelected[
+                                                                  playlistPrevious] =
+                                                              true;
+                                                      });
+                                                      showModalBottomSheet(
+                                                        context: context,
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.only(
+                                                            topLeft:
+                                                                Radius.circular(
+                                                                    32.0),
+                                                            topRight:
+                                                                Radius.circular(
+                                                                    32.0),
                                                           ),
-                                                          Container(
-                                                            width: width * 0.06,
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              shape: BoxShape
-                                                                  .circle,
-                                                              border:
-                                                                  Border.all(
-                                                                color: Colors
-                                                                    .black,
+                                                        ),
+                                                        builder: (context) {
+                                                          return StatefulBuilder(
+                                                              builder: (BuildContext
+                                                                      context,
+                                                                  StateSetter
+                                                                      setState) {
+                                                            return Container(
+                                                              height: height *
+                                                                      0.3 ??
+                                                                  height * 0.6,
+                                                              padding:
+                                                                  EdgeInsets
+                                                                      .only(
+                                                                top: 11.0,
                                                               ),
-                                                            ),
-                                                            child: Center(
-                                                              child: Icon(
-                                                                Icons
-                                                                    .arrow_drop_down,
-                                                                size: 16.0,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      subCategoryText != ''
-                                                          ? Container(
-                                                              height:
-                                                                  height * 0.02,
-                                                              width:
-                                                                  width * 0.2,
-                                                              color:
-                                                                  Colors.white,
-                                                              child: Center(
-                                                                child: Text(
-                                                                  subCategoryText !=null ? subCategoryText : "",
-                                                                  style:
-                                                                      TextStyle(
-                                                                    color: Colors
-                                                                        .black,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500,
-                                                                  ),
+                                                              child:
+                                                                  SingleChildScrollView(
+                                                                physics:
+                                                                    AlwaysScrollableScrollPhysics(),
+                                                                child: Column(
+                                                                  children: [
+                                                                    Center(
+                                                                      child:
+                                                                          Container(
+                                                                        height:
+                                                                            3,
+                                                                        width:
+                                                                            60,
+                                                                        color: Colors
+                                                                            .black,
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                        height:
+                                                                            19),
+                                                                    Container(
+                                                                      padding: EdgeInsets.only(
+                                                                          left:
+                                                                              39.0),
+                                                                      child:
+                                                                          Column(
+                                                                        crossAxisAlignment:
+                                                                            CrossAxisAlignment.start,
+                                                                        children: [
+                                                                          viewData(
+                                                                            'Playlists',
+                                                                            playlistData,
+                                                                            playlistSelected,
+                                                                            'Add Playlist',
+                                                                            context,
+                                                                          ),
+                                                                          SizedBox(
+                                                                              height: 10),
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                  ],
                                                                 ),
                                                               ),
-                                                            )
-                                                          : Container(),
+                                                            );
+                                                          });
+                                                        },
+                                                      );
+                                                    },
+                                                    child: Icon(
+                                                      Icons.add,
+                                                      size: 30.0,
+                                                      color: Color(0xff5AA5EF),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+
+                                        ///----Categories Section
+                                        //----Visiblity
+                                        InkWell(
+                                          onTap: () {
+                                            // if (!isVisibilityShown) {
+                                            //   _scrollController.animateTo(780,
+                                            //       duration: const Duration(
+                                            //           milliseconds: 500),
+                                            //       curve: Curves.easeOut);
+                                            // }
+                                            // setState(() => isVisibilityShown =
+                                            //     !isVisibilityShown);
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.all(12.0),
+                                            width: width,
+                                            color: (checked1 ||
+                                                    checked2 ||
+                                                    checked3)
+                                                ? Color(0xff5AA5EF)
+                                                : Colors
+                                                    .black, //Color(0xff5AA5EF),
+                                            child: Text(
+                                              'Visibility',
+                                              textAlign: TextAlign.start,
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14.0,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(height: height * 0.02),
+                                        if (isVisibilityShown) ...[
+                                          Container(
+                                            margin: EdgeInsets.only(left: 10.0),
+                                            padding: EdgeInsets.only(
+                                              left: 13.0,
+                                              top: 16.0,
+                                              right: 10.0,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                              color: Colors.white,
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                InkWell(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      visibilityId = 2;
+                                                      checked2 = false;
+                                                      checked1 = true;
+                                                      checked3 = false;
+                                                      visibilityBool = true;
+                                                    });
+                                                  },
+                                                  child: Row(
+                                                    children: [
+                                                      checkBox(height, width,
+                                                          checked1),
+                                                      Flexible(
+                                                        child: Text(
+                                                          'Anyone can view on Projector',
+                                                          style: TextStyle(
+                                                            fontSize: 15.0,
+                                                            color: Colors.black,
+                                                            fontWeight:
+                                                                FontWeight.w400,
+                                                          ),
+                                                        ),
+                                                      )
                                                     ],
                                                   ),
                                                 ),
-                                              ),
-                                              Container(
-                                                margin: EdgeInsets.only(left: 16.0,right: 16.0,bottom: 20,top: 16.0),
-                                                decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                    color: Color(0xffD9D9DA),
-                                                    width: 2.0,
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0),
-                                                ),
-                                                padding: EdgeInsets.all(12.0),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      'Playlist',
-                                                      style: titleStyle,
-                                                    ),
-                                                    Text(
-                                                      'Add your video to one or more playlist.\nPlaylist’s can help your audience view\nspecial collections.',
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                        fontSize: 12.0,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                        height: height * 0.013),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: [
-                                                        Expanded(
-                                                          child: Text(
-                                                            playlistText,
-                                                            maxLines: 2,
-                                                            style: TextStyle(
-                                                              color:
-                                                                  Colors.black,
-                                                              fontSize: 18.0,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                            ),
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .clip,
-                                                          ),
+                                                SizedBox(height: height * 0.02),
+                                                InkWell(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      visibilityId = 1;
+                                                      checked2 = true;
+                                                      checked1 = false;
+                                                      checked3 = false;
+                                                      visibilityBool = true;
+                                                    });
+                                                  },
+                                                  child: Row(
+                                                    children: [
+                                                      checkBox(height, width,
+                                                          checked2),
+                                                      Text(
+                                                        'Only I can view',
+                                                        style: TextStyle(
+                                                          fontSize: 16.0,
+                                                          color: Colors.black,
+                                                          fontWeight:
+                                                              FontWeight.w400,
                                                         ),
-                                                        Align(
-                                                          alignment: Alignment
-                                                              .bottomRight,
-                                                          child: InkWell(
-                                                            onTap: () {
-                                                              // print(playlistData);
-                                                              setState(() {
-                                                                if (playlistPrevious !=
-                                                                    null)
-                                                                  playlistSelected[
-                                                                          playlistPrevious] =
-                                                                      true;
-                                                              });
-                                                              showModalBottomSheet(
-                                                                context:
-                                                                    context,
-                                                                shape:
-                                                                    RoundedRectangleBorder(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .only(
-                                                                    topLeft: Radius
-                                                                        .circular(
-                                                                            32.0),
-                                                                    topRight: Radius
-                                                                        .circular(
-                                                                            32.0),
-                                                                  ),
-                                                                ),
-                                                                builder:
-                                                                    (context) {
-                                                                  return StatefulBuilder(builder: (BuildContext
-                                                                          context,
-                                                                      StateSetter
-                                                                          setState) {
-                                                                    return Container(
-                                                                      height: height *
-                                                                              0.3 ??
-                                                                          height *
-                                                                              0.6,
-                                                                      padding:
-                                                                          EdgeInsets
-                                                                              .only(
-                                                                        top:
-                                                                            11.0,
-                                                                      ),
-                                                                      child:
-                                                                          Column(
-                                                                        children: [
-                                                                          Center(
-                                                                            child:
-                                                                                Container(
-                                                                              height: 3,
-                                                                              width: 60,
-                                                                              color: Colors.black,
-                                                                            ),
-                                                                          ),
-                                                                          SizedBox(
-                                                                              height: 19),
-                                                                          Container(
-                                                                            padding:
-                                                                                EdgeInsets.only(left: 39.0),
-                                                                            child:
-                                                                                Column(
-                                                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                                                              children: [
-                                                                                viewData(
-                                                                                  'Playlists',
-                                                                                  playlistData,
-                                                                                  playlistSelected,
-                                                                                  'Add Playlist',
-                                                                                  context,
-                                                                                ),
-                                                                                SizedBox(height: 10),
-                                                                              ],
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                    );
-                                                                  });
-                                                                },
-                                                              );
-                                                            },
-                                                            child: Icon(
-                                                              Icons.add,
-                                                              size: 30.0,
-                                                              color: Color(
-                                                                  0xff5AA5EF),
-                                                            ),
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ],
+                                                      )
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
-
-                                            ///----Categories Section
-                                            //----Visiblity
-                                            InkWell(
-                                              onTap: () {
-                                                // if (!isVisibilityShown) {
-                                                //   _scrollController.animateTo(780,
-                                                //       duration: const Duration(
-                                                //           milliseconds: 500),
-                                                //       curve: Curves.easeOut);
-                                                // }
-                                                // setState(() => isVisibilityShown =
-                                                //     !isVisibilityShown);
-                                              },
-                                              child: Container(
-                                                padding: EdgeInsets.all(12.0),
-                                                width: width,
-                                                color: (checked1 ||
-                                                        checked2 ||
-                                                        checked3)
-                                                    ? Color(0xff5AA5EF)
-                                                    : Colors
-                                                        .black, //Color(0xff5AA5EF),
-                                                child: Text(
-                                                  'Visibility',
-                                                  textAlign: TextAlign.start,
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 14.0,
-                                                      fontWeight:
-                                                          FontWeight.w500),
+                                                SizedBox(height: height * 0.02),
+                                                InkWell(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      visibilityId = 3;
+                                                      checked2 = false;
+                                                      checked1 = false;
+                                                      checked3 = true;
+                                                      visibilityBool = true;
+                                                    });
+                                                  },
+                                                  child: Row(
+                                                    children: [
+                                                      checkBox(height, width,
+                                                          checked3),
+                                                      Text(
+                                                        'Choose a group to share with',
+                                                        style: TextStyle(
+                                                          fontSize: 16.0,
+                                                          color: Colors.black,
+                                                          fontWeight:
+                                                              FontWeight.w400,
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                            ),
-                                            SizedBox(height: height * 0.02),
-                                            if (isVisibilityShown) ...[
-                                              Container(
-                                                margin: EdgeInsets.only(left: 10.0),
-                                                padding: EdgeInsets.only(
-                                                  left: 13.0,
-                                                  top: 16.0,
-                                                  right: 10.0,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0),
-                                                  color: Colors.white,
-                                                ),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    InkWell(
-                                                      onTap: () {
-                                                        setState(() {
-                                                          visibilityId = 2;
-                                                          checked2 = false;
-                                                          checked1 = true;
-                                                          checked3 = false;
-                                                          visibilityBool = true;
-                                                        });
-                                                      },
-                                                      child: Row(
-                                                        children: [
-                                                          checkBox(height,
-                                                              width, checked1),
-                                                          Flexible(
-                                                            child: Text(
-                                                              'Anyone can view on Projector',
-                                                              style: TextStyle(
-                                                                fontSize: 15.0,
+                                                SizedBox(height: 32),
+                                                checked3
+                                                    ? FutureBuilder(
+                                                        future: GroupService()
+                                                            .getMyGroups(),
+                                                        builder: (context,
+                                                            snapshot) {
+                                                          if (snapshot
+                                                              .hasData) {
+                                                            // final userData = new Map<String,dynamic>.from(snapshot.data);
+                                                            // _isChecked = List<bool>.filled(snapshot.data.length, false);
+                                                            return Container(
+                                                              width: width,
+                                                              height:
+                                                                  height * 0.15,
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                      top: 8.0,
+                                                                      left:
+                                                                          8.0),
+                                                              decoration:
+                                                                  BoxDecoration(
                                                                 color: Colors
-                                                                    .black,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400,
-                                                              ),
-                                                            ),
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                        height: height * 0.02),
-                                                    InkWell(
-                                                      onTap: () {
-                                                        setState(() {
-                                                          visibilityId = 1;
-                                                          checked2 = true;
-                                                          checked1 = false;
-                                                          checked3 = false;
-                                                          visibilityBool = true;
-                                                        });
-                                                      },
-                                                      child: Row(
-                                                        children: [
-                                                          checkBox(height,
-                                                              width, checked2),
-                                                          Text(
-                                                            'Only I can view',
-                                                            style: TextStyle(
-                                                              fontSize: 16.0,
-                                                              color:
-                                                                  Colors.black,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                            ),
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                        height: height * 0.02),
-                                                    InkWell(
-                                                      onTap: () {
-                                                        setState(() {
-                                                          visibilityId = 3;
-                                                          checked2 = false;
-                                                          checked1 = false;
-                                                          checked3 = true;
-                                                          visibilityBool = true;
-                                                        });
-                                                      },
-                                                      child: Row(
-                                                        children: [
-                                                          checkBox(height,
-                                                              width, checked3),
-                                                          Text(
-                                                            'Choose a group to share with',
-                                                            style: TextStyle(
-                                                              fontSize: 16.0,
-                                                              color:
-                                                                  Colors.black,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                            ),
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    SizedBox(height: 32),
-                                                    checked3
-                                                        ? FutureBuilder(
-                                                            future: GroupServcie()
-                                                                .getMyGroups(),
-                                                            builder: (context,
-                                                                snapshot) {
-                                                              if (snapshot
-                                                                  .hasData) {
-                                                                // final userData = new Map<String,dynamic>.from(snapshot.data);
-                                                                // _isChecked = List<bool>.filled(snapshot.data.length, false);
-                                                                return Container(
-                                                                  width: width,
-                                                                  height:
-                                                                      height *
-                                                                          0.15,
-                                                                  padding: EdgeInsets
-                                                                      .only(
-                                                                          top:
-                                                                              8.0,
-                                                                          left:
-                                                                              8.0),
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    color: Colors
-                                                                        .white,
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
+                                                                    .white,
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
                                                                             5.0),
-                                                                    boxShadow: [
-                                                                      BoxShadow(
-                                                                        color: Color(0xff000000)
-                                                                            .withAlpha(29),
-                                                                        blurRadius:
-                                                                            6.0,
-                                                                        // spreadRadius: 6.0,
-                                                                      ),
-                                                                    ],
+                                                                boxShadow: [
+                                                                  BoxShadow(
+                                                                    color: Color(
+                                                                            0xff000000)
+                                                                        .withAlpha(
+                                                                            29),
+                                                                    blurRadius:
+                                                                        6.0,
+                                                                    // spreadRadius: 6.0,
                                                                   ),
-                                                                  margin:
-                                                                      EdgeInsets
-                                                                          .only(
-                                                                    left: 10.0,
-                                                                    right: 10.0,
-                                                                  ),
-                                                                  child:
-                                                                      ListView(
-                                                                    // crossAxisAlignment: CrossAxisAlignment.start,
-                                                                    children: [
-                                                                      ListView
-                                                                          .builder(
-                                                                        itemCount: snapshot
+                                                                ],
+                                                              ),
+                                                              margin: EdgeInsets
+                                                                  .only(
+                                                                left: 10.0,
+                                                                right: 10.0,
+                                                              ),
+                                                              child: ListView(
+                                                                // crossAxisAlignment: CrossAxisAlignment.start,
+                                                                children: [
+                                                                  ListView
+                                                                      .builder(
+                                                                    itemCount:
+                                                                        snapshot
                                                                             .data
                                                                             .length,
-                                                                        shrinkWrap:
-                                                                            true,
-                                                                        physics:
-                                                                            NeverScrollableScrollPhysics(),
-                                                                        itemBuilder:
-                                                                            (context,
-                                                                                index) {
-                                                                          groupSelected
-                                                                              .add(false);
-                                                                          return InkWell(
-                                                                            onTap:
-                                                                                () {
-                                                                              // setState(
-                                                                              //         () {
-                                                                              //       groupId =
-                                                                              //       snapshot.data[index]
-                                                                              //       [
-                                                                              //       'id'];
-                                                                              //     });
-                                                                            },
-                                                                            child:
-                                                                                Container(
-                                                                              margin: EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
-                                                                              child: Row(
-                                                                                children: [
-                                                                                  // groupId ==
-                                                                                  //     snapshot.data[index]['id']
-                                                                                  //     ? Icon(
-                                                                                  //   Icons.check,
-                                                                                  //   size: 16,
-                                                                                  // )
-                                                                                  //     : Container(
-                                                                                  //   width: 16,
-                                                                                  // ),
-
-                                                                                  SizedBox(
-                                                                                    height: 24.0,
-                                                                                    width: 24.0,
-                                                                                    child: Checkbox(
-                                                                                        value: groupSelected[index],
-                                                                                        onChanged: (val) {
-                                                                                          setState(() {
-                                                                                            groupSelected[index] = !groupSelected[index];
-
-                                                                                            if (groupSelected[index]) {
-                                                                                              groupListIds.add(snapshot.data[index]['id']);
-
-                                                                                              //print("groupid add --->" + groupListIds.toString());
-                                                                                            } else {
-                                                                                              groupListIds.remove(snapshot.data[index]['id']);
-
-                                                                                              //print("groupid remove --->" + groupListIds.toString());
-                                                                                            }
-                                                                                          });
-                                                                                        }),
-                                                                                  ),
-                                                                                  SizedBox(
-                                                                                    width: 5.0,
-                                                                                  ),
-
-                                                                                  Text(
-                                                                                    snapshot.data[index]['title'],
-                                                                                    style: TextStyle(
-                                                                                      color: Colors.black,
-                                                                                      fontWeight: FontWeight.bold,
-                                                                                    ),
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                            ),
-                                                                          );
+                                                                    shrinkWrap:
+                                                                        true,
+                                                                    physics:
+                                                                        NeverScrollableScrollPhysics(),
+                                                                    itemBuilder:
+                                                                        (context,
+                                                                            index) {
+                                                                      groupSelected
+                                                                          .add(
+                                                                              false);
+                                                                      return InkWell(
+                                                                        onTap:
+                                                                            () {
+                                                                          // setState(
+                                                                          //         () {
+                                                                          //       groupId =
+                                                                          //       snapshot.data[index]
+                                                                          //       [
+                                                                          //       'id'];
+                                                                          //     });
                                                                         },
-                                                                      ),
-                                                                      Container(
-                                                                        margin:
-                                                                            EdgeInsets.all(10.0),
                                                                         child:
-                                                                            InkWell(
-                                                                          onTap:
-                                                                              () {
-                                                                            editDialog(
-                                                                              context,
-                                                                              height,
-                                                                              width,
-                                                                              true,
-                                                                            ).then((value) {
-                                                                              setState(() {});
-                                                                            });
-                                                                          },
+                                                                            Container(
+                                                                          margin: EdgeInsets.only(
+                                                                              left: 10.0,
+                                                                              right: 10.0,
+                                                                              top: 10.0),
                                                                           child:
+                                                                              Row(
+                                                                            children: [
+                                                                              // groupId ==
+                                                                              //     snapshot.data[index]['id']
+                                                                              //     ? Icon(
+                                                                              //   Icons.check,
+                                                                              //   size: 16,
+                                                                              // )
+                                                                              //     : Container(
+                                                                              //   width: 16,
+                                                                              // ),
+
+                                                                              SizedBox(
+                                                                                height: 24.0,
+                                                                                width: 24.0,
+                                                                                child: Checkbox(
+                                                                                    value: groupSelected[index],
+                                                                                    onChanged: (val) {
+                                                                                      setState(() {
+                                                                                        groupSelected[index] = !groupSelected[index];
+
+                                                                                        if (groupSelected[index]) {
+                                                                                          groupListIds.add(snapshot.data[index]['id']);
+
+                                                                                          //print("groupid add --->" + groupListIds.toString());
+                                                                                        } else {
+                                                                                          groupListIds.remove(snapshot.data[index]['id']);
+
+                                                                                          //print("groupid remove --->" + groupListIds.toString());
+                                                                                        }
+                                                                                      });
+                                                                                    }),
+                                                                              ),
+                                                                              SizedBox(
+                                                                                width: 5.0,
+                                                                              ),
+
                                                                               Text(
-                                                                            'New Group',
-                                                                            style:
-                                                                                TextStyle(
-                                                                              color: Color(0xff5AA5EF),
-                                                                              fontWeight: FontWeight.w600,
-                                                                            ),
+                                                                                snapshot.data[index]['title'],
+                                                                                style: TextStyle(
+                                                                                  color: Colors.black,
+                                                                                  fontWeight: FontWeight.bold,
+                                                                                ),
+                                                                              ),
+                                                                            ],
                                                                           ),
                                                                         ),
-                                                                      )
-                                                                    ],
+                                                                      );
+                                                                    },
                                                                   ),
-                                                                );
-                                                              } else {
-                                                                return Text(
-                                                                    'Loading');
-                                                              }
-                                                            },
-                                                          )
-                                                        : Container(),
-                                                    SizedBox(
-                                                        height: height * 0.05),
-                                                  ],
+                                                                  Container(
+                                                                    margin: EdgeInsets
+                                                                        .all(
+                                                                            10.0),
+                                                                    child:
+                                                                        InkWell(
+                                                                      onTap:
+                                                                          () {
+                                                                        editDialog(
+                                                                          context,
+                                                                          height,
+                                                                          width,
+                                                                          true,
+                                                                        ).then(
+                                                                            (value) {
+                                                                          setState(
+                                                                              () {});
+                                                                        });
+                                                                      },
+                                                                      child:
+                                                                          Text(
+                                                                        'New Group',
+                                                                        style:
+                                                                            TextStyle(
+                                                                          color:
+                                                                              Color(0xff5AA5EF),
+                                                                          fontWeight:
+                                                                              FontWeight.w600,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                            );
+                                                          } else {
+                                                            return Text(
+                                                                'Loading');
+                                                          }
+                                                        },
+                                                      )
+                                                    : Container(),
+                                                SizedBox(height: height * 0.05),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                        Container(
+                                          height: 70,
+                                          width: width,
+                                          color: Colors.white,
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 20.0, horizontal: 5.0),
+                                          child: Container(
+                                            width: width,
+                                            height: 35,
+                                            child: ElevatedButton(
+                                                onPressed: () {
+                                                  uploadEditVideo();
+                                                },
+                                                child: Text(
+                                                  'UPDATE',
+                                                  style: TextStyle(
+                                                    fontSize: 16.0,
+                                                    color: Colors.white,
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
-                                            Container(
-                                              height: 70,
-                                              width: width,
-                                              color: Colors.white,
-                                              padding: EdgeInsets.symmetric(
-                                                  vertical: 20.0,
-                                                  horizontal: 5.0),
-                                              child: Container(
-                                                width: width,
-                                                height: 35,
-                                                child: ElevatedButton(
-                                                    onPressed: () {
-                                                      uploadEditVideo();
-                                                    },
-                                                    child: Text(
-                                                      'UPDATE',
-                                                      style: TextStyle(
-                                                        fontSize: 16.0,
-                                                        color: Colors.white,
-                                                      ),
-                                                    ),
-                                                    style: ElevatedButton
-                                                        .styleFrom(
-                                                      primary: (thumbnailBool == true &&
+                                                style: ElevatedButton.styleFrom(
+                                                  primary:
+                                                      (thumbnailBool == true &&
                                                               titleBool ==
                                                                   true &&
                                                               descritionBool ==
@@ -3874,52 +3900,48 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                                                   true)
                                                           ? Color(0xff5AA5EF)
                                                           : Colors.black,
-                                                    )),
-                                                color: (thumbnailBool == true &&
-                                                        titleBool == true &&
-                                                        descritionBool ==
-                                                            true &&
-                                                        categoryBool == true &&
-                                                        subCategoryBool ==
-                                                            true &&
-                                                        visibilityBool == true)
-                                                    ? Color(0xff5AA5EF)
-                                                    : Colors.black,
-                                              ),
-                                            ),
+                                                )),
+                                            color: (thumbnailBool == true &&
+                                                    titleBool == true &&
+                                                    descritionBool == true &&
+                                                    categoryBool == true &&
+                                                    subCategoryBool == true &&
+                                                    visibilityBool == true)
+                                                ? Color(0xff5AA5EF)
+                                                : Colors.black,
+                                          ),
+                                        ),
 
-                                            /// video delete
-                                            InkWell(
-                                              onTap: () async {
-                                                // isVideoView = true
-                                                // video view
+                                        /// video delete
+                                        InkWell(
+                                          onTap: () async {
+                                            // isVideoView = true
+                                            // video view
 
-                                                removeDialog(context, height, width, true );
-
-                                              },
-                                              child: Container(
-                                                  padding: EdgeInsets.all(5.0),
-                                                  child: Align(
-                                                    alignment: Alignment.center,
-                                                    child: Text(
-                                                      "Delete",
-                                                      style: GoogleFonts
-                                                          .montserrat(
-                                                        fontSize: 16.0,
-                                                        color: Colors.red,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                  )),
-                                            ),
-                                            SizedBox(height: height * 0.02),
-                                          ]),
-                                    ],
-                                    controller: _scrollController,
-                                  ),
-                                ),
-                              );
+                                            removeDialog(
+                                                context, height, width, true);
+                                          },
+                                          child: Container(
+                                              padding: EdgeInsets.all(5.0),
+                                              child: Align(
+                                                alignment: Alignment.center,
+                                                child: Text(
+                                                  "Delete",
+                                                  style: GoogleFonts.montserrat(
+                                                    fontSize: 16.0,
+                                                    color: Colors.red,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              )),
+                                        ),
+                                        SizedBox(height: height * 0.02),
+                                      ]),
+                                ],
+                                controller: _scrollController,
+                              ),
+                            ),
+                          );
                         }
                       } else {
                         return Center(
@@ -4067,7 +4089,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
     }
   }
 
-  removeDialog(context, height, width,bool isVideoView) {
+  removeDialog(context, height, width, bool isVideoView) {
     return showDialog(
       context: context,
       barrierColor: Color(0xff333333).withOpacity(0.7),
@@ -4103,37 +4125,37 @@ class _SummaryScreenState extends State<SummaryScreen> {
                               padding: EdgeInsets.only(
                                 left: 20,
                                 right: 17.0,
-                                bottom: 50,
+                                bottom: 36,
                               ),
                               child: Container(
                                 child: Column(
                                   children: [
                                     SizedBox(height: 40),
                                     Text(
-                                      "Are you sure you want to delete?",
+                                      "Are you sure?",
                                       textAlign: TextAlign.center,
                                       style: GoogleFonts.montserrat(
-                                        fontSize: 35.0,
+                                        fontSize: 24.0,
                                         fontWeight: FontWeight.w700,
-                                        color: Colors.black,
+                                        color: Colors.red,
                                       ),
                                     ),
-                                    SizedBox(height: 30),
+                                    SizedBox(height: 24.0),
                                     Text(
-                                      "Are you sure you want to delete this content?",
+                                      "Are you sure to delete this item? The process cannot be undone",
                                       textAlign: TextAlign.center,
                                       style: GoogleFonts.montserrat(
-                                        fontSize: 17.0,
+                                        fontSize: 16.0,
                                         fontWeight: FontWeight.w500,
                                         color: Color(0xff0A112B),
                                       ),
                                     ),
-                                    SizedBox(height: 50),
+                                    SizedBox(height: 36),
                                     Align(
                                       alignment: FractionalOffset.center,
                                       child: Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                            MainAxisAlignment.center,
                                         children: [
                                           ButtonTheme(
                                             shape: new RoundedRectangleBorder(
@@ -4159,34 +4181,32 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                                 ),
                                               ),
                                               onPressed: () async {
-
-                                                if(isVideoView == true){
+                                                if (isVideoView == true) {
                                                   // video delete
                                                   removeUserProgress = true;
                                                   var res = await VideoService()
                                                       .deleteVideo(
-                                                      videoId:
-                                                      widget.contentId);
+                                                          videoId:
+                                                              widget.contentId);
 
                                                   if (res['success'] == true) {
                                                     removeUserProgress = false;
-                                                    navigateRemove(
-                                                        context, NewListVideo());
+                                                    navigateRemove(context,
+                                                        NewListVideo());
                                                   }
-                                                }else{
+                                                } else {
                                                   // album delete
                                                   removeUserProgress = true;
                                                   var res = await VideoService()
                                                       .deleteAlbum(
-                                                      albumId:
-                                                      widget.contentId);
+                                                          albumId:
+                                                              widget.contentId);
                                                   if (res['success'] == true) {
                                                     removeUserProgress = false;
                                                     navigateRemove(context,
                                                         NewListVideo());
                                                   }
                                                 }
-
                                               },
                                             ),
                                           ),
@@ -4213,7 +4233,6 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                             ),
                                             onPressed: () {
                                               Navigator.pop(context);
-
                                             },
                                           ),
                                         ],
@@ -4252,5 +4271,4 @@ class _SummaryScreenState extends State<SummaryScreen> {
       },
     );
   }
-
 }

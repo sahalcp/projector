@@ -3,9 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projector/accountSettings/profileScreen.dart';
 import 'package:projector/contentDashboard/contentNewListVideo.dart';
-import 'package:projector/contentDashboard/contentPage.dart';
 import 'package:projector/contentDashboard/homePage.dart';
-import 'package:projector/contentDashboard/layoutPage.dart';
+import 'package:projector/contentDashboard/layout/layout_page.dart';
 import 'package:projector/contentDashboard/viewersPage.dart';
 import 'package:sizer/sizer.dart';
 
@@ -21,8 +20,7 @@ class _ContentDashboardScreenState extends State<ContentDashboardScreen> {
   int _selectedIndex = 0;
 
   static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
   void _onItemTapped(int index) {
     setState(() {
@@ -30,23 +28,21 @@ class _ContentDashboardScreenState extends State<ContentDashboardScreen> {
     });
   }
 
-
-
   final pages = [
     const HomePage(),
-     ContentNewListVideo(),
+    ContentNewListVideo(),
     const ViewersPage(),
-     LayoutPage(),
-     ProfileScreen()
-
+    LayoutPage(),
+    ProfileScreen()
   ];
   @override
   Widget build(BuildContext context) {
     return Sizer(builder: (context, orientation, deviceType) {
-      if(deviceType == DeviceType.mobile){
+      if (deviceType == DeviceType.mobile) {
         SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-      }else{
-        SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight]);
+      } else {
+        SystemChrome.setPreferredOrientations(
+            [DeviceOrientation.landscapeRight]);
       }
       return Scaffold(
           backgroundColor: Colors.white,
@@ -63,23 +59,38 @@ class _ContentDashboardScreenState extends State<ContentDashboardScreen> {
             child: BottomNavigationBar(
               items: const <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.home,size: 27,),
+                  icon: Icon(
+                    Icons.home,
+                    size: 27,
+                  ),
                   label: 'Home',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.business,size: 27,),
+                  icon: Icon(
+                    Icons.business,
+                    size: 27,
+                  ),
                   label: 'Content',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.group,size: 27,),
+                  icon: Icon(
+                    Icons.group,
+                    size: 27,
+                  ),
                   label: 'Viewers',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.featured_play_list_outlined,size: 27,),
+                  icon: Icon(
+                    Icons.featured_play_list_outlined,
+                    size: 27,
+                  ),
                   label: 'Layout',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.settings,size: 27,),
+                  icon: Icon(
+                    Icons.settings,
+                    size: 27,
+                  ),
                   label: 'Settings',
                 ),
               ],
@@ -94,16 +105,12 @@ class _ContentDashboardScreenState extends State<ContentDashboardScreen> {
               unselectedLabelStyle: GoogleFonts.montserrat(
                 fontWeight: FontWeight.w500,
               ),
-
               backgroundColor: Colors.white,
               type: BottomNavigationBarType.fixed,
               elevation: 10,
-
-
               onTap: _onItemTapped,
             ),
-          )
-      );
+          ));
     });
   }
 
@@ -125,15 +132,15 @@ class _ContentDashboardScreenState extends State<ContentDashboardScreen> {
             },
             icon: pageIndex == 0
                 ? const Icon(
-              Icons.home_filled,
-              color: Colors.black,
-              size: 35,
-            )
+                    Icons.home_filled,
+                    color: Colors.black,
+                    size: 35,
+                  )
                 : const Icon(
-              Icons.home_outlined,
-              color: Colors.blue,
-              size: 35,
-            ),
+                    Icons.home_outlined,
+                    color: Colors.blue,
+                    size: 35,
+                  ),
           ),
           IconButton(
             enableFeedback: false,
@@ -144,15 +151,15 @@ class _ContentDashboardScreenState extends State<ContentDashboardScreen> {
             },
             icon: pageIndex == 1
                 ? const Icon(
-              Icons.work_rounded,
-              color: Colors.black,
-              size: 35,
-            )
+                    Icons.work_rounded,
+                    color: Colors.black,
+                    size: 35,
+                  )
                 : const Icon(
-              Icons.work_outline_outlined,
-              color: Colors.blue,
-              size: 35,
-            ),
+                    Icons.work_outline_outlined,
+                    color: Colors.blue,
+                    size: 35,
+                  ),
           ),
           IconButton(
             enableFeedback: false,
@@ -163,15 +170,15 @@ class _ContentDashboardScreenState extends State<ContentDashboardScreen> {
             },
             icon: pageIndex == 2
                 ? const Icon(
-              Icons.widgets_rounded,
-              color: Colors.black,
-              size: 35,
-            )
+                    Icons.widgets_rounded,
+                    color: Colors.black,
+                    size: 35,
+                  )
                 : const Icon(
-              Icons.widgets_outlined,
-              color: Colors.blue,
-              size: 35,
-            ),
+                    Icons.widgets_outlined,
+                    color: Colors.blue,
+                    size: 35,
+                  ),
           ),
           IconButton(
             enableFeedback: false,
@@ -182,17 +189,16 @@ class _ContentDashboardScreenState extends State<ContentDashboardScreen> {
             },
             icon: pageIndex == 3
                 ? const Icon(
-              Icons.person,
-              color: Colors.black,
-              size: 35,
-            )
+                    Icons.person,
+                    color: Colors.black,
+                    size: 35,
+                  )
                 : const Icon(
-              Icons.person_outline,
-              color: Colors.blue,
-              size: 35,
-            ),
+                    Icons.person_outline,
+                    color: Colors.blue,
+                    size: 35,
+                  ),
           ),
-
           IconButton(
             enableFeedback: false,
             onPressed: () {
@@ -202,19 +208,18 @@ class _ContentDashboardScreenState extends State<ContentDashboardScreen> {
             },
             icon: pageIndex == 4
                 ? const Icon(
-              Icons.person,
-              color: Colors.black,
-              size: 35,
-            )
+                    Icons.person,
+                    color: Colors.black,
+                    size: 35,
+                  )
                 : const Icon(
-              Icons.person_outline,
-              color: Colors.blue,
-              size: 35,
-            ),
+                    Icons.person_outline,
+                    color: Colors.blue,
+                    size: 35,
+                  ),
           ),
         ],
       ),
     );
   }
 }
-

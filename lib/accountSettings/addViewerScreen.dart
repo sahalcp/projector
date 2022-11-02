@@ -5,7 +5,6 @@ import 'package:projector/apis/groupService.dart';
 import 'package:projector/apis/videoService.dart';
 import 'package:projector/apis/viewService.dart';
 import 'package:projector/widgets/dialogs.dart';
-import 'package:projector/widgets/widgets.dart';
 
 class AddViewerScreen extends StatefulWidget {
   @override
@@ -587,7 +586,7 @@ class _AddViewerScreenState extends State<AddViewerScreen> {
                                     Container(
                                       height: height * 0.1,
                                       child: FutureBuilder(
-                                        future: GroupServcie().getMyGroups(),
+                                        future: GroupService().getMyGroups(),
                                         builder: (context, snapshot) {
                                           if (snapshot.hasData) {
                                             return ListView.builder(

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -12,7 +11,6 @@ import 'package:projector/apis/groupService.dart';
 import 'package:projector/apis/videoService.dart';
 import 'package:projector/data/userData.dart';
 import 'package:projector/sideDrawer/newListVideo.dart';
-
 // import 'package:projector/uploading/selectVideo.dart';
 import 'package:projector/widgets/dialogs.dart';
 import 'package:projector/widgets/widgets.dart';
@@ -94,7 +92,8 @@ class _AddDetailsScreenState extends State<AddDetailsScreen> {
   File _image;
   final picker = ImagePicker();
   String hintTextTitle = 'title hint';
-  String hintTextDescription = 'Short lens view of your video, tell your viewers what your video is about';
+  String hintTextDescription =
+      'Short lens view of your video, tell your viewers what your video is about';
 
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
@@ -130,8 +129,7 @@ class _AddDetailsScreenState extends State<AddDetailsScreen> {
     // });
     //});
 
-
-   /* if (descriptionNode != null) {
+    /* if (descriptionNode != null) {
       descriptionNode.addListener(() {
         if (descriptionNode.hasFocus) {
           hintTextDescription = '';
@@ -472,268 +470,269 @@ class _AddDetailsScreenState extends State<AddDetailsScreen> {
           ),
         ),
         builder: (context) {
-
           var height = MediaQuery.of(context).size.height;
           return StatefulBuilder(
-            builder : (BuildContext context, StateSetter setStateM){
-              return Container(
-                height: height * 0.6,
-                padding: EdgeInsets.only(
-                  top: 11.0,
-                  // left: 39.0,
-                ),
-                child: ListView(
-                  children: [
-                    Center(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          height: 3,
-                          width: 60,
-                          color: Colors.black,
-                        ),
+              builder: (BuildContext context, StateSetter setStateM) {
+            return Container(
+              height: height * 0.6,
+              padding: EdgeInsets.only(
+                top: 11.0,
+                // left: 39.0,
+              ),
+              child: ListView(
+                children: [
+                  Center(
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        height: 3,
+                        width: 60,
+                        color: Colors.black,
                       ),
                     ),
-                    SizedBox(height: 19),
-                    Container(
-                      padding: EdgeInsets.all(20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Add New $title',
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 19),
+                  Container(
+                    padding: EdgeInsets.all(20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Add New $title',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.w600,
                           ),
-                          SizedBox(height: 5),
-                          TextField(
-                            decoration: InputDecoration(
-                              border: new OutlineInputBorder(
-                                borderSide: new BorderSide(color: Colors.teal),
-                              ),
-                              labelText: 'Add',
-                              suffixStyle: const TextStyle(color: Colors.green),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 5),
+                        TextField(
+                          decoration: InputDecoration(
+                            border: new OutlineInputBorder(
+                              borderSide: new BorderSide(color: Colors.teal),
                             ),
-                            onChanged: (value) => {val = value},
+                            labelText: 'Add',
+                            suffixStyle: const TextStyle(color: Colors.green),
                           ),
-                          Align(
-                            alignment: Alignment.topRight,
-                            child: RaisedButton(
-                              color: Colors.blue,
-                              onPressed: () async {
-                                if (val.length != 0) {
-                                  setState(() {
-                                    loading = true;
-                                  });
-                                  if (id == 1) {
-                                    var categoryAdded = await VideoService()
-                                        .addEditCategory(
-                                        title: val,
-                                        bgImageId: selectedBackgroundImageId);
-                                    if (categoryAdded['success'] == true) {
-                                      parentId =
-                                          categoryAdded['category_id'].toString();
-                                     // await UserData().setCategoryId(parentId);
-                                      //print("categoryId--->"+parentId);
+                          onChanged: (value) => {val = value},
+                        ),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: RaisedButton(
+                            color: Colors.blue,
+                            onPressed: () async {
+                              if (val.length != 0) {
+                                setState(() {
+                                  loading = true;
+                                });
+                                if (id == 1) {
+                                  var categoryAdded = await VideoService()
+                                      .addEditCategory(
+                                          title: val,
+                                          bgImageId: selectedBackgroundImageId);
+                                  if (categoryAdded['success'] == true) {
+                                    parentId =
+                                        categoryAdded['category_id'].toString();
+                                    // await UserData().setCategoryId(parentId);
+                                    //print("categoryId--->"+parentId);
 
-                                      var data =
-                                      await VideoService().getMyCategory();
-                                      setState(() {
-                                        //getCategoryId();
-                                       // print("catttttt---$sharedParentId");
-                                        categoryText = val;
-                                        categoryData = data;
-                                        loading = false;
-                                        categorySelected.add(false);
-                                      });
-                                      Navigator.pop(context);
-                                    }
-                                  } else if (id == 2) {
-                                    var subCategoryAdded = await VideoService()
-                                        .addEditSubCategory(title: val);
-                                    // print(subCategoryAdded);
-                                    if (subCategoryAdded['success'] == true) {
-                                      subCategoryId =
-                                          subCategoryAdded['subcategory_id']
-                                              .toString();
-                                      //print("categoryId sub--->"+subCategoryId);
-                                      var res =
-                                      await VideoService().getMySubCategory();
-                                     // getCategoryId();
-                                      // print("catttttt1---$sharedParentId");
-                                      // print(data);
-                                      setState(() {
-                                        subCategoryText = val;
-                                        subCategoryData = res['data'];
-                                        subSelected.add(false);
-                                        loading = false;
-                                      });
-                                      Navigator.pop(context);
-                                    }
-                                  } else {
-                                    var addPlaylist = await VideoService()
-                                        .addEditPlaylist(title: val);
-                                    if (addPlaylist['success'] == true) {
-                                      var data =
-                                      await VideoService().getMyPlaylist();
-                                      setState(() {
-                                        loading = false;
-                                        playlistData = data;
-                                        playlistSelected.add(false);
-                                      });
-                                      Navigator.pop(context);
-                                    }
+                                    var data =
+                                        await VideoService().getMyCategory();
+                                    setState(() {
+                                      //getCategoryId();
+                                      // print("catttttt---$sharedParentId");
+                                      categoryText = val;
+                                      categoryData = data;
+                                      loading = false;
+                                      categorySelected.add(false);
+                                    });
+                                    Navigator.pop(context);
+                                  }
+                                } else if (id == 2) {
+                                  var subCategoryAdded = await VideoService()
+                                      .addEditSubCategory(title: val);
+                                  // print(subCategoryAdded);
+                                  if (subCategoryAdded['success'] == true) {
+                                    subCategoryId =
+                                        subCategoryAdded['subcategory_id']
+                                            .toString();
+                                    //print("categoryId sub--->"+subCategoryId);
+                                    var res =
+                                        await VideoService().getMySubCategory();
+                                    // getCategoryId();
+                                    // print("catttttt1---$sharedParentId");
+                                    // print(data);
+                                    setState(() {
+                                      subCategoryText = val;
+                                      subCategoryData = res['data'];
+                                      subSelected.add(false);
+                                      loading = false;
+                                    });
+                                    Navigator.pop(context);
+                                  }
+                                } else {
+                                  var addPlaylist = await VideoService()
+                                      .addEditPlaylist(title: val);
+                                  if (addPlaylist['success'] == true) {
+                                    var data =
+                                        await VideoService().getMyPlaylist();
+                                    setState(() {
+                                      loading = false;
+                                      playlistData = data;
+                                      playlistSelected.add(false);
+                                    });
+                                    Navigator.pop(context);
                                   }
                                 }
-                              },
-                              child: Text(
-                                loading ? 'Creating...' : 'Create',
-                                style: TextStyle(color: Colors.white),
-                              ),
+                              }
+                            },
+                            child: Text(
+                              loading ? 'Creating...' : 'Create',
+                              style: TextStyle(color: Colors.white),
                             ),
                           ),
-                          title == 'Category'
-                              ? Container(
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  height: 20,
-                                ),
-                                Text(
-                                  'Select Background',
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 20,
-                                ),
-                              ],
-                            ),
-                          )
-                              : Container(),
-                          title == 'Category'
-                              ? Container(
-                            child: FutureBuilder(
-                              future: VideoService()
-                                  .getCategoryBackgroundImages(),
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return snapshot.data.length == 0
-                                      ? Center(
-                                    child: Text(
-                                      'No Background',
+                        ),
+                        title == 'Category'
+                            ? Container(
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    Text(
+                                      'Select Background',
                                       style: GoogleFonts.poppins(
                                         color: Colors.black,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
                                       ),
                                     ),
-                                  )
-                                      : Container(
-                                    //alignment: Alignment.centerLeft,
-                                    child: Container(
-                                      child: GridView.builder(
-                                        gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 2,
-                                          childAspectRatio: 3,
-                                          crossAxisSpacing: 16,
-                                          mainAxisSpacing: 16,
-                                        ),
-                                        itemCount: snapshot.data.length,
-                                        shrinkWrap: true,
-                                        physics:
-                                        NeverScrollableScrollPhysics(),
-                                        scrollDirection: Axis.vertical,
-                                        itemBuilder: (context, index) {
-
-                                          var image = snapshot
-                                              .data[index]['image'];
-                                          return InkWell(
-                                            onTap: () async {
-                                              selectedBackgroundImageId =
-                                              snapshot.data[index]
-                                              ['id'];
-                                              setStateM(() {
-
-                                                selectedBackground =
-                                                    index;
-
-                                               // print("imageidd ---" +selectedBackgroundImageId);
-
-                                                //print("imageidd ---${selectedBackground == index}");
-                                              });
-                                            },
-                                            child: Container(
-                                              padding:
-                                              EdgeInsets.all(3.0),
-                                              // padding:
-                                              // EdgeInsets.symmetric(
-                                              //     horizontal: 15),
-// margin: EdgeInsets.only(right: 16,bottom: 16),
-                                              height: 90,
-                                              width:
-                                              MediaQuery.of(context)
-                                                  .size
-                                                  .width,
-                                              decoration: BoxDecoration(
-                                                color:
-                                                // Color(0xff2F303D),
-                                                Colors.grey,
-                                                borderRadius:
-                                                BorderRadius
-                                                    .circular(10.0),
-                                                border: Border.all(
-                                                  color: selectedBackground !=
-                                                      null &&
-                                                      selectedBackground ==
-                                                          index
-                                                      ? Colors.blue
-                                                      : Colors
-                                                      .transparent,
-                                                  width: 3.0,
-                                                ),
-                                                image: DecorationImage(
-                                                  // image: AssetImage('images/pic.png'),
-
-                                                  image: NetworkImage(
-                                                      image),
-                                                  fit: BoxFit.cover,
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : Container(),
+                        title == 'Category'
+                            ? Container(
+                                child: FutureBuilder(
+                                  future: VideoService()
+                                      .getCategoryBackgroundImages(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      return snapshot.data.length == 0
+                                          ? Center(
+                                              child: Text(
+                                                'No Background',
+                                                style: GoogleFonts.poppins(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
                                                 ),
                                               ),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  );
-                                } else {
-                                  return CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.blue,
-                                  );
-                                }
-                              },
-                            ),
-                          )
-                              : Container()
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              );
-          }
-          );
+                                            )
+                                          : Container(
+                                              //alignment: Alignment.centerLeft,
+                                              child: Container(
+                                                child: GridView.builder(
+                                                  gridDelegate:
+                                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                                    crossAxisCount: 2,
+                                                    childAspectRatio: 3,
+                                                    crossAxisSpacing: 16,
+                                                    mainAxisSpacing: 16,
+                                                  ),
+                                                  itemCount:
+                                                      snapshot.data.length,
+                                                  shrinkWrap: true,
+                                                  physics:
+                                                      NeverScrollableScrollPhysics(),
+                                                  scrollDirection:
+                                                      Axis.vertical,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    var image = snapshot
+                                                        .data[index]['image'];
+                                                    return InkWell(
+                                                      onTap: () async {
+                                                        selectedBackgroundImageId =
+                                                            snapshot.data[index]
+                                                                ['id'];
+                                                        setStateM(() {
+                                                          selectedBackground =
+                                                              index;
 
+                                                          // print("imageidd ---" +selectedBackgroundImageId);
+
+                                                          //print("imageidd ---${selectedBackground == index}");
+                                                        });
+                                                      },
+                                                      child: Container(
+                                                        padding:
+                                                            EdgeInsets.all(3.0),
+                                                        // padding:
+                                                        // EdgeInsets.symmetric(
+                                                        //     horizontal: 15),
+// margin: EdgeInsets.only(right: 16,bottom: 16),
+                                                        height: 90,
+                                                        width: MediaQuery.of(
+                                                                context)
+                                                            .size
+                                                            .width,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color:
+                                                              // Color(0xff2F303D),
+                                                              Colors.grey,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      10.0),
+                                                          border: Border.all(
+                                                            color: selectedBackground !=
+                                                                        null &&
+                                                                    selectedBackground ==
+                                                                        index
+                                                                ? Colors.blue
+                                                                : Colors
+                                                                    .transparent,
+                                                            width: 3.0,
+                                                          ),
+                                                          image:
+                                                              DecorationImage(
+                                                            // image: AssetImage('images/pic.png'),
+
+                                                            image: NetworkImage(
+                                                                image),
+                                                            fit: BoxFit.cover,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            );
+                                    } else {
+                                      return CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.blue,
+                                      );
+                                    }
+                                  },
+                                ),
+                              )
+                            : Container()
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          });
         });
   }
 
@@ -935,20 +934,27 @@ class _AddDetailsScreenState extends State<AddDetailsScreen> {
                                                   alignment: Alignment.center,
                                                   child: TextField(
                                                     controller: titleController
-                                                      ..selection = TextSelection.collapsed(offset: titleController.text.length),
+                                                      ..selection = TextSelection
+                                                          .collapsed(
+                                                              offset:
+                                                                  titleController
+                                                                      .text
+                                                                      .length),
                                                     inputFormatters: [
-                                                      LengthLimitingTextInputFormatter(40),
+                                                      LengthLimitingTextInputFormatter(
+                                                          40),
                                                     ],
                                                     textAlign: TextAlign.center,
                                                     focusNode: titleNode,
                                                     style: TextStyle(
                                                       color: Colors.black,
                                                       fontSize: 17.0,
-                                                      fontWeight: FontWeight.w600,
+                                                      fontWeight:
+                                                          FontWeight.w600,
                                                     ),
 
                                                     onChanged: (val) {
-                                                      if(val.length < 40){
+                                                      if (val.length < 40) {
                                                         setState(() {
                                                           titleBool = true;
                                                         });
@@ -957,40 +963,48 @@ class _AddDetailsScreenState extends State<AddDetailsScreen> {
                                                         titleController =
                                                             TextEditingController(
                                                                 text: val);
-
-
-                                                      }else{
+                                                      } else {
                                                         Fluttertoast.showToast(
-                                                          backgroundColor: Colors.black,
-                                                          gravity:
-                                                          ToastGravity.CENTER,
-                                                          textColor: Colors.white,
+                                                          backgroundColor:
+                                                              Colors.black,
+                                                          gravity: ToastGravity
+                                                              .CENTER,
+                                                          textColor:
+                                                              Colors.white,
                                                           msg:
-                                                          'Should not exceed 40 characters',
+                                                              'Should not exceed 40 characters',
                                                         );
                                                       }
                                                     },
 
                                                     //maxLength: 40,
                                                     decoration: InputDecoration(
-                                                      contentPadding: const EdgeInsets.only(left: 10.0,right: 10.0),
-                                                      hintText: 'Create title for your photo',
+                                                      contentPadding:
+                                                          const EdgeInsets.only(
+                                                              left: 10.0,
+                                                              right: 10.0),
+                                                      hintText:
+                                                          'Create title for your photo',
                                                       hintMaxLines: 3,
                                                       hintStyle: TextStyle(
-                                                        color: Color(0xff9F9E9E),
+                                                        color:
+                                                            Color(0xff9F9E9E),
                                                         fontSize: 12.0,
-                                                        fontWeight: FontWeight.w400,
+                                                        fontWeight:
+                                                            FontWeight.w400,
                                                       ),
                                                       border: InputBorder.none,
-                                                      focusedBorder: InputBorder.none,
-                                                      enabledBorder: InputBorder.none,
-                                                      errorBorder: InputBorder.none,
-                                                      disabledBorder: InputBorder.none,
+                                                      focusedBorder:
+                                                          InputBorder.none,
+                                                      enabledBorder:
+                                                          InputBorder.none,
+                                                      errorBorder:
+                                                          InputBorder.none,
+                                                      disabledBorder:
+                                                          InputBorder.none,
                                                     ),
-
                                                   ),
                                                 )
-
 
                                                 /*Visibility(
                                                   visible: titleErrorBool,
@@ -1006,7 +1020,6 @@ class _AddDetailsScreenState extends State<AddDetailsScreen> {
                                                     ),
                                                   ),
                                                 ),*/
-
 
                                                 // Center(
                                                 //   child: Text(
@@ -1040,7 +1053,9 @@ class _AddDetailsScreenState extends State<AddDetailsScreen> {
                                               mainAxisAlignment:
                                                   MainAxisAlignment.center,
                                               children: [
-                                                SizedBox(height: 20,),
+                                                SizedBox(
+                                                  height: 20,
+                                                ),
                                                 Align(
                                                   alignment: Alignment.center,
                                                   child: Text(
@@ -1057,20 +1072,27 @@ class _AddDetailsScreenState extends State<AddDetailsScreen> {
                                                   alignment: Alignment.center,
                                                   child: TextField(
                                                     controller: descriptionController
-                                                      ..selection = TextSelection.collapsed(offset: descriptionController.text.length),
+                                                      ..selection = TextSelection
+                                                          .collapsed(
+                                                              offset:
+                                                                  descriptionController
+                                                                      .text
+                                                                      .length),
                                                     inputFormatters: [
-                                                      LengthLimitingTextInputFormatter(120),
+                                                      LengthLimitingTextInputFormatter(
+                                                          120),
                                                     ],
                                                     textAlign: TextAlign.center,
                                                     focusNode: descriptionNode,
                                                     style: TextStyle(
                                                       color: Colors.black,
                                                       fontSize: 17.0,
-                                                      fontWeight: FontWeight.w600,
+                                                      fontWeight:
+                                                          FontWeight.w600,
                                                     ),
 
                                                     onChanged: (val) {
-                                                      if(val.length < 120){
+                                                      if (val.length < 120) {
                                                         setState(() {
                                                           descritionBool = true;
                                                           thumbnailBool = true;
@@ -1080,15 +1102,16 @@ class _AddDetailsScreenState extends State<AddDetailsScreen> {
                                                         descriptionController =
                                                             TextEditingController(
                                                                 text: val);
-
-                                                      }else{
+                                                      } else {
                                                         Fluttertoast.showToast(
-                                                          backgroundColor: Colors.black,
-                                                          gravity:
-                                                          ToastGravity.CENTER,
-                                                          textColor: Colors.white,
+                                                          backgroundColor:
+                                                              Colors.black,
+                                                          gravity: ToastGravity
+                                                              .CENTER,
+                                                          textColor:
+                                                              Colors.white,
                                                           msg:
-                                                          'Should not exceed 120 characters',
+                                                              'Should not exceed 120 characters',
                                                         );
                                                       }
                                                     },
@@ -1097,21 +1120,30 @@ class _AddDetailsScreenState extends State<AddDetailsScreen> {
                                                     // textInputAction: TextInputAction.done,
                                                     // maxLength: 40,
                                                     decoration: InputDecoration(
-                                                      contentPadding: const EdgeInsets.only(left: 10.0,right: 10.0),
-                                                      hintText: 'Short lens view of your album, tell your viewers what your album is about',
+                                                      contentPadding:
+                                                          const EdgeInsets.only(
+                                                              left: 10.0,
+                                                              right: 10.0),
+                                                      hintText:
+                                                          'Short lens view of your album, tell your viewers what your album is about',
                                                       hintMaxLines: 3,
                                                       hintStyle: TextStyle(
-                                                        color: Color(0xff9F9E9E),
+                                                        color:
+                                                            Color(0xff9F9E9E),
                                                         fontSize: 12.0,
-                                                        fontWeight: FontWeight.w400,
+                                                        fontWeight:
+                                                            FontWeight.w400,
                                                       ),
                                                       border: InputBorder.none,
-                                                      focusedBorder: InputBorder.none,
-                                                      enabledBorder: InputBorder.none,
-                                                      errorBorder: InputBorder.none,
-                                                      disabledBorder: InputBorder.none,
+                                                      focusedBorder:
+                                                          InputBorder.none,
+                                                      enabledBorder:
+                                                          InputBorder.none,
+                                                      errorBorder:
+                                                          InputBorder.none,
+                                                      disabledBorder:
+                                                          InputBorder.none,
                                                     ),
-
                                                   ),
                                                 )
 
@@ -1129,7 +1161,6 @@ class _AddDetailsScreenState extends State<AddDetailsScreen> {
                                                     ),
                                                   ),
                                                 ),*/
-
 
                                                 // Text(
                                                 //   'Share what your video is about',
@@ -2014,7 +2045,7 @@ child: Center(
                                               SizedBox(height: 32),
                                               checked3
                                                   ? FutureBuilder(
-                                                      future: GroupServcie()
+                                                      future: GroupService()
                                                           .getMyGroups(),
                                                       builder:
                                                           (context, snapshot) {

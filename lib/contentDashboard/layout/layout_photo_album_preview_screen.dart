@@ -5,23 +5,18 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:projector/apis/contentDashboardService.dart';
 import 'package:projector/apis/photoService.dart';
-import 'package:projector/apis/videoService.dart';
-import 'package:projector/contents/contentViewScreen.dart';
-import 'package:projector/contents/newContentViewScreen.dart';
-import 'package:projector/sideDrawer/viewProfiePage.dart';
-import 'package:projector/uploading/selectVideo.dart';
-import 'package:projector/widgets/widgets.dart';
 
 class LayoutPhotoAlbumPreviewScreen extends StatefulWidget {
-  LayoutPhotoAlbumPreviewScreen(
-      {this.title, @required this.albumId});
+  LayoutPhotoAlbumPreviewScreen({this.title, @required this.albumId});
   final String title, albumId;
 
   @override
-  _LayoutPhotoAlbumPreviewScreenState createState() => _LayoutPhotoAlbumPreviewScreenState();
+  _LayoutPhotoAlbumPreviewScreenState createState() =>
+      _LayoutPhotoAlbumPreviewScreenState();
 }
 
-class _LayoutPhotoAlbumPreviewScreenState extends State<LayoutPhotoAlbumPreviewScreen> {
+class _LayoutPhotoAlbumPreviewScreenState
+    extends State<LayoutPhotoAlbumPreviewScreen> {
   bool loading = false, edit = false, spin = false;
   final formKey = GlobalKey<FormState>();
   String title;
@@ -72,7 +67,6 @@ class _LayoutPhotoAlbumPreviewScreenState extends State<LayoutPhotoAlbumPreviewS
               ),
             ),
           ),
-
         ),
         body: ModalProgressHUD(
           inAsyncCall: loading,
@@ -82,7 +76,6 @@ class _LayoutPhotoAlbumPreviewScreenState extends State<LayoutPhotoAlbumPreviewS
               // crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: height * 0.01),
-
                 Container(
                   padding: EdgeInsets.only(
                     left: 10,
@@ -91,8 +84,8 @@ class _LayoutPhotoAlbumPreviewScreenState extends State<LayoutPhotoAlbumPreviewS
                   child: Column(
                     children: [
                       FutureBuilder(
-                          future: PhotoService().getMyAlbumDetail(
-                                  albumId: widget.albumId),
+                          future: PhotoService()
+                              .getMyAlbumDetail(albumId: widget.albumId),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
                               if (snapshot.data[0]['photos'].length != 0) {
@@ -126,16 +119,16 @@ class _LayoutPhotoAlbumPreviewScreenState extends State<LayoutPhotoAlbumPreviewS
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                    snapshot.data[0]['icon'] != null
+                                        snapshot.data[0]['icon'] != null
                                             ? Container(
                                                 height: height * 0.2,
                                                 width: width,
                                                 decoration: BoxDecoration(
                                                   image: DecorationImage(
-                                                    image: NetworkImage(snapshot
-                                                            .data[0]['icon']),
-                                                    fit: BoxFit.fill
-                                                  ),
+                                                      image: NetworkImage(
+                                                          snapshot.data[0]
+                                                              ['icon']),
+                                                      fit: BoxFit.fill),
                                                   color: Colors.white,
                                                   border: Border.all(
                                                     color: Color(0xff707070),
@@ -219,27 +212,25 @@ class _LayoutPhotoAlbumPreviewScreenState extends State<LayoutPhotoAlbumPreviewS
                                                             spin = true;
                                                           });
 
-                                                            var res =
-                                                                await PhotoService()
-                                                                    .addAlbum(
-                                                              title: title,
-                                                              albumId: widget
-                                                                  .albumId,
-                                                            );
-                                                            if (res['success'] ==
-                                                                true) {
-                                                              setState(() {
-                                                                edit = false;
-                                                              });
-                                                              Fluttertoast
-                                                                  .showToast(
-                                                                      msg:
-                                                                          'Title Updated');
-                                                            }
+                                                          var res =
+                                                              await PhotoService()
+                                                                  .addAlbum(
+                                                            title: title,
+                                                            albumId:
+                                                                widget.albumId,
+                                                          );
+                                                          if (res['success'] ==
+                                                              true) {
                                                             setState(() {
-                                                              spin = false;
+                                                              edit = false;
                                                             });
-
+                                                            Fluttertoast.showToast(
+                                                                msg:
+                                                                    'Title Updated');
+                                                          }
+                                                          setState(() {
+                                                            spin = false;
+                                                          });
                                                         }
                                                       },
                                                       child: spin
@@ -300,10 +291,8 @@ class _LayoutPhotoAlbumPreviewScreenState extends State<LayoutPhotoAlbumPreviewS
                                                 fontWeight: FontWeight.w500,
                                               ),
                                             ),
-
                                           ],
                                         ),
-
                                       ],
                                     ),
                                   ),
@@ -313,14 +302,12 @@ class _LayoutPhotoAlbumPreviewScreenState extends State<LayoutPhotoAlbumPreviewS
                                     child: ReorderableListView(
                                         physics: NeverScrollableScrollPhysics(),
                                         children: List.generate(
-
                                           snapshot.data[0]['photos'].length,
                                           (index) {
                                             var title = snapshot.data[0]
                                                 ['photos'][index]['title'];
                                             var description = snapshot.data[0]
-                                                    ['photos'][index]
-                                                ['photos'];
+                                                ['photos'][index]['photos'];
                                             var thumbnail = snapshot.data[0]
                                                 ['photos'][index]['photo_file'];
                                             return ContentPreviewCard(
@@ -343,7 +330,7 @@ class _LayoutPhotoAlbumPreviewScreenState extends State<LayoutPhotoAlbumPreviewS
                                             newIndex -= 1;
                                           }
                                           final item =
-                                          photos.removeAt(oldIndex);
+                                              photos.removeAt(oldIndex);
                                           photos.insert(newIndex, item);
                                           var ids = [], orderNumbers = [];
 
@@ -357,8 +344,8 @@ class _LayoutPhotoAlbumPreviewScreenState extends State<LayoutPhotoAlbumPreviewS
                                               Map.fromIterables(
                                                   ids, orderNumbers);
 
-                                            await ContentDashboardService()
-                                                .reOrderPhotosList(items);
+                                          await ContentDashboardService()
+                                              .reOrderPhotosList(items);
                                           setState(() {
                                             loading = false;
                                           });
@@ -432,7 +419,7 @@ class ContentPreviewCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                title !=null ? title : "",
+                title != null ? title : "",
                 style: GoogleFonts.poppins(
                   fontSize: 13.0,
                   color: Color(0xff1A1D2A),
@@ -440,7 +427,7 @@ class ContentPreviewCard extends StatelessWidget {
                 ),
               ),
               Text(
-                description !=null ? description : "",
+                description != null ? description : "",
                 style: GoogleFonts.poppins(
                   fontSize: 8.0,
                   color: Color(0xff1A1D2A),

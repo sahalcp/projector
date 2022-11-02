@@ -1,22 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:projector/apis/videoService.dart';
-import 'package:projector/contentDashboard/layoutCategoryPreviewScreen.dart';
-import 'package:projector/contents/contentViewScreen.dart';
-import 'package:projector/contents/newContentViewScreen.dart';
-import 'package:projector/data/checkConnection.dart';
-import 'package:projector/models/changeOrderModel.dart';
-import 'package:projector/sideDrawer/contentPreviewScreen.dart';
-import 'package:projector/sideDrawer/viewProfiePage.dart';
-import 'package:projector/uploading/selectVideo.dart';
-import 'package:projector/widgets/dialogs.dart';
-import 'package:projector/widgets/widgets.dart';
 
-import '../signInScreen.dart';
+import 'layout_category_preview_screen.dart';
 
 class LayoutCategoryScreen extends StatefulWidget {
   @override
@@ -25,7 +13,6 @@ class LayoutCategoryScreen extends StatefulWidget {
 
 class _LayoutCategoryScreenState extends State<LayoutCategoryScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-
 
   bool loading = false;
 
@@ -65,7 +52,6 @@ class _LayoutCategoryScreenState extends State<LayoutCategoryScreen> {
               ),
             ),
           ),
-
         ),
         body: ModalProgressHUD(
           inAsyncCall: loading,
@@ -78,7 +64,6 @@ class _LayoutCategoryScreenState extends State<LayoutCategoryScreen> {
               // crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: height * 0.01),
-
                 Padding(
                   padding: EdgeInsets.only(
                     left: 10.0,
@@ -123,10 +108,9 @@ class _LayoutCategoryScreenState extends State<LayoutCategoryScreen> {
                               ),
                             )
                           : Container(
-                              height:
-                                  snapshot.data.length * height * 0.15,
+                              height: snapshot.data.length * height * 0.15,
                               child: ReorderableListView(
-                                physics: NeverScrollableScrollPhysics(),
+                                  physics: NeverScrollableScrollPhysics(),
                                   children: List.generate(
                                     snapshot.data.length,
                                     // (index) => null)
@@ -136,12 +120,11 @@ class _LayoutCategoryScreenState extends State<LayoutCategoryScreen> {
                                       // print(snapshot.data['data'][index]);
                                       var category =
                                           snapshot.data[index]['title'];
-                                      var count = snapshot.data[index]
-                                          ['video_count'];
-                                      var id =
-                                          snapshot.data[index]['id'];
-                                      var thumbnails = snapshot.data
-                                          [index]['thumbnails'];
+                                      var count =
+                                          snapshot.data[index]['video_count'];
+                                      var id = snapshot.data[index]['id'];
+                                      var thumbnails =
+                                          snapshot.data[index]['thumbnails'];
                                       return CategoryCard(
                                         thumbnails: thumbnails,
                                         isCategory: true,
@@ -182,14 +165,11 @@ class _LayoutCategoryScreenState extends State<LayoutCategoryScreen> {
                                     if (newIndex > oldIndex) {
                                       newIndex -= 1;
                                     }
-                                    final item =
-                                        list.removeAt(oldIndex);
+                                    final item = list.removeAt(oldIndex);
                                     list.insert(newIndex, item);
                                     var ids = [], orderNumbers = [];
 
-                                    for (var i = 0;
-                                        i < list.length;
-                                        i++) {
+                                    for (var i = 0; i < list.length; i++) {
                                       orderNumbers.add(i);
                                       ids.add(list[i]['id']);
                                     }
@@ -215,7 +195,6 @@ class _LayoutCategoryScreenState extends State<LayoutCategoryScreen> {
                   },
                 ),
                 SizedBox(height: 30),
-
               ],
             ),
           ),

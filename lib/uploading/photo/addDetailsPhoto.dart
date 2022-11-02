@@ -866,7 +866,7 @@ class _AddPhotoDetailsScreenState extends State<AddPhotoDetailsScreen> {
                                           SizedBox(height: 32),
                                           checked3
                                               ? FutureBuilder(
-                                                  future: GroupServcie()
+                                                  future: GroupService()
                                                       .getMyGroups(),
                                                   builder: (context, snapshot) {
                                                     if (snapshot.hasData) {

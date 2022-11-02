@@ -6,11 +6,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projector/apis/videoService.dart';
 import 'package:projector/constant.dart';
-import 'package:projector/contents/playVideoScreen.dart';
 import 'package:projector/data/userData.dart';
 import 'package:projector/player/playVideoScreenNew.dart';
 import 'package:projector/style.dart';
-import 'package:projector/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
 
 class ContentDetailScreen extends StatefulWidget {
@@ -297,7 +295,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
                                 ),
-                                maxLines: 2,
+                                maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.start,
                               ),

@@ -4,11 +4,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:projector/apis/videoService.dart';
-import 'package:projector/contents/contentViewScreen.dart';
-import 'package:projector/contents/newContentViewScreen.dart';
-import 'package:projector/sideDrawer/viewProfiePage.dart';
-import 'package:projector/uploading/selectVideo.dart';
-import 'package:projector/widgets/widgets.dart';
 // import '../signInScreen.dart';
 
 class LayoutCategoryPreviewScreen extends StatefulWidget {
@@ -18,10 +13,12 @@ class LayoutCategoryPreviewScreen extends StatefulWidget {
   final bool isCategory;
 
   @override
-  _LayoutCategoryPreviewScreenState createState() => _LayoutCategoryPreviewScreenState();
+  _LayoutCategoryPreviewScreenState createState() =>
+      _LayoutCategoryPreviewScreenState();
 }
 
-class _LayoutCategoryPreviewScreenState extends State<LayoutCategoryPreviewScreen> {
+class _LayoutCategoryPreviewScreenState
+    extends State<LayoutCategoryPreviewScreen> {
   var selectedBackgroundImageId;
   bool loading = false, edit = false, spin = false;
   final formKey = GlobalKey<FormState>();
@@ -33,7 +30,7 @@ class _LayoutCategoryPreviewScreenState extends State<LayoutCategoryPreviewScree
     setState(() {
       text = TextEditingController(text: widget.title);
       title = widget.title;
-     // print("categoryid--->${widget.playlistId}");
+      // print("categoryid--->${widget.playlistId}");
     });
 
     super.initState();
@@ -66,7 +63,11 @@ class _LayoutCategoryPreviewScreenState extends State<LayoutCategoryPreviewScree
           title: Transform(
             transform: Matrix4.translationValues(0.0, 0.0, 0.0),
             child: Text(
-             widget.isCategory ?  title !=null ? title : "" : "Manage Playlist",
+              widget.isCategory
+                  ? title != null
+                      ? title
+                      : ""
+                  : "Manage Playlist",
               style: GoogleFonts.montserrat(
                 color: Colors.black,
                 fontSize: 20.0,
@@ -74,7 +75,6 @@ class _LayoutCategoryPreviewScreenState extends State<LayoutCategoryPreviewScree
               ),
             ),
           ),
-
         ),
         body: ModalProgressHUD(
           inAsyncCall: loading,
@@ -84,7 +84,6 @@ class _LayoutCategoryPreviewScreenState extends State<LayoutCategoryPreviewScree
               // crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: height * 0.01),
-
                 Container(
                   padding: EdgeInsets.only(
                     left: 10,
@@ -131,60 +130,67 @@ class _LayoutCategoryPreviewScreenState extends State<LayoutCategoryPreviewScree
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                    widget.isCategory?  snapshot.data[0]['icon'] != null
-                                            ? Container(
-                                                height: height * 0.2,
-                                                width: width,
-                                                decoration: BoxDecoration(
-                                                  image: DecorationImage(
-                                                    image: NetworkImage(snapshot
-                                                            .data[0]['icon']),
-                                                    fit: BoxFit.fill
+                                        widget.isCategory
+                                            ? snapshot.data[0]['icon'] != null
+                                                ? Container(
+                                                    height: height * 0.2,
+                                                    width: width,
+                                                    decoration: BoxDecoration(
+                                                      image: DecorationImage(
+                                                          image: NetworkImage(
+                                                              snapshot.data[0]
+                                                                  ['icon']),
+                                                          fit: BoxFit.fill),
+                                                      color: Colors.white,
+                                                      border: Border.all(
+                                                        color:
+                                                            Color(0xff707070),
+                                                        width: 1.0,
+                                                      ),
+                                                    ),
+                                                  )
+                                                : Container(
+                                                    height: height * 0.2,
+                                                    width: width,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      border: Border.all(
+                                                        color:
+                                                            Color(0xff707070),
+                                                        width: 1.0,
+                                                      ),
+                                                    ),
+                                                  )
+                                            : Container(),
+
+                                        //  widget.isCategory? SizedBox(height: 10) : SizedBox(height: 0),
+
+                                        widget.isCategory
+                                            ? InkWell(
+                                                child: Container(
+                                                  child: Align(
+                                                    child: Text(
+                                                      'Edit Background',
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                        color:
+                                                            Color(0xff818181),
+                                                        fontSize: 14.0,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                    alignment:
+                                                        Alignment.topRight,
                                                   ),
-                                                  color: Colors.white,
-                                                  border: Border.all(
-                                                    color: Color(0xff707070),
-                                                    width: 1.0,
-                                                  ),
+                                                  margin: EdgeInsets.all(10),
                                                 ),
+                                                onTap: () {
+                                                  addBottomSheetData(
+                                                      context, setState);
+                                                },
                                               )
-                                            : Container(
-                                                height: height * 0.2,
-                                                width: width,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  border: Border.all(
-                                                    color: Color(0xff707070),
-                                                    width: 1.0,
-                                                  ),
-                                                ),
-                                              ) : Container(),
-
-                                      //  widget.isCategory? SizedBox(height: 10) : SizedBox(height: 0),
-
-                                        widget.isCategory? InkWell(
-                                          child: Container(
-                                            child:  Align(
-                                              child: Text(
-                                                'Edit Background',
-                                                style: GoogleFonts.poppins(
-                                                  color: Color(0xff818181),
-                                                  fontSize: 14.0,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                              ),
-                                              alignment: Alignment.topRight,
-                                            ),
-                                            margin: EdgeInsets.all(10),
-                                          ),
-                                          onTap: (){
-
-                                            addBottomSheetData(
-                                                context,
-                                                setState);
-                                          },
-                                        ) :
-                                            Container(),
+                                            : Container(),
 
                                         SizedBox(height: 10),
                                         edit
@@ -560,201 +566,207 @@ class _LayoutCategoryPreviewScreenState extends State<LayoutCategoryPreviewScree
           var height = MediaQuery.of(context).size.height;
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setStateM) {
-                return Container(
-                  height: height * 0.6,
-                  padding: EdgeInsets.only(
-                    top: 11.0,
-                    // left: 39.0,
+            return Container(
+              height: height * 0.6,
+              padding: EdgeInsets.only(
+                top: 11.0,
+                // left: 39.0,
+              ),
+              child: Column(
+                children: [
+                  Center(
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        height: 3,
+                        width: 60,
+                        color: Colors.black,
+                      ),
+                    ),
                   ),
-                  child: Column(
-                    children: [
-                      Center(
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                            height: 3,
-                            width: 60,
-                            color: Colors.black,
+                  SizedBox(height: 19),
+                  Container(
+                    padding: EdgeInsets.all(20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Text(
+                                'Select Background',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                      SizedBox(height: 19),
-                      Container(
-                        padding: EdgeInsets.all(20.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-
-                            Container(
-                              child: Column(
-                                children: [
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  Text(
-                                    'Select Background',
-                                    style: GoogleFonts.poppins(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              height: 200,
-                              child: SingleChildScrollView(
-                                child: ListView(
-                                  scrollDirection: Axis.vertical,
-                                  shrinkWrap:
-                                  true,
-                                  physics:
-                                  NeverScrollableScrollPhysics(),
-                                  children: [
-                                    Container(
-                                      child: FutureBuilder(
-                                        future: VideoService()
-                                            .getCategoryBackgroundImages(),
-                                        builder: (context, snapshot) {
-                                          if (snapshot.hasData) {
-                                            return snapshot.data.length == 0
-                                                ? Center(
-                                              child: Text(
-                                                'No Background',
-                                                style: GoogleFonts.poppins(
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16,
-                                                ),
-                                              ),
-                                            )
-                                                : Container(
-                                              //alignment: Alignment.centerLeft,
-                                              child: Container(
-                                                child: GridView.builder(
-                                                  gridDelegate:
-                                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                                    crossAxisCount: 2,
-                                                    childAspectRatio: 3,
-                                                    crossAxisSpacing: 16,
-                                                    mainAxisSpacing: 16,
+                        Container(
+                          height: 200,
+                          child: SingleChildScrollView(
+                            child: ListView(
+                              scrollDirection: Axis.vertical,
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              children: [
+                                Container(
+                                  child: FutureBuilder(
+                                    future: VideoService()
+                                        .getCategoryBackgroundImages(),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        return snapshot.data.length == 0
+                                            ? Center(
+                                                child: Text(
+                                                  'No Background',
+                                                  style: GoogleFonts.poppins(
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16,
                                                   ),
-                                                  itemCount:
-                                                  snapshot.data.length,
-                                                  shrinkWrap: true,
-                                                  physics:
-                                                  NeverScrollableScrollPhysics(),
-                                                  scrollDirection:
-                                                  Axis.vertical,
-                                                  itemBuilder:
-                                                      (context, index) {
-                                                    var image = snapshot
-                                                        .data[index]['image'];
-                                                    return InkWell(
-                                                      onTap: () async {
-                                                        selectedBackgroundImageId =
-                                                        snapshot.data[index]
-                                                        ['id'];
+                                                ),
+                                              )
+                                            : Container(
+                                                //alignment: Alignment.centerLeft,
+                                                child: Container(
+                                                  child: GridView.builder(
+                                                    gridDelegate:
+                                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                                      crossAxisCount: 2,
+                                                      childAspectRatio: 3,
+                                                      crossAxisSpacing: 16,
+                                                      mainAxisSpacing: 16,
+                                                    ),
+                                                    itemCount:
+                                                        snapshot.data.length,
+                                                    shrinkWrap: true,
+                                                    physics:
+                                                        NeverScrollableScrollPhysics(),
+                                                    scrollDirection:
+                                                        Axis.vertical,
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      var image = snapshot
+                                                          .data[index]['image'];
+                                                      return InkWell(
+                                                        onTap: () async {
+                                                          selectedBackgroundImageId =
+                                                              snapshot.data[
+                                                                  index]['id'];
 
-                                                        var categoryAdded = await VideoService()
-                                                            .addEditCategory(
-                                                          categoryId: widget.playlistId,
-                                                            bgImageId: selectedBackgroundImageId);
-                                                        if (categoryAdded['success'] == true) {
+                                                          var categoryAdded =
+                                                              await VideoService()
+                                                                  .addEditCategory(
+                                                                      categoryId:
+                                                                          widget
+                                                                              .playlistId,
+                                                                      bgImageId:
+                                                                          selectedBackgroundImageId);
+                                                          if (categoryAdded[
+                                                                  'success'] ==
+                                                              true) {
+                                                            Navigator.pop(
+                                                                context);
 
-                                                          Navigator.pop(context);
+                                                            setState(() {});
+                                                          }
 
-                                                          setState(() {
-
-                                                          });
-                                                        }
-
-                                                      /*  setStateM(() {
+                                                          /*  setStateM(() {
                                                           selectedBackground =
                                                               index;
                                                         });*/
-                                                      },
-                                                      child: Container(
-                                                        padding:
-                                                        EdgeInsets.all(3.0),
-                                                        height: 90,
-                                                        width: MediaQuery.of(
-                                                            context)
-                                                            .size
-                                                            .width,
-                                                        decoration:
-                                                        BoxDecoration(
-                                                          color:
-                                                          // Color(0xff2F303D),
-                                                          Colors.grey,
-                                                          borderRadius:
-                                                          BorderRadius
-                                                              .circular(
-                                                              10.0),
-                                                          border: Border.all(
-                                                            color: selectedBackground !=
-                                                                null &&
-                                                                selectedBackground ==
-                                                                    index
-                                                                ? Colors.blue
-                                                                : Colors
-                                                                .transparent,
-                                                            width: 3.0,
-                                                          ),
-                                                          image:
-                                                          DecorationImage(
-                                                            // image: AssetImage('images/pic.png'),
+                                                        },
+                                                        child: Container(
+                                                          padding:
+                                                              EdgeInsets.all(
+                                                                  3.0),
+                                                          height: 90,
+                                                          width: MediaQuery.of(
+                                                                  context)
+                                                              .size
+                                                              .width,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color:
+                                                                // Color(0xff2F303D),
+                                                                Colors.grey,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10.0),
+                                                            border: Border.all(
+                                                              color: selectedBackground !=
+                                                                          null &&
+                                                                      selectedBackground ==
+                                                                          index
+                                                                  ? Colors.blue
+                                                                  : Colors
+                                                                      .transparent,
+                                                              width: 3.0,
+                                                            ),
+                                                            image:
+                                                                DecorationImage(
+                                                              // image: AssetImage('images/pic.png'),
 
-                                                            image: NetworkImage(
-                                                                image),
-                                                            fit: BoxFit.cover,
+                                                              image:
+                                                                  NetworkImage(
+                                                                      image),
+                                                              fit: BoxFit.cover,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    );
-                                                  },
-                                                ),
-                                              ),
-                                            );
-                                          } else {
-                                            return Column(
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: <Widget>[
-                                                Center(
-                                                  child: Container(
-                                                    height: 30,
-                                                    width: 30,
-                                                    margin: EdgeInsets.all(5),
-                                                    child: CircularProgressIndicator(
-                                                      strokeWidth: 2.0,
-                                                      color: Colors.blue,
-                                                    ),
+                                                      );
+                                                    },
                                                   ),
                                                 ),
-                                              ],
-                                            );
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  ],
+                                              );
+                                      } else {
+                                        return Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            Center(
+                                              child: Container(
+                                                height: 30,
+                                                width: 30,
+                                                margin: EdgeInsets.all(5),
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  strokeWidth: 2.0,
+                                                  color: Colors.blue,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      }
+                                    },
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                );
-              });
+                ],
+              ),
+            );
+          });
         });
   }
 }

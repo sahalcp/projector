@@ -1,25 +1,21 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_uploader/flutter_uploader.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:projector/apis/groupService.dart';
 import 'package:projector/apis/videoService.dart';
 import 'package:projector/data/userData.dart';
 import 'package:projector/sideDrawer/newListVideo.dart';
-import 'package:path_provider/path_provider.dart';
-
-// import 'package:projector/uploading/selectVideo.dart';
 import 'package:projector/widgets/dialogs.dart';
 import 'package:projector/widgets/widgets.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../bgUpload/backgroundUploader.dart';
 import '../widgets/widgets.dart';
@@ -64,11 +60,11 @@ class _UploadScreenState extends State<UploadScreen> {
   bool details = true,
       category = false,
       visibilty = false,
-      checked1 = false, // checked radio button 1
+      checked1 = true, // Default checked radio button 1 in visibility: Public
       checked2 = false,
       checked3 = false,
       titleBool = false,
-      visibilityBool = false,
+      visibilityBool = true,
       descritionBool = false,
       thumbnailBool = false,
       categoryBool = false,
@@ -81,7 +77,9 @@ class _UploadScreenState extends State<UploadScreen> {
       localThumbanilSelected = false,
       videoUploaded = false;
 
-  bool _showFab = true;
+  int selectedGeneratedThumbnailLocal = 1;
+  bool localGeneratedThumbanilSelected = true;
+
   var descriptionHeight = 0.0;
   String hintText = 'Title',
       hintDescription = 'Description',
@@ -98,7 +96,9 @@ class _UploadScreenState extends State<UploadScreen> {
       subCategoryId,
       playlistId,
       groupId;
-  int visibilityId, groupIndex, selectedIndex;
+  // Default visibility option set to Public
+  int visibilityId = 2;
+  int groupIndex, selectedIndex;
   double percentageUpload = 0;
   List playlistIds = [], playlistNames = [];
   TextEditingController titleController = TextEditingController(),
@@ -123,6 +123,15 @@ class _UploadScreenState extends State<UploadScreen> {
   String hintTextTitle = 'title hint';
   String hintTextDescription =
       'Short lens view of your video, tell your viewers what your video is about';
+
+  Uint8List videoThumbnailByte;
+
+  _getVideoThumbnail() async {
+    videoThumbnailByte = await VideoThumbnail.thumbnailData(
+      video: widget.videoFile.path,
+      imageFormat: ImageFormat.JPEG,
+    );
+  }
 
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
@@ -155,12 +164,12 @@ class _UploadScreenState extends State<UploadScreen> {
     });
   }
 
-
-  bgUploadVideo({videoId}) async{
+  bgUploadVideo({videoId}) async {
     var token = await UserData().getUserToken();
 
     _prepareMediaUploadListener();
-    String taskId = await BackgroundUploader.videoUploadEnqueue(file:widget.videoFile,
+    String taskId = await BackgroundUploader.videoUploadEnqueue(
+      file: widget.videoFile,
       token: token,
       videoId: videoId,
     );
@@ -168,7 +177,6 @@ class _UploadScreenState extends State<UploadScreen> {
     } else {
       BackgroundUploader.uploader.cancelAll();
     }
-
   }
 
   static void _prepareMediaUploadListener() {
@@ -186,7 +194,6 @@ class _UploadScreenState extends State<UploadScreen> {
     });
   }
 
-
   @override
   void dispose() {
     super.dispose();
@@ -194,6 +201,8 @@ class _UploadScreenState extends State<UploadScreen> {
 
   @override
   void initState() {
+    _getVideoThumbnail();
+
     VideoService().getMyCategory().then((data) {
       if (data != null) {
         setState(() {
@@ -292,7 +301,6 @@ class _UploadScreenState extends State<UploadScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   InkWell(
                     onTap: () {
                       Navigator.pop(context);
@@ -300,8 +308,8 @@ class _UploadScreenState extends State<UploadScreen> {
                           title == 'Category'
                               ? 1
                               : title == 'Sub-Category'
-                              ? 2
-                              : 3,
+                                  ? 2
+                                  : 3,
                           title,
                           context,
                           setState);
@@ -315,7 +323,9 @@ class _UploadScreenState extends State<UploadScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 14,),
+                  SizedBox(
+                    height: 14,
+                  ),
                   Container(
                     height: data.length == 0 ? 0 : height * 0.04 * data.length,
                     child: ListView.separated(
@@ -494,7 +504,7 @@ class _UploadScreenState extends State<UploadScreen> {
                   SizedBox(height: 11.0),
                   // add new category clickk
 
-                 // SizedBox(height: 20.0),
+                  // SizedBox(height: 20.0),
                 ],
               ),
             ),
@@ -541,7 +551,7 @@ class _UploadScreenState extends State<UploadScreen> {
                 top: 11.0,
                 // left: 39.0,
               ),
-              child: Column(
+              child: ListView(
                 children: [
                   Center(
                     child: InkWell(
@@ -586,6 +596,11 @@ class _UploadScreenState extends State<UploadScreen> {
                             color: Colors.blue,
                             onPressed: () async {
                               if (val.length != 0) {
+                                Navigator.pop(context);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text(
+                                            'Please wait while adding $title')));
                                 setState(() {
                                   loading = true;
                                 });
@@ -611,7 +626,15 @@ class _UploadScreenState extends State<UploadScreen> {
                                       categorySelected.add(false);
                                       categoryBool = true;
                                     });
-                                    Navigator.pop(context);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                '$title: $val added successfully')));
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content:
+                                                Text('Failed to add $title')));
                                   }
                                 } else if (id == 2) {
                                   var subCategoryAdded = await VideoService()
@@ -634,7 +657,15 @@ class _UploadScreenState extends State<UploadScreen> {
                                       loading = false;
                                       subCategoryBool = true;
                                     });
-                                    Navigator.pop(context);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                '$title: $val added successfully')));
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content:
+                                                Text('Failed to add $title')));
                                   }
                                 } else {
                                   var addPlaylist = await VideoService()
@@ -650,7 +681,15 @@ class _UploadScreenState extends State<UploadScreen> {
                                       playlistSelected.add(false);
                                       playlistIds.add(playlistData.last['id']);
                                     });
-                                    Navigator.pop(context);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                '$title: $val added successfully')));
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content:
+                                                Text('Failed to add $title')));
                                   }
                                 }
                               }
@@ -685,140 +724,152 @@ class _UploadScreenState extends State<UploadScreen> {
                             : Container(),
                         title == 'Category'
                             ? Container(
-                          height: 200,
-                              child: SingleChildScrollView(
-                                child: ListView(
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap:
-                          true,
-                          physics:
-                          NeverScrollableScrollPhysics(),
-                          children: [
-                                Container(
-                                  child: FutureBuilder(
-                                    future: VideoService()
-                                        .getCategoryBackgroundImages(),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.hasData) {
-                                        return snapshot.data.length == 0
-                                            ? Center(
-                                          child: Text(
-                                            'No Background',
-                                            style: GoogleFonts.poppins(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                        )
-                                            : Container(
-                                          //alignment: Alignment.centerLeft,
-                                          child: Container(
-                                            child: GridView.builder(
-                                              gridDelegate:
-                                              SliverGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisCount: 2,
-                                                childAspectRatio: 3,
-                                                crossAxisSpacing: 16,
-                                                mainAxisSpacing: 16,
-                                              ),
-                                              itemCount:
-                                              snapshot.data.length,
-                                              shrinkWrap: true,
-                                              physics:
-                                              NeverScrollableScrollPhysics(),
-                                              scrollDirection:
-                                              Axis.vertical,
-                                              itemBuilder:
-                                                  (context, index) {
-                                                var image = snapshot
-                                                    .data[index]['image'];
-                                                return InkWell(
-                                                  onTap: () async {
-                                                    selectedBackgroundImageId =
-                                                    snapshot.data[index]
-                                                    ['id'];
-                                                    setStateM(() {
-                                                      selectedBackground =
-                                                          index;
-
-                                                      // print("imageidd ---" +selectedBackgroundImageId);
-
-                                                      //print("imageidd ---${selectedBackground == index}");
-                                                    });
-                                                  },
-                                                  child: Container(
-                                                    padding:
-                                                    EdgeInsets.all(3.0),
-                                                    // padding:
-                                                    // EdgeInsets.symmetric(
-                                                    //     horizontal: 15),
-// margin: EdgeInsets.only(right: 16,bottom: 16),
-                                                    height: 90,
-                                                    width: MediaQuery.of(
-                                                        context)
-                                                        .size
-                                                        .width,
-                                                    decoration:
-                                                    BoxDecoration(
-                                                      color:
-                                                      // Color(0xff2F303D),
-                                                      Colors.grey,
-                                                      borderRadius:
-                                                      BorderRadius
-                                                          .circular(
-                                                          10.0),
-                                                      border: Border.all(
-                                                        color: selectedBackground !=
-                                                            null &&
-                                                            selectedBackground ==
-                                                                index
-                                                            ? Colors.blue
-                                                            : Colors
-                                                            .transparent,
-                                                        width: 3.0,
+                                height: 200,
+                                child: SingleChildScrollView(
+                                  child: ListView(
+                                    scrollDirection: Axis.vertical,
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    children: [
+                                      Container(
+                                        child: FutureBuilder(
+                                          future: VideoService()
+                                              .getCategoryBackgroundImages(),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.hasData) {
+                                              return snapshot.data.length == 0
+                                                  ? Center(
+                                                      child: Text(
+                                                        'No Background',
+                                                        style:
+                                                            GoogleFonts.poppins(
+                                                          color: Colors.black,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 16,
+                                                        ),
                                                       ),
-                                                      image:
-                                                      DecorationImage(
-                                                        // image: AssetImage('images/pic.png'),
+                                                    )
+                                                  : Container(
+                                                      //alignment: Alignment.centerLeft,
+                                                      child: Container(
+                                                        child: GridView.builder(
+                                                          gridDelegate:
+                                                              SliverGridDelegateWithFixedCrossAxisCount(
+                                                            crossAxisCount: 2,
+                                                            childAspectRatio: 3,
+                                                            crossAxisSpacing:
+                                                                16,
+                                                            mainAxisSpacing: 16,
+                                                          ),
+                                                          itemCount: snapshot
+                                                              .data.length,
+                                                          shrinkWrap: true,
+                                                          physics:
+                                                              NeverScrollableScrollPhysics(),
+                                                          scrollDirection:
+                                                              Axis.vertical,
+                                                          itemBuilder:
+                                                              (context, index) {
+                                                            var image = snapshot
+                                                                    .data[index]
+                                                                ['image'];
+                                                            return InkWell(
+                                                              onTap: () async {
+                                                                selectedBackgroundImageId =
+                                                                    snapshot.data[
+                                                                            index]
+                                                                        ['id'];
+                                                                setStateM(() {
+                                                                  selectedBackground =
+                                                                      index;
 
-                                                        image: NetworkImage(
-                                                            image),
-                                                        fit: BoxFit.cover,
+                                                                  // print("imageidd ---" +selectedBackgroundImageId);
+
+                                                                  //print("imageidd ---${selectedBackground == index}");
+                                                                });
+                                                              },
+                                                              child: Container(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .all(
+                                                                            3.0),
+                                                                // padding:
+                                                                // EdgeInsets.symmetric(
+                                                                //     horizontal: 15),
+                                                                // margin: EdgeInsets.only(right: 16,bottom: 16),
+                                                                height: 90,
+                                                                width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color:
+                                                                      // Color(0xff2F303D),
+                                                                      Colors
+                                                                          .grey,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10.0),
+                                                                  border: Border
+                                                                      .all(
+                                                                    color: selectedBackground !=
+                                                                                null &&
+                                                                            selectedBackground ==
+                                                                                index
+                                                                        ? Colors
+                                                                            .blue
+                                                                        : Colors
+                                                                            .transparent,
+                                                                    width: 3.0,
+                                                                  ),
+                                                                  image:
+                                                                      DecorationImage(
+                                                                    // image: AssetImage('images/pic.png'),
+
+                                                                    image: NetworkImage(
+                                                                        image),
+                                                                    fit: BoxFit
+                                                                        .cover,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            );
+                                                          },
+                                                        ),
+                                                      ),
+                                                    );
+                                            } else {
+                                              return Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: <Widget>[
+                                                  Center(
+                                                    child: Container(
+                                                      height: 30,
+                                                      width: 30,
+                                                      margin: EdgeInsets.all(5),
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        strokeWidth: 2.0,
+                                                        color: Colors.blue,
                                                       ),
                                                     ),
                                                   ),
-                                                );
-                                              },
-                                            ),
-                                          ),
-                                        );
-                                      } else {
-                                        return Column(
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: <Widget>[
-                                            Center(
-                                              child: Container(
-                                                height: 30,
-                                                width: 30,
-                                                margin: EdgeInsets.all(5),
-                                                child: CircularProgressIndicator(
-                                                  strokeWidth: 2.0,
-                                                  color: Colors.blue,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        );
-                                      }
-                                    },
+                                                ],
+                                              );
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                          ],
-                        ),
-                              ),
-                            )
+                              )
                             : Container()
                       ],
                     ),
@@ -880,14 +931,14 @@ class _UploadScreenState extends State<UploadScreen> {
               InkWell(
                 onTap: () async {
                   if (thumbnailBool &&
-                      titleBool &&
-                      descritionBool &&
-                      categoryBool &&
-                      subCategoryBool &&
-                      visibilityBool
+                          titleBool &&
+                          descritionBool &&
+                          categoryBool &&
+                          subCategoryBool &&
+                          visibilityBool
                       //selectedThumbnailList !=0 ||
-                     // selectedThumbnailListLocal !=0
-                  ) {
+                      // selectedThumbnailListLocal !=0
+                      ) {
                     String base64Image = '';
                     if (_image != null) {
                       List<int> imageBytes = _image.readAsBytesSync();
@@ -930,11 +981,14 @@ class _UploadScreenState extends State<UploadScreen> {
 
                       await UserData().setVideoId(videoId);
 
-
                       /// bgUpload video
                       bgUploadVideo(videoId: videoId);
                       print('videoidupload----->$videoId');
-                      navigate(context, NewListVideo(videoId:videoId.toString(),));
+                      navigate(
+                          context,
+                          NewListVideo(
+                            videoId: videoId.toString(),
+                          ));
                     } else {
                       print('false');
                       IsvideoUploading = false;
@@ -992,7 +1046,7 @@ class _UploadScreenState extends State<UploadScreen> {
                               children: [
                                 SizedBox(height: height * 0.03),
                                 //---Image view banner
-                              /*  Container(
+                                /*  Container(
                                   width: width,
                                   height: 200,
                                   decoration: BoxDecoration(
@@ -1007,11 +1061,11 @@ class _UploadScreenState extends State<UploadScreen> {
                                   // ),
                                 ),*/
 
-
-                               // SizedBox(height: height * 0.03),
+                                // SizedBox(height: height * 0.03),
                                 //--Thumbnail
                                 Container(
-                                  padding: EdgeInsets.only(top: 6.0,left: 16.0,right: 16.0),
+                                  padding: EdgeInsets.only(
+                                      top: 6.0, left: 16.0, right: 16.0),
                                   width: width,
                                   child: Text(
                                     'Thumbnail',
@@ -1051,6 +1105,45 @@ class _UploadScreenState extends State<UploadScreen> {
                                           SizedBox(
                                             width: 10,
                                           ),
+                                          InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                selectedThumbnailLocal = 0;
+                                                selectedGeneratedThumbnailLocal =
+                                                    1;
+                                                selectedThumbnail = 0;
+                                                localThumbanilSelected = false;
+                                                localGeneratedThumbanilSelected =
+                                                    true;
+                                              });
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color:
+                                                        selectedGeneratedThumbnailLocal ==
+                                                                1
+                                                            ? Colors.blue
+                                                            : Colors
+                                                                .transparent,
+                                                    width: 2),
+                                              ),
+                                              width: width * 0.25,
+                                              height: height * 0.14,
+                                              margin: EdgeInsets.only(
+                                                top: 7.0,
+                                                left: 5.0,
+                                                right: 5.0,
+                                              ),
+                                              child: videoThumbnailByte != null
+                                                  ? Image.memory(
+                                                      videoThumbnailByte,
+                                                      fit: BoxFit.fill,
+                                                    )
+                                                  : Container(),
+                                            ),
+                                          ),
+
                                           Visibility(
                                             visible:
                                                 _image != null ? true : false,
@@ -1062,6 +1155,10 @@ class _UploadScreenState extends State<UploadScreen> {
                                                   localThumbanilSelected = true;
                                                   // selectedThumbnailList = 0;
                                                   // selectedThumbnailListLocal = 1;
+                                                  selectedGeneratedThumbnailLocal =
+                                                      0;
+                                                  localGeneratedThumbanilSelected =
+                                                      false;
                                                 });
                                               },
                                               child: Container(
@@ -1092,9 +1189,9 @@ class _UploadScreenState extends State<UploadScreen> {
                                             ),
                                           ),
 
-                                        /// thumbnail list
+                                          /// thumbnail list
 
-                                        /*  Container(
+                                          /*  Container(
                                             height: height * 0.15,
                                             child: ListView.builder(
                                               itemCount: widget.image.length,
@@ -1193,7 +1290,8 @@ class _UploadScreenState extends State<UploadScreen> {
                                 if (isDetailsShown) ...[
                                   // These children are only visible if condition is true
                                   Container(
-                                    padding: EdgeInsets.only(left: 16, right: 16),
+                                    padding:
+                                        EdgeInsets.only(left: 16, right: 16),
                                     width: width,
                                     child: Text(
                                       'Title',
@@ -1207,7 +1305,8 @@ class _UploadScreenState extends State<UploadScreen> {
                                   //----Text filed
                                   SizedBox(height: height * 0.02),
                                   Container(
-                                    padding: EdgeInsets.only(left: 16, right: 16),
+                                    padding:
+                                        EdgeInsets.only(left: 16, right: 16),
                                     // height: height * 0.06,
                                     child: TextFormField(
                                       focusNode: titleNode,
@@ -1280,8 +1379,9 @@ class _UploadScreenState extends State<UploadScreen> {
                                   ),
                                   SizedBox(height: height * 0.03),
                                   Container(
-                                    padding: EdgeInsets.only(left: 16, right: 16),
-                                   // padding: EdgeInsets.all(6.0),
+                                    padding:
+                                        EdgeInsets.only(left: 16, right: 16),
+                                    // padding: EdgeInsets.all(6.0),
                                     width: width,
                                     child: Text(
                                       'Description',
@@ -1295,7 +1395,8 @@ class _UploadScreenState extends State<UploadScreen> {
                                   //----Text filed
                                   SizedBox(height: height * 0.02),
                                   Container(
-                                    padding: EdgeInsets.only(left: 16, right: 16),
+                                    padding:
+                                        EdgeInsets.only(left: 16, right: 16),
                                     // height: height * 0.06,
                                     child: TextFormField(
                                       focusNode: descriptionNode,
@@ -1405,162 +1506,145 @@ class _UploadScreenState extends State<UploadScreen> {
                                 SizedBox(height: height * 0.02),
                                 if (isCategoriesSHown) ...[
                                   InkWell(
-                                    onTap: (){
+                                    onTap: () {
                                       setState(() {
                                         if (categoryPrevious != null)
-                                          categorySelected[
-                                          categoryPrevious] =
-                                          true;
+                                          categorySelected[categoryPrevious] =
+                                              true;
                                       });
 
                                       /// bottom sheet for category
                                       showModalBottomSheet(
                                         context: context,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                          BorderRadius.only(
-                                            topLeft:
-                                            Radius.circular(32.0),
-                                            topRight:
-                                            Radius.circular(32.0),
+                                          borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(32.0),
+                                            topRight: Radius.circular(32.0),
                                           ),
                                         ),
                                         builder: (context) {
-                                          return StatefulBuilder(
-                                              builder: (BuildContext
-                                              context,
-                                                  StateSetter
-                                                  setState) {
-                                                return Container(
-                                                  height: categoryData
-                                                      .length !=
-                                                      0
-                                                      ? height *
+                                          return StatefulBuilder(builder:
+                                              (BuildContext context,
+                                                  StateSetter setState) {
+                                            return Container(
+                                              height: categoryData.length != 0
+                                                  ? height *
                                                       0.3 *
-                                                      categoryData
-                                                          .length
-                                                      : height * 0.15,
-                                                  padding:
-                                                  EdgeInsets.only(
-                                                    top: 11.0,
-                                                  ),
-                                                  child: SingleChildScrollView(
-                                                    physics: AlwaysScrollableScrollPhysics(),
-                                                    child: Column(
-                                                      children: [
-                                                        Center(
-                                                          child: Container(
-                                                              height: 3,
-                                                              width: 60,
-                                                              color: Colors
-                                                                  .black),
-                                                        ),
-                                                        SizedBox(
-                                                            height: 19),
-                                                        Container(
-                                                          padding: EdgeInsets
-                                                              .only(
-                                                              left:
-                                                              39.0),
-                                                          child: Column(
-                                                            crossAxisAlignment:
+                                                      categoryData.length
+                                                  : height * 0.15,
+                                              padding: EdgeInsets.only(
+                                                top: 11.0,
+                                              ),
+                                              child: SingleChildScrollView(
+                                                physics:
+                                                    AlwaysScrollableScrollPhysics(),
+                                                child: Column(
+                                                  children: [
+                                                    Center(
+                                                      child: Container(
+                                                          height: 3,
+                                                          width: 60,
+                                                          color: Colors.black),
+                                                    ),
+                                                    SizedBox(height: 19),
+                                                    Container(
+                                                      padding: EdgeInsets.only(
+                                                          left: 39.0),
+                                                      child: Column(
+                                                        crossAxisAlignment:
                                                             CrossAxisAlignment
                                                                 .start,
-                                                            children: [
-                                                              viewData(
-                                                                'Category',
-                                                                categoryData,
-                                                                categorySelected,
-                                                                'Add New Category',
-                                                                context,
-                                                              ),
-                                                              SizedBox(
-                                                                  height:
-                                                                  10),
-                                                            ],
+                                                        children: [
+                                                          viewData(
+                                                            'Category',
+                                                            categoryData,
+                                                            categorySelected,
+                                                            'Add New Category',
+                                                            context,
                                                           ),
-                                                        ),
-                                                      ],
+                                                          SizedBox(height: 10),
+                                                        ],
+                                                      ),
                                                     ),
-                                                  ),
-                                                );
-                                              });
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          });
                                         },
                                       );
                                     },
                                     child: Container(
-                                      margin: EdgeInsets.only(left: 16.0,right: 16.0),
+                                      margin: EdgeInsets.symmetric(
+                                          horizontal: 16.0),
                                       height: height * 0.12,
-                                      padding: EdgeInsets.only(
-                                        top: 13.0,
-                                        left: 11.0,
-                                        // bottom: 11.0,
-                                        right: 15.0,
-                                      ),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 12.0, vertical: 4.0),
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(5.0),
+                                        borderRadius:
+                                            BorderRadius.circular(5.0),
                                         border: Border.all(
                                           color: Color(0xffE8E8E8),
                                         ),
                                       ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Category',
-                                            style: titleStyle,
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
+                                      child: Row(
+                                        mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              Visibility(
-                                                visible: categoryText != ''
-                                                    ? false
-                                                    : true,
-                                                child: Text(
-                                                  'Select a main category that\nyour video fits into.',
-                                                  style: GoogleFonts.poppins(
-                                                    fontSize: 12.0,
-                                                    fontWeight: FontWeight.w400,
-                                                  ),
-                                                ),
+                                              Text(
+                                                'Category',
+                                                style: titleStyle,
                                               ),
+                                              SizedBox(height: 4.0),
                                               Container(
-                                                width: width * 0.06,
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  border: Border.all(
-                                                    color: Colors.black,
-                                                  ),
-                                                ),
-                                                child: Center(
-                                                  child: Icon(
-                                                    Icons.arrow_drop_down,
-                                                    size: 16.0,
-                                                  ),
-                                                ),
-                                              ),
+                                                //height: height * 0.02,
+                                                width: width * 0.75,
+                                                color: Colors.white,
+                                                child: (categoryText != '')
+                                                    ? Text(
+                                                        categoryText,
+                                                        style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      )
+                                                    : Text(
+                                                        'Select a main category that\nyour video fits into.',
+                                                        style:
+                                                            GoogleFonts.poppins(
+                                                          fontSize: 12.0,
+                                                          fontWeight:
+                                                              FontWeight.w400,
+                                                        ),
+                                                      ),
+                                              )
                                             ],
                                           ),
-                                          categoryText != ''
-                                              ? Container(
-                                            height: height * 0.02,
-                                            width: width * 0.25,
-                                            color: Colors.white,
-                                            child: Center(
-                                              child: Text(
-                                                categoryText,
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontWeight:
-                                                  FontWeight.w500,
-                                                ),
+                                          Container(
+                                            width: width * 0.06,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: Colors.black,
                                               ),
                                             ),
-                                          )
-                                              : Container(),
+                                            child: Center(
+                                              child: Icon(
+                                                Icons.arrow_drop_down,
+                                                size: 16.0,
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -1601,7 +1685,8 @@ class _UploadScreenState extends State<UploadScreen> {
                                                 top: 11.0,
                                               ),
                                               child: SingleChildScrollView(
-                                                physics: AlwaysScrollableScrollPhysics(),
+                                                physics:
+                                                    AlwaysScrollableScrollPhysics(),
                                                 child: Column(
                                                   children: [
                                                     Center(
@@ -1641,14 +1726,11 @@ class _UploadScreenState extends State<UploadScreen> {
                                       // }
                                     },
                                     child: Container(
-                                      margin: EdgeInsets.only(left: 16.0,right: 16.0),
+                                      margin: EdgeInsets.symmetric(
+                                          horizontal: 16.0),
                                       height: height * 0.1,
-                                      padding: EdgeInsets.only(
-                                        top: 13.0,
-                                        left: 11.0,
-                                        // bottom: 11.0,
-                                        right: 15.0,
-                                      ),
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 4.0, horizontal: 12.0),
                                       decoration: BoxDecoration(
                                         borderRadius:
                                             BorderRadius.circular(5.0),
@@ -1656,73 +1738,77 @@ class _UploadScreenState extends State<UploadScreen> {
                                           color: Color(0xffE8E8E8),
                                         ),
                                       ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(
-                                            'Sub-Category',
-                                            style: titleStyle,
-                                          ),
-                                          Row(
+                                          Column(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              Visibility(
-                                                visible: subCategoryText != ''
-                                                    ? false
-                                                    : true,
-                                                child: Text(
-                                                  'Better sort your video for your viewers.',
-                                                  style: GoogleFonts.poppins(
-                                                    fontSize: 12.0,
-                                                    fontWeight: FontWeight.w400,
-                                                  ),
-                                                ),
+                                              Text(
+                                                'Sub-Category',
+                                                style: titleStyle,
                                               ),
+                                              SizedBox(height: 4.0),
                                               Container(
-                                                width: width * 0.06,
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  border: Border.all(
-                                                    color: Colors.black,
-                                                  ),
-                                                ),
-                                                child: Center(
-                                                  child: Icon(
-                                                    Icons.arrow_drop_down,
-                                                    size: 16.0,
-                                                  ),
-                                                ),
-                                              ),
+                                                //height: height * 0.02,
+                                                width: width * 0.75,
+                                                color: Colors.white,
+                                                child: (subCategoryText != '')
+                                                    ? Text(
+                                                        subCategoryText,
+                                                        style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      )
+                                                    : Text(
+                                                        'Better sort your video for your viewers.',
+                                                        style:
+                                                            GoogleFonts.poppins(
+                                                          fontSize: 12.0,
+                                                          fontWeight:
+                                                              FontWeight.w400,
+                                                        ),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                              )
                                             ],
                                           ),
-                                          subCategoryText != ''
-                                              ? Container(
-                                                  height: height * 0.02,
-                                                  width: width * 0.2,
-                                                  color: Colors.white,
-                                                  child: Center(
-                                                    child: Text(
-                                                      subCategoryText,
-                                                      style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                )
-                                              : Container(),
+                                          Container(
+                                            width: width * 0.06,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            child: Center(
+                                              child: Icon(
+                                                Icons.arrow_drop_down,
+                                                size: 16.0,
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
                                   ),
                                   Container(
-                                    margin: EdgeInsets.only(left: 16.0,right: 16.0,bottom: 20,top: 16.0),
-                                    // margin: EdgeInsets.symmetric(
-                                    //   vertical: 20.0,
-                                    // ),
+                                    margin: EdgeInsets.only(
+                                        left: 16.0,
+                                        right: 16.0,
+                                        bottom: 20,
+                                        top: 16.0),
                                     decoration: BoxDecoration(
                                       border: Border.all(
                                         color: Color(0xffD9D9DA),
@@ -1731,132 +1817,134 @@ class _UploadScreenState extends State<UploadScreen> {
                                       borderRadius: BorderRadius.circular(10.0),
                                     ),
                                     padding: EdgeInsets.all(12.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(
-                                          'Playlist',
-                                          style: titleStyle,
-                                        ),
-                                        Text(
-                                          'Add your video to one or more playlist.\nPlaylist’s can help your audience view\nspecial collections.',
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                        SizedBox(height: height * 0.013),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
+                                        Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            Expanded(
-                                              child: Text(
-                                                playlistText,
-                                                maxLines: 2,
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 18.0,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                                overflow: TextOverflow.clip,
-                                              ),
+                                            Text(
+                                              'Playlist',
+                                              style: titleStyle,
                                             ),
-                                            Align(
-                                              alignment: Alignment.bottomRight,
-                                              child: InkWell(
-                                                onTap: () {
-                                                  // print(playlistData);
-                                                  setState(() {
-                                                    if (playlistPrevious !=
-                                                        null)
-                                                      playlistSelected[
-                                                              playlistPrevious] =
-                                                          true;
-                                                  });
-                                                  showModalBottomSheet(
-                                                    context: context,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.only(
-                                                        topLeft:
-                                                            Radius.circular(
-                                                                32.0),
-                                                        topRight:
-                                                            Radius.circular(
-                                                                32.0),
+                                            Container(
+                                              padding:
+                                                  EdgeInsets.only(top: 4.0),
+                                              width: width * 0.75,
+                                              child: (playlistText != '')
+                                                  ? Text(
+                                                      playlistText,
+                                                      maxLines: 3,
+                                                      style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 16.0,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    )
+                                                  : Text(
+                                                      'Add your video to one or more playlist.\nPlaylist’s can help your audience view\nspecial collections.',
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                        fontSize: 12.0,
+                                                        fontWeight:
+                                                            FontWeight.w400,
                                                       ),
                                                     ),
-                                                    builder: (context) {
-                                                      return StatefulBuilder(
-                                                          builder: (BuildContext
-                                                                  context,
-                                                              StateSetter
-                                                                  setState) {
-                                                        return Container(
-                                                          height:
-                                                              height * 0.3 ??
-                                                                  height * 0.6,
-                                                          padding:
-                                                              EdgeInsets.only(
-                                                            top: 11.0,
-                                                          ),
-                                                          child: SingleChildScrollView(
-                                                            physics: AlwaysScrollableScrollPhysics(),
-                                                            child: Column(
-                                                              children: [
-                                                                Center(
-                                                                  child:
-                                                                      Container(
-                                                                    height: 3,
-                                                                    width: 60,
-                                                                    color: Colors
-                                                                        .black,
-                                                                  ),
-                                                                ),
-                                                                SizedBox(
-                                                                    height: 19),
-                                                                Container(
-                                                                  padding: EdgeInsets
-                                                                      .only(
-                                                                          left:
-                                                                              39.0),
-                                                                  child: Column(
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .start,
-                                                                    children: [
-                                                                      viewData(
-                                                                        'Playlists',
-                                                                        playlistData,
-                                                                        playlistSelected,
-                                                                        'Add Playlist',
-                                                                        context,
-                                                                      ),
-                                                                      SizedBox(
-                                                                          height:
-                                                                              10),
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        );
-                                                      });
-                                                    },
-                                                  );
-                                                },
-                                                child: Icon(
-                                                  Icons.add,
-                                                  size: 30.0,
-                                                  color: Color(0xff5AA5EF),
-                                                ),
-                                              ),
                                             )
                                           ],
+                                        ),
+                                        Align(
+                                          alignment: Alignment.bottomRight,
+                                          child: InkWell(
+                                            onTap: () {
+                                              // print(playlistData);
+                                              setState(() {
+                                                if (playlistPrevious != null)
+                                                  playlistSelected[
+                                                      playlistPrevious] = true;
+                                              });
+                                              showModalBottomSheet(
+                                                context: context,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(32.0),
+                                                    topRight:
+                                                        Radius.circular(32.0),
+                                                  ),
+                                                ),
+                                                builder: (context) {
+                                                  return StatefulBuilder(
+                                                      builder:
+                                                          (BuildContext context,
+                                                              StateSetter
+                                                                  setState) {
+                                                    return Container(
+                                                      height: height * 0.3 ??
+                                                          height * 0.6,
+                                                      padding: EdgeInsets.only(
+                                                        top: 11.0,
+                                                      ),
+                                                      child:
+                                                          SingleChildScrollView(
+                                                        physics:
+                                                            AlwaysScrollableScrollPhysics(),
+                                                        child: Column(
+                                                          children: [
+                                                            Center(
+                                                              child: Container(
+                                                                height: 3,
+                                                                width: 60,
+                                                                color: Colors
+                                                                    .black,
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                                height: 19),
+                                                            Container(
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                      left:
+                                                                          39.0),
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  viewData(
+                                                                    'Playlists',
+                                                                    playlistData,
+                                                                    playlistSelected,
+                                                                    'Add Playlist',
+                                                                    context,
+                                                                  ),
+                                                                  SizedBox(
+                                                                      height:
+                                                                          10),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    );
+                                                  });
+                                                },
+                                              );
+                                            },
+                                            child: Icon(
+                                              Icons.add,
+                                              size: 30.0,
+                                              color: Color(0xff5AA5EF),
+                                            ),
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -1987,7 +2075,7 @@ class _UploadScreenState extends State<UploadScreen> {
                                         SizedBox(height: 32),
                                         checked3
                                             ? FutureBuilder(
-                                                future: GroupServcie()
+                                                future: GroupService()
                                                     .getMyGroups(),
                                                 builder: (context, snapshot) {
                                                   if (snapshot.hasData) {
@@ -2163,14 +2251,14 @@ class _UploadScreenState extends State<UploadScreen> {
                                     child: ElevatedButton(
                                         onPressed: () async {
                                           if (thumbnailBool &&
-                                              titleBool &&
-                                              descritionBool &&
-                                              categoryBool &&
-                                              subCategoryBool &&
-                                              visibilityBool
+                                                  titleBool &&
+                                                  descritionBool &&
+                                                  categoryBool &&
+                                                  subCategoryBool &&
+                                                  visibilityBool
                                               // selectedThumbnailList !=0 ||
                                               // selectedThumbnailListLocal !=0
-                                          ) {
+                                              ) {
                                             String base64Image = '';
                                             if (_image != null) {
                                               List<int> imageBytes =
@@ -2179,9 +2267,25 @@ class _UploadScreenState extends State<UploadScreen> {
                                                   base64Encode(imageBytes);
                                             }
 
+                                            if (videoThumbnailByte != null &&
+                                                localGeneratedThumbanilSelected ==
+                                                    true) {
+                                              base64Image = base64Encode(
+                                                  videoThumbnailByte);
+                                            }
+
                                             setState(() {
                                               circleLoading = true;
                                             });
+
+                                            //   customThumbnail:
+                                            //   localThumbanilSelected
+                                            //       ? base64Image
+                                            //       : null,
+                                            // thumbnail: localThumbanilSelected
+                                            // ? null
+                                            //     : widget
+                                            //     .image[selectedThumbnail],
 
                                             /// video upload
                                             var data = await VideoService()
@@ -2190,21 +2294,15 @@ class _UploadScreenState extends State<UploadScreen> {
                                               description: description,
                                               status: 0,
                                               videoId: widget.videoId,
-                                              customThumbnail:
-                                                  localThumbanilSelected
-                                                      ? base64Image
-                                                      : null,
-                                              thumbnail: localThumbanilSelected
-                                                  ? null
-                                                  : widget
-                                                      .image[selectedThumbnail],
+                                              customThumbnail: base64Image,
+                                              thumbnail: null,
                                               categoryId: parentId,
                                               subCategoryId: subCategoryId,
                                               playlistId: playlistIds,
                                               groupId: groupListIds,
                                               visibility: visibilityId,
                                             );
-                                            if (data['success'] == true)  {
+                                            if (data['success'] == true) {
                                               setState(() {
                                                 FocusScope.of(context)
                                                     .unfocus();
@@ -2220,23 +2318,25 @@ class _UploadScreenState extends State<UploadScreen> {
 
                                               var videoId = data['video_id'];
 
-                                              await UserData().setVideoId(videoId);
-
+                                              await UserData()
+                                                  .setVideoId(videoId);
 
                                               /// bgUpload video
                                               bgUploadVideo(videoId: videoId);
-                                              print('videoidupload----->$videoId');
-                                              navigate(context, NewListVideo(videoId:videoId.toString(),));
+                                              print(
+                                                  'videoidupload----->$videoId');
+                                              navigate(
+                                                  context,
+                                                  NewListVideo(
+                                                    videoId: videoId.toString(),
+                                                  ));
                                             } else {
                                               print('false');
                                             }
 
-
-
                                             setState(() {
                                               circleLoading = false;
                                             });
-
                                           } else {
                                             Fluttertoast.showToast(
                                               msg: 'All fields are necessary',
@@ -2245,17 +2345,17 @@ class _UploadScreenState extends State<UploadScreen> {
                                           }
                                         },
                                         child: Center(
-                                          child: circleLoading?
-                                          CircularProgressIndicator(
-                                            backgroundColor: Colors.white,
-                                          ):
-                                          Text(
-                                            'PUBLISH',
-                                            style: TextStyle(
-                                              fontSize: 16.0,
-                                              color: Colors.white,
-                                            ),
-                                          ),
+                                          child: circleLoading
+                                              ? CircularProgressIndicator(
+                                                  backgroundColor: Colors.white,
+                                                )
+                                              : Text(
+                                                  'PUBLISH',
+                                                  style: TextStyle(
+                                                    fontSize: 16.0,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
                                         ),
                                         style: ElevatedButton.styleFrom(
                                           primary: (thumbnailBool == true &&
@@ -2323,13 +2423,12 @@ checkBox(height, width, checked) {
 }
 
 Future editDialog(context, height, width, edit, {groupId, title, grpimage}) {
-  String email = '', groupName = '', groupStatusMsg = '', userId = '';
+  String email = '', groupName = '', groupStatusMsg = '';
   bool groupStatus = true;
   List users = [];
   List ids = [];
   List<Map<String, String>> selectedUser = [];
   File image;
-  bool loading = false;
 
   TextEditingController controller = TextEditingController(text: title);
 
@@ -2583,7 +2682,7 @@ Future editDialog(context, height, width, edit, {groupId, title, grpimage}) {
                               // ignore: missing_return
                               onChanged: (val) async {
                                 email = val;
-                                var data = await GroupServcie()
+                                var data = await GroupService()
                                     .searchUserFriendList(email);
 
                                 // GrpModel model =
@@ -2650,7 +2749,7 @@ Future editDialog(context, height, width, edit, {groupId, title, grpimage}) {
                                     if (edit) {
                                       if (groupName != '') {
                                         var data =
-                                            await GroupServcie().addNewGroup(
+                                            await GroupService().addNewGroup(
                                           controller.text,
                                           image,
                                         );
@@ -2663,7 +2762,7 @@ Future editDialog(context, height, width, edit, {groupId, title, grpimage}) {
                                         // if (EmailValidator.validate(email)) {
                                         if (data['success'] == true) {
                                           for (var item in selectedUser) {
-                                            var d = await GroupServcie()
+                                            var d = await GroupService()
                                                 .addMembersToGroup(
                                               groupId,
                                               item['id'],
@@ -2701,7 +2800,7 @@ Future editDialog(context, height, width, edit, {groupId, title, grpimage}) {
                                       //     .addMembersToGroup(groupId, userId);
                                       for (var item in selectedUser) {
                                         // print(item['id']);
-                                        var d = await GroupServcie()
+                                        var d = await GroupService()
                                             .addMembersToGroup(
                                                 groupId, item['id']);
                                         if (d['success'] != true) {

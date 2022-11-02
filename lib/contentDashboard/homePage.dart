@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:projector/apis/accountService.dart';
 import 'package:projector/apis/contentDashboardService.dart';
 import 'package:projector/apis/subscriptionService.dart';
 import 'package:projector/apis/viewService.dart';
@@ -25,7 +26,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   bool loading = false;
   StreamController subscriptionController = StreamController.broadcast();
   String maxStorage = '0', maxReq = '0';
@@ -33,6 +33,7 @@ class _HomePageState extends State<HomePage> {
   var storageAvailable;
   var availableStorage;
   var isLaunchSubscriptionWeb = false;
+  String avatarUrl;
   var currentPlan,
       totalStorage,
       usedStorage,
@@ -47,17 +48,24 @@ class _HomePageState extends State<HomePage> {
   bool spin = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
-   formatSizeUnits(bytes){
-    if      (bytes >= 1073741824) { bytes = (bytes / 1073741824).toFixed(2) + " GB"; }
-    else if (bytes >= 1048576)    { bytes = (bytes / 1048576).toFixed(2) + " MB"; }
-    else if (bytes >= 1024)       { bytes = (bytes / 1024).toFixed(2) + " KB"; }
-    else if (bytes > 1)           { bytes = bytes + " bytes"; }
-    else if (bytes == 1)          { bytes = bytes + " byte"; }
-    else                          { bytes = "0 bytes"; }
+  formatSizeUnits(bytes) {
+    if (bytes >= 1073741824) {
+      bytes = (bytes / 1073741824).toFixed(2) + " GB";
+    } else if (bytes >= 1048576) {
+      bytes = (bytes / 1048576).toFixed(2) + " MB";
+    } else if (bytes >= 1024) {
+      bytes = (bytes / 1024).toFixed(2) + " KB";
+    } else if (bytes > 1) {
+      bytes = bytes + " bytes";
+    } else if (bytes == 1) {
+      bytes = bytes + " byte";
+    } else {
+      bytes = "0 bytes";
+    }
     return bytes;
   }
 
-   String formatBytes(int bytes, int decimals) {
+  String formatBytes(int bytes, int decimals) {
     if (bytes <= 0) return "0 B";
     const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
     var i = (log(bytes) / log(1024)).floor();
@@ -86,6 +94,12 @@ class _HomePageState extends State<HomePage> {
       }
     });
 
+    AccountService().getProfile().then((data) {
+      setState(() {
+        avatarUrl = data['image'];
+      });
+    });
+
     getMySubscription().then((data) {
       subscriptionController.add(data);
       // print(data);
@@ -103,10 +117,10 @@ class _HomePageState extends State<HomePage> {
       videoStorage = data['storageUsed']['video_storage'];
       albumStorage = data['storageUsed']['album_storage'];
 
-      if(videoStorage == null){
+      if (videoStorage == null) {
         videoStorage = "0";
       }
-      if(albumStorage == null){
+      if (albumStorage == null) {
         albumStorage = "0";
       }
 
@@ -131,41 +145,66 @@ class _HomePageState extends State<HomePage> {
     var width = MediaQuery.of(context).size.width;
 
     return Sizer(builder: (context, orientation, deviceType) {
-      if(deviceType == DeviceType.mobile){
+      if (deviceType == DeviceType.mobile) {
         SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-      }else{
-        SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight]);
+      } else {
+        SystemChrome.setPreferredOrientations(
+            [DeviceOrientation.landscapeRight]);
       }
       return Scaffold(
         backgroundColor: Color.fromRGBO(242, 242, 242, 1),
         appBar: AppBar(
-          backgroundColor: Colors.white,
-          centerTitle: false,
-          elevation: 1,
-          leading: IconButton(
-            onPressed: () {
-              if (Navigator.canPop(context)) {
-                Navigator.pop(context);
-              } else {
-                SystemNavigator.pop();
-              }
-            },
-            icon: Icon(Icons.arrow_back_ios),
-            color: Colors.black,
-          ),
-          titleSpacing: 0.0,
-          title: Transform(
-            transform: Matrix4.translationValues(0.0, 0.0, 0.0),
-            child: Text(
-              "Dashboard",
-              style: GoogleFonts.montserrat(
-                color: Colors.black,
-                fontSize: 20.0,
-                fontWeight: FontWeight.w700,
+            backgroundColor: Colors.white,
+            centerTitle: false,
+            elevation: 1,
+            leading: IconButton(
+              onPressed: () {
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                } else {
+                  SystemNavigator.pop();
+                }
+              },
+              icon: Icon(Icons.arrow_back_ios),
+              color: Colors.black,
+            ),
+            titleSpacing: 0.0,
+            title: Transform(
+              transform: Matrix4.translationValues(0.0, 0.0, 0.0),
+              child: Text(
+                "Dashboard",
+                style: GoogleFonts.montserrat(
+                  color: Colors.black,
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
-          ),
-        ),
+            actions: [
+              Container(
+                margin: EdgeInsets.only(right: 16),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.black),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: (avatarUrl != null)
+                      ? CircleAvatar(
+                          radius: deviceType == DeviceType.mobile ? 18 : 47,
+                          backgroundImage: NetworkImage(avatarUrl),
+                        )
+                      : Image(
+                          width: 36.0,
+                          height: 36.0,
+                          color: Colors.black,
+                          image: AssetImage(
+                            'images/person.png',
+                          ),
+                        ),
+                ),
+              ),
+            ]),
         body: Container(
           child: SingleChildScrollView(
             child: Column(
@@ -235,7 +274,10 @@ class _HomePageState extends State<HomePage> {
                                         showPopupUpload(
                                             context: context,
                                             availableStorage: availableStorage,
-                                            left: 25.0,top: 200,right: 0.0,bottom: 0.0);
+                                            left: 25.0,
+                                            top: 200,
+                                            right: 0.0,
+                                            bottom: 0.0);
                                       } else {
                                         storageDialog(context, height, width);
                                       }
@@ -287,193 +329,179 @@ class _HomePageState extends State<HomePage> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(25.0),
                     child: Container(
-                      child: Container(
-                          padding: EdgeInsets.all(20),
-                          height: height * 0.24,
-                          width: width,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25.0),
-                            color: Colors.white,
-                          ),
-                          child: StreamBuilder(
-                            stream: subscriptionController.stream,
-                            builder: (context, data) {
-                              if (data.hasData) {
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Current Plan',
-                                      style: TextStyle(
-                                        fontSize:
-                                            deviceType == DeviceType.mobile
-                                                ? 20.0
-                                                : 25.0,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                        padding: EdgeInsets.all(20),
+                        height: 204,
+                        width: width,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25.0),
+                          color: Colors.white,
+                        ),
+                        child: StreamBuilder(
+                          stream: subscriptionController.stream,
+                          builder: (context, data) {
+                            if (data.hasData) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Current Plan',
+                                    style: TextStyle(
+                                      fontSize: deviceType == DeviceType.mobile
+                                          ? 20.0
+                                          : 25.0,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    SizedBox(height: height * 0.01),
-                                    Text(
-                                      "$currentPlan : $totalStorageText Storage ( $availableStorageTxt Available )",
-                                      style: GoogleFonts.montserrat(
-                                        fontSize:
-                                            deviceType == DeviceType.mobile
-                                                ? 14.0
-                                                : 18.0,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.black,
-                                      ),
+                                  ),
+                                  SizedBox(height: height * 0.01),
+                                  Text(
+                                    "$currentPlan : $totalStorageText Storage ( $availableStorageTxt Available )",
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: deviceType == DeviceType.mobile
+                                          ? 14.0
+                                          : 18.0,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black,
                                     ),
-                                    SizedBox(height: height * 0.01),
+                                  ),
+                                  SizedBox(height: height * 0.01),
+                                  if (albumStorage != null &&
+                                      videoStorage != null &&
+                                      totalStorage != null)
                                     Container(
                                       height: deviceType == DeviceType.mobile
                                           ? height * 0.03
                                           : height * 0.04,
                                       child: Row(
                                         children: [
-                                          Expanded(
-                                            child: Container(
+                                          Container(
                                               color: Colors.blue,
-                                              child: Center(
-                                                child: Text(
-                                                  'Videos',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize: deviceType ==
-                                                            DeviceType.mobile
-                                                        ? 14.0
-                                                        : 18.0,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
+                                              width: width *
+                                                  0.76 *
+                                                  double.parse(videoStorage) /
+                                                  double.parse(totalStorage)),
+                                          Container(
+                                            color: Colors.red,
+                                            width: width *
+                                                0.8 *
+                                                double.parse(albumStorage) /
+                                                double.parse(totalStorage),
                                           ),
                                           Expanded(
-                                            child: Container(
-                                              color: Colors.red,
-                                              child: Center(
-                                                child: Text(
-                                                  'Photos',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize: deviceType ==
-                                                            DeviceType.mobile
-                                                        ? 14.0
-                                                        : 18.0,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Container(
-                                              color: Colors.black,
-                                              child: Center(
-                                                child: Text(
-                                                  '$availableStorageTxt',
-                                                  style: TextStyle(
-                                                    fontSize: deviceType ==
-                                                        DeviceType
-                                                            .mobile
-                                                        ? 14.0
-                                                        : 18.0,
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                    FontWeight.w500,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
+                                            child:
+                                                Container(color: Colors.black),
                                           ),
                                         ],
                                       ),
                                     ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      videoStorage != null
-                                          ? "Videos : ${double.parse(videoStorage).round()} MB"
-                                          : "Videos : 0 MB",
-                                      style: GoogleFonts.montserrat(
-                                        fontSize:
-                                            deviceType == DeviceType.mobile
-                                                ? 14.0
-                                                : 18.0,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.black,
+                                  SizedBox(height: 8),
+
+                                  Row(
+                                    children: [
+                                      Container(
+                                        width: 16.0,
+                                        height: 12.0,
+                                        color: Colors.blue,
                                       ),
-                                    ),
-
-                                    Text(
-                                      "Photos : ${double.parse(albumStorage).round()} MB",
-                                      style: GoogleFonts.montserrat(
-                                        fontSize:
-                                            deviceType == DeviceType.mobile
-                                                ? 14.0
-                                                : 18.0,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-
-                                    SizedBox(height: 10),
-
-                                    Center(
-                                      child: InkWell(
-                                        child: Container(
-                                          width: 100,
-                                          height:
+                                      SizedBox(width: 8.0),
+                                      Text(
+                                        videoStorage != null
+                                            ? "Videos : ${double.parse(videoStorage).round()} MB"
+                                            : "Videos : 0 MB",
+                                        style: GoogleFonts.montserrat(
+                                          fontSize:
                                               deviceType == DeviceType.mobile
-                                                  ? height * 0.04
-                                                  : height * 0.05,
-                                          decoration: BoxDecoration(
-                                            color: Color(0xffc9c9c9),
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                          ),
-                                          child: Center(
-                                            child: Text('Manage',
-                                                style: GoogleFonts.montserrat(
-                                                  fontSize: deviceType ==
-                                                          DeviceType.mobile
-                                                      ? 14.0
-                                                      : 18.0,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.white,
-                                                )),
-                                          ),
+                                                  ? 14.0
+                                                  : 18.0,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black,
                                         ),
-                                        onTap: () {
-                                          launch(serverPlanUrl);
-                                        },
                                       ),
+                                    ],
+                                  ),
+
+                                  Row(
+                                    children: [
+                                      Container(
+                                        width: 16.0,
+                                        height: 12.0,
+                                        color: Colors.red,
+                                      ),
+                                      SizedBox(width: 8.0),
+                                      Text(
+                                        "Photos : ${double.parse(albumStorage).round()} MB",
+                                        style: GoogleFonts.montserrat(
+                                          fontSize:
+                                              deviceType == DeviceType.mobile
+                                                  ? 14.0
+                                                  : 18.0,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  Row(
+                                    children: [
+                                      Container(
+                                        width: 16.0,
+                                        height: 12.0,
+                                        color: Colors.black,
+                                      ),
+                                      SizedBox(width: 8.0),
+                                      Text(
+                                        "Free space : $availableStorageTxt",
+                                        style: GoogleFonts.montserrat(
+                                          fontSize:
+                                              deviceType == DeviceType.mobile
+                                                  ? 14.0
+                                                  : 18.0,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  SizedBox(height: 10),
+
+                                  Center(
+                                    child: InkWell(
+                                      child: Container(
+                                        width: 100,
+                                        height: deviceType == DeviceType.mobile
+                                            ? height * 0.04
+                                            : height * 0.05,
+                                        decoration: BoxDecoration(
+                                          color: Color(0xffc9c9c9),
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                        child: Center(
+                                          child: Text('Manage',
+                                              style: GoogleFonts.montserrat(
+                                                fontSize: deviceType ==
+                                                        DeviceType.mobile
+                                                    ? 14.0
+                                                    : 18.0,
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.white,
+                                              )),
+                                        ),
+                                      ),
+                                      onTap: () {
+                                        launch(serverPlanUrl);
+                                      },
                                     ),
-                                    // SizedBox(height: height * 0.01),
-                                  ],
-                                );
-                              }
-                              return Center(child: CircularProgressIndicator());
-                            },
-                          )),
-                      height: deviceType == DeviceType.mobile
-                          ? height * 0.28
-                          : height * 0.30,
-                      width: width,
-                      margin: EdgeInsets.only(bottom: 6.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(25.0),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.29),
-                            offset: Offset(0.0, 1.0), //(x,y)
-                            blurRadius: 6.0,
-                          ),
-                        ],
-                      ),
-                    ),
+                                  ),
+                                  // SizedBox(height: height * 0.01),
+                                ],
+                              );
+                            }
+                            return Center(child: CircularProgressIndicator());
+                          },
+                        )),
                   ),
                 ),
                 SizedBox(height: 20),
@@ -723,84 +751,90 @@ class _HomePageState extends State<HomePage> {
 
                                             return Row(
                                               mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text(
-                                                        "$firstName $lastName",
-                                                        style: TextStyle(
-                                                          fontSize: deviceType ==
-                                                              DeviceType.mobile
-                                                              ? 16.0
-                                                              : 18.0,
-                                                          color: Colors.black,
-                                                          fontWeight: FontWeight.w600,
-                                                        ),
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      "$firstName $lastName",
+                                                      style: TextStyle(
+                                                        fontSize: deviceType ==
+                                                                DeviceType
+                                                                    .mobile
+                                                            ? 16.0
+                                                            : 18.0,
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.w600,
                                                       ),
-                                                      Text(
-                                                        userEmail,
-                                                        style: GoogleFonts.montserrat(
-                                                          fontSize: deviceType ==
-                                                              DeviceType.mobile
-                                                              ? 9.0
-                                                              : 14.0,
-                                                          color: Color(0xffB2B2B2),
-                                                          fontWeight: FontWeight.w400,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  InkWell(
-                                                    child: Container(
-                                                      child: Text(
-                                                        "Remove",
-                                                        style: GoogleFonts.montserrat(
-                                                          fontSize: 11.0,
-                                                          fontWeight: FontWeight.w600,
-                                                          color: Color(0xffFF0000),
-                                                        ),
-                                                      ),
-                                                      decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                            color: Colors.black,
-                                                            width: 1),
-                                                        borderRadius:
-                                                        BorderRadius.circular(
-                                                            5.0),
-                                                      ),
-                                                      padding:
-                                                      const EdgeInsets.all(4.0),
                                                     ),
-                                                    onTap: () async {
-                                                      setState(() {
-                                                        loading =
-                                                        true;
-                                                      });
-
-                                                      var response =
-                                                      await ContentDashboardService()
-                                                          .deleteViewer(
-                                                          userId: userId);
-
-                                                      if (response["success"]) {
-                                                        setState(() {
-                                                          loading =
-                                                          false;
-                                                        });
-
-
-                                                      } else {
-                                                        setState(() {
-                                                          loading =
-                                                          false;
-                                                        });
-                                                      }
-                                                    },
+                                                    Text(
+                                                      userEmail,
+                                                      style: GoogleFonts
+                                                          .montserrat(
+                                                        fontSize: deviceType ==
+                                                                DeviceType
+                                                                    .mobile
+                                                            ? 9.0
+                                                            : 14.0,
+                                                        color:
+                                                            Color(0xffB2B2B2),
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                InkWell(
+                                                  child: Container(
+                                                    child: Text(
+                                                      "Remove",
+                                                      style: GoogleFonts
+                                                          .montserrat(
+                                                        fontSize: 11.0,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color:
+                                                            Color(0xffFF0000),
+                                                      ),
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                          color: Colors.black,
+                                                          width: 1),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5.0),
+                                                    ),
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            4.0),
                                                   ),
-                                                ],
+                                                  onTap: () async {
+                                                    setState(() {
+                                                      loading = true;
+                                                    });
+
+                                                    var response =
+                                                        await ContentDashboardService()
+                                                            .deleteViewer(
+                                                                userId: userId);
+
+                                                    if (response["success"]) {
+                                                      setState(() {
+                                                        loading = false;
+                                                      });
+                                                    } else {
+                                                      setState(() {
+                                                        loading = false;
+                                                      });
+                                                    }
+                                                  },
+                                                ),
+                                              ],
                                             );
                                           },
                                         );

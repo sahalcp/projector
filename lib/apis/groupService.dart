@@ -4,9 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:projector/constant.dart';
 import 'package:projector/data/userData.dart';
 
-class GroupServcie {
-
-   addNewGroup(String title, File image) async {
+class GroupService {
+  addNewGroup(String title, File image) async {
     var token = await UserData().getUserToken();
     // print(token);
     // print(title);
@@ -33,7 +32,8 @@ class GroupServcie {
       return null;
     }
   }
-  getMyGroups() async {
+
+  Future<List> getMyGroups() async {
     var token = await UserData().getUserToken();
     // print(token);
     var body = json.encode({
@@ -44,7 +44,7 @@ class GroupServcie {
       body: body,
     );
     // print(res.body);
-    if (res.statusCode == 200 && json.decode(res.body)['success']==true) {
+    if (res.statusCode == 200 && json.decode(res.body)['success'] == true) {
       return json.decode(res.body)['data'];
     } else {
       return [];
@@ -66,10 +66,12 @@ class GroupServcie {
       return null;
     }
   }
-  addMembersToGroup(groupId,userId) async {
+
+  addMembersToGroup(groupId, userId) async {
     var token = await UserData().getUserToken();
     // print(token);
-    var body = json.encode({'token': token, 'group_id': groupId,'users':userId});
+    var body =
+        json.encode({'token': token, 'group_id': groupId, 'users': userId});
     var res = await http.post(
       Uri.parse('$serverUrl/addMemberToGroup'),
       body: body,
@@ -79,6 +81,30 @@ class GroupServcie {
       return json.decode(res.body);
     } else {
       return null;
+    }
+  }
+
+  /// Add Videos and Albums to Group
+  Future<bool> addFilesToGroup(
+      {String groupId, String videos, String albums}) async {
+    final token = await UserData().getUserToken();
+
+    final body = json.encode({
+      'token': token,
+      'group_id': groupId,
+      'video_id': videos,
+      'album_id': albums
+    });
+    final req = await http.post(
+      Uri.parse('$serverUrl/moveFilesToGroup'),
+      body: body,
+    );
+
+    if (req.statusCode == 200) {
+      final result = json.decode(req.body);
+      return result['success'];
+    } else {
+      return false;
     }
   }
 }

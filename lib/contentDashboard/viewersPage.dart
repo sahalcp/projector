@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:projector/contentDashboard/groupListPage.dart';
+import 'package:projector/contentDashboard/groups/groups_list_page.dart';
 import 'package:projector/contentDashboard/successorListPage.dart';
 import 'package:projector/contentDashboard/viewerListPage.dart';
 import 'package:projector/widgets/widgets.dart';
@@ -49,87 +49,88 @@ class _ViewersPageState extends State<ViewersPage> {
       body: Container(
         child: ListView(
           children: [
-            SizedBox(height: 50,),
-           SizedBox(
-             height: 80,
-             child: InkWell(
-               onTap: (){
-                 navigate(context, ViewerListPage());
-               },
-               child: Container(
-                 margin: EdgeInsets.only(left: 16.0,right: 16.0),
-                 decoration: BoxDecoration(
-                   borderRadius: BorderRadius.circular(8.0),
-                   color: Colors.white,
-                   boxShadow: [
-                     BoxShadow(
-                       color: Colors.grey[300],
-                       blurRadius: 2.0,
-                       spreadRadius: 0.0,
-                       offset: Offset(2.0, 2.0), // shadow direction: bottom right
-                     )
-                   ],
-                 ),
-                 child: Row(
-                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                   crossAxisAlignment: CrossAxisAlignment.center,
-                   children: [
-                     Container(
-                       margin: EdgeInsets.only(left: 20.0),
-                       child: Text(
-                         "Viewers",
-                         style: GoogleFonts.poppins(
-                           color: Colors.black,
-                           fontSize: 18.0,
-                           fontWeight: FontWeight.w700,
-                         ),
-                       ),
-                     ),
-
-                     Container(
-                       margin: EdgeInsets.only(right: 16.0),
-                       padding: EdgeInsets.only(left: 15.0,right: 15.0,top: 10.0,bottom: 10.0),
-                       decoration: BoxDecoration(
-                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                         border: Border.all(color: Colors.grey[200]),
-
-                       ),
-                       child: Text(
-                         "Edit",
-                         style: GoogleFonts.poppins(
-                           color: Colors.black,
-                           fontSize: 12.0,
-                           fontWeight: FontWeight.w600,
-                         ),
-                       ),
-                     ),
-
-
-
-                   ],
-                 ),
-               ),
-             )
-           ),
-
-            SizedBox(height: 20,),
+            SizedBox(
+              height: 50,
+            ),
             SizedBox(
                 height: 80,
                 child: InkWell(
-                  onTap: (){
-                    navigate(context, GroupListPage());
+                  onTap: () {
+                    navigate(context, ViewerListPage());
                   },
                   child: Container(
-                    margin: EdgeInsets.only(left: 16.0,right: 16.0),
+                    margin: EdgeInsets.only(left: 16.0, right: 16.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8.0),
                       color: Colors.white,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey[300],
+                          color: Colors.grey[500],
                           blurRadius: 2.0,
-                          spreadRadius: 0.0,
-                          offset: Offset(2.0, 2.0), // shadow direction: bottom right
+                          spreadRadius: 1.0,
+                          offset:
+                              Offset(0.0, 0.0), // shadow direction: 360 degree
+                        )
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(left: 20.0),
+                          child: Text(
+                            "Viewers",
+                            style: GoogleFonts.poppins(
+                              color: Colors.black,
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(right: 16.0),
+                          padding: EdgeInsets.only(
+                              left: 15.0, right: 15.0, top: 10.0, bottom: 10.0),
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(5.0)),
+                            border: Border.all(color: Colors.grey[200]),
+                          ),
+                          child: Text(
+                            "Edit",
+                            style: GoogleFonts.poppins(
+                              color: Colors.black,
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )),
+            SizedBox(
+              height: 20,
+            ),
+            SizedBox(
+                height: 80,
+                child: InkWell(
+                  onTap: () {
+                    navigate(context, GroupsListPage());
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(left: 16.0, right: 16.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey[500],
+                          blurRadius: 2.0,
+                          spreadRadius: 1.0,
+                          offset:
+                              Offset(0.0, 0.0), // shadow direction: 360 degree
                         )
                       ],
                     ),
@@ -148,14 +149,14 @@ class _ViewersPageState extends State<ViewersPage> {
                             ),
                           ),
                         ),
-
                         Container(
                           margin: EdgeInsets.only(right: 16.0),
-                          padding: EdgeInsets.only(left: 15.0,right: 15.0,top: 10.0,bottom: 10.0),
+                          padding: EdgeInsets.only(
+                              left: 15.0, right: 15.0, top: 10.0, bottom: 10.0),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(5.0)),
                             border: Border.all(color: Colors.grey[200]),
-
                           ),
                           child: Text(
                             "Edit",
@@ -166,33 +167,31 @@ class _ViewersPageState extends State<ViewersPage> {
                             ),
                           ),
                         ),
-
-
-
                       ],
                     ),
                   ),
-                )
+                )),
+            SizedBox(
+              height: 20,
             ),
-
-            SizedBox(height: 20,),
             SizedBox(
                 height: 80,
                 child: InkWell(
-                  onTap: (){
+                  onTap: () {
                     navigate(context, SuccessorListPage());
                   },
                   child: Container(
-                    margin: EdgeInsets.only(left: 16.0,right: 16.0),
+                    margin: EdgeInsets.only(left: 16.0, right: 16.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8.0),
                       color: Colors.white,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey[300],
+                          color: Colors.grey[500],
                           blurRadius: 2.0,
-                          spreadRadius: 0.0,
-                          offset: Offset(2.0, 2.0), // shadow direction: bottom right
+                          spreadRadius: 1.0,
+                          offset:
+                              Offset(0.0, 0.0), // shadow direction: 360 degree
                         )
                       ],
                     ),
@@ -211,14 +210,14 @@ class _ViewersPageState extends State<ViewersPage> {
                             ),
                           ),
                         ),
-
                         Container(
                           margin: EdgeInsets.only(right: 16.0),
-                          padding: EdgeInsets.only(left: 15.0,right: 15.0,top: 10.0,bottom: 10.0),
+                          padding: EdgeInsets.only(
+                              left: 15.0, right: 15.0, top: 10.0, bottom: 10.0),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(5.0)),
                             border: Border.all(color: Colors.grey[200]),
-
                           ),
                           child: Text(
                             "Edit",
@@ -229,19 +228,13 @@ class _ViewersPageState extends State<ViewersPage> {
                             ),
                           ),
                         ),
-
-
-
                       ],
                     ),
                   ),
-                )
-            )
+                ))
           ],
         ),
-
       ),
-
     );
   }
 }

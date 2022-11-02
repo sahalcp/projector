@@ -1,29 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:projector/apis/videoService.dart';
-import 'package:projector/contentDashboard/layoutCategoryPreviewScreen.dart';
-import 'package:projector/contents/contentViewScreen.dart';
-import 'package:projector/contents/newContentViewScreen.dart';
-import 'package:projector/data/checkConnection.dart';
-import 'package:projector/models/changeOrderModel.dart';
-import 'package:projector/sideDrawer/contentPreviewScreen.dart';
-import 'package:projector/sideDrawer/viewProfiePage.dart';
-import 'package:projector/uploading/selectVideo.dart';
-import 'package:projector/widgets/dialogs.dart';
-import 'package:projector/widgets/widgets.dart';
+import 'package:projector/apis/contentDashboardService.dart';
+import 'package:projector/apis/photoService.dart';
 
-import '../signInScreen.dart';
+import 'layout_photo_album_preview_screen.dart';
 
-class LayoutPlaylistScreen extends StatefulWidget {
+class LayoutPhotoAlbumScreen extends StatefulWidget {
   @override
-  _LayoutPlaylistScreenState createState() => _LayoutPlaylistScreenState();
+  _LayoutPhotoAlbumScreenState createState() => _LayoutPhotoAlbumScreenState();
 }
 
-class _LayoutPlaylistScreenState extends State<LayoutPlaylistScreen> {
+class _LayoutPhotoAlbumScreenState extends State<LayoutPhotoAlbumScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   bool loading = false;
@@ -63,7 +52,7 @@ class _LayoutPlaylistScreenState extends State<LayoutPlaylistScreen> {
           title: Transform(
             transform: Matrix4.translationValues(0.0, 0.0, 0.0),
             child: Text(
-              "Playlists",
+              "Photo Album",
               style: GoogleFonts.montserrat(
                 color: Colors.black,
                 fontSize: 20.0,
@@ -71,7 +60,6 @@ class _LayoutPlaylistScreenState extends State<LayoutPlaylistScreen> {
               ),
             ),
           ),
-
         ),
         body: ModalProgressHUD(
           inAsyncCall: loading,
@@ -84,14 +72,13 @@ class _LayoutPlaylistScreenState extends State<LayoutPlaylistScreen> {
               // crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: height * 0.01),
-
                 Padding(
                   padding: EdgeInsets.only(
                     left: 10.0,
                     bottom: 5.0,
                   ),
                   child: Text(
-                    'Playlists',
+                    'Photo Album',
                     style: GoogleFonts.poppins(
                       fontSize: 14.0,
                       fontWeight: FontWeight.w600,
@@ -103,7 +90,7 @@ class _LayoutPlaylistScreenState extends State<LayoutPlaylistScreen> {
                   color: Color(0xff707070),
                 ),
                 FutureBuilder(
-                  future: VideoService().getMyPlaylist(),
+                  future: PhotoService().getMyAlbum(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       if (snapshot.data.length != 0) {
@@ -120,7 +107,7 @@ class _LayoutPlaylistScreenState extends State<LayoutPlaylistScreen> {
                               height: height * 0.1,
                               child: Center(
                                 child: Text(
-                                  'No Playlists Found',
+                                  'No Album Found',
                                   style: GoogleFonts.poppins(
                                     fontSize: 17.0,
                                     fontWeight: FontWeight.w600,
@@ -129,25 +116,22 @@ class _LayoutPlaylistScreenState extends State<LayoutPlaylistScreen> {
                               ),
                             )
                           : Container(
-                              height:
-                                  snapshot.data.length * height * 0.15,
+                              height: snapshot.data.length * height * 0.15,
                               child: ReorderableListView(
-                                physics: NeverScrollableScrollPhysics(),
+                                  physics: NeverScrollableScrollPhysics(),
                                   children: List.generate(
                                     snapshot.data.length,
                                     (index) {
-                                      var category =
-                                          snapshot.data[index]['title'];
-                                      var count = snapshot.data[index]
-                                          ['video_count'];
-                                      var id =
-                                          snapshot.data[index]['id'];
-                                      var thumbnails = snapshot.data
-                                          [index]['thumbnails'];
+                                      var title = snapshot.data[index]['title'];
+                                      var count =
+                                          snapshot.data[index]['photo_count'];
+                                      var id = snapshot.data[index]['id'];
+                                      var thumbnails =
+                                          snapshot.data[index]['icon'];
                                       return CategoryCard(
                                         thumbnails: thumbnails,
                                         isCategory: false,
-                                        category: category,
+                                        category: title,
                                         key: ValueKey(index),
                                         videoCount: count,
                                         playlistId: id,
@@ -156,10 +140,9 @@ class _LayoutPlaylistScreenState extends State<LayoutPlaylistScreen> {
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) =>
-                                                  LayoutCategoryPreviewScreen(
-                                                title: category,
-                                                playlistId: id,
-                                                isCategory: false,
+                                                  LayoutPhotoAlbumPreviewScreen(
+                                                title: title,
+                                                albumId: id,
                                               ),
                                             ),
                                           ).then((value) {
@@ -188,10 +171,10 @@ class _LayoutPlaylistScreenState extends State<LayoutPlaylistScreen> {
                                       ids.add(list[i]['id']);
                                     }
                                     Map<dynamic, dynamic> items =
-                                    Map.fromIterables(ids, orderNumbers);
+                                        Map.fromIterables(ids, orderNumbers);
                                     // print(items);
-                                    await VideoService()
-                                        .updatePlaylistOrder(items);
+                                    await ContentDashboardService()
+                                        .updatePhotoAlbumOrder(items);
                                     setState(() {
                                       loading = false;
                                     });
@@ -207,7 +190,6 @@ class _LayoutPlaylistScreenState extends State<LayoutPlaylistScreen> {
                   },
                 ),
                 SizedBox(height: 30),
-
               ],
             ),
           ),
@@ -233,7 +215,7 @@ class CategoryCard extends StatelessWidget {
   final int videoCount;
   final bool isCategory;
   final Function onTapped;
-  final List thumbnails;
+  final String thumbnails;
 
   @override
   Widget build(BuildContext context) {
@@ -276,7 +258,7 @@ class CategoryCard extends StatelessWidget {
                   width: width * 0.8,
                   child: Stack(
                     children: [
-                      thumbnails.length >= 1 && thumbnails[0] != null
+                      thumbnails != null
                           ? Positioned(
                               left: width * 0.04,
                               child: Container(
@@ -284,102 +266,13 @@ class CategoryCard extends StatelessWidget {
                                 width: width * 0.3,
                                 decoration: BoxDecoration(
                                   image: DecorationImage(
-                                    image: NetworkImage(thumbnails[0]),
+                                    image: NetworkImage(thumbnails),
                                     fit: BoxFit.cover,
                                   ),
                                 ),
                               ),
                             )
                           : Container(),
-                      thumbnails.length >= 2 && thumbnails[1] != null
-                          ? Positioned(
-                              left: width * 0.1,
-                              child: Container(
-                                height: height * 0.08,
-                                width: width * 0.3,
-                                decoration: BoxDecoration(
-                                  // color: Color(0xff5AA5EF),
-                                  image: DecorationImage(
-                                    image: NetworkImage(thumbnails[1]),
-                                    fit: BoxFit.cover,
-                                  ),
-                                  borderRadius: BorderRadius.circular(6.0),
-                                  border: Border.all(
-                                    color: Color(0xff707070),
-                                    width: 1.0,
-                                  ),
-                                ),
-                              ),
-                            )
-                          : Container(),
-                      thumbnails.length >= 3 && thumbnails[2] != null
-                          ? Positioned(
-                              left: width * 0.16,
-                              child: Container(
-                                height: height * 0.08,
-                                width: width * 0.3,
-                                decoration: BoxDecoration(
-                                  // color: Colors.black,
-                                  image: DecorationImage(
-                                    image: NetworkImage(thumbnails[2]),
-                                    fit: BoxFit.cover,
-                                  ),
-                                  borderRadius: BorderRadius.circular(6.0),
-                                  border: Border.all(
-                                    color: Color(0xff707070),
-                                    width: 1.0,
-                                  ),
-                                ),
-                              ),
-                            )
-                          : Container(),
-                      thumbnails.length >= 4 && thumbnails[3] != null
-                          ? Positioned(
-                              left: width * 0.22,
-                              child: Container(
-                                height: height * 0.08,
-                                width: width * 0.3,
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: NetworkImage(thumbnails[3]),
-                                    fit: BoxFit.cover,
-                                  ),
-                                  borderRadius: BorderRadius.circular(6.0),
-                                  border: Border.all(
-                                    color: Color(0xff707070),
-                                    width: 1.0,
-                                  ),
-                                ),
-                              ),
-                            )
-                          : Container(),
-                      Positioned(
-                          left: thumbnails.length >= 4
-                              ? width * 0.47
-                              : thumbnails.length >= 3
-                                  ? width * 0.42
-                                  : thumbnails.length >= 2
-                                      ? width * 0.35
-                                      : width * 0.3,
-                          top: height * 0.01,
-                          child: thumbnails.length == 0
-                              ? Text(
-                                  'No Videos',
-                                  style: TextStyle(fontWeight: FontWeight.w500),
-                                )
-                              : Container()
-                          // : CircleAvatar(
-                          //     backgroundColor: Color(0xffF5F4F4),
-                          //     child: Text(
-                          //       '$videoCount',
-                          //       style: GoogleFonts.poppins(
-                          //         color: Colors.black,
-                          //         fontSize: 13.0,
-                          //         fontWeight: FontWeight.w600,
-                          //       ),
-                          //     ),
-                          //   ),
-                          ),
                     ],
                   ),
                 ),

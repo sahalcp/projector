@@ -245,7 +245,7 @@ class ContentDashboardService {
     }
   }
 
-  deleteMemberFromGroup({groupId,users}) async {
+  deleteMemberFromGroup({groupId, users}) async {
     var token = await UserData().getUserToken();
     var body = json.encode({
       'token': token,
@@ -263,23 +263,91 @@ class ContentDashboardService {
     }
   }
 
-  getVideoAndAlbumOfUser({groupId}) async {
-    var token = await UserData().getUserToken();
-    var userId = await UserData().getUserId();
-    var body = json.encode({'token': token,
-      'user_id' : userId,
-      'group_id' : groupId
-    });
-    var res = await http.post(
+  /// Fetch user's all videos and albums
+  Future<dynamic> getVideoAndAlbumOfUser() async {
+    final token = await UserData().getUserToken();
+    final userId = await UserData().getUserId();
+    final body = json.encode({'token': token, 'user_id': userId});
+    final res = await http.post(
       Uri.parse('$serverUrl/getVideosAndALbumsOfUser'),
       body: body,
     );
 
     if (res.statusCode == 200) {
-     // return json.decode(res.body);
+      // return json.decode(res.body);
       return GroupListVideoAlbumModel.fromJson(json.decode(res.body));
     } else {
       return null;
+    }
+  }
+
+  /// Fetch user's Video and Album of respective group id.
+  Future<dynamic> getVideoAndAlbumsOfGroup({String groupId}) async {
+    try {
+      final token = await UserData().getUserToken();
+      final body = json.encode({'token': token, 'group_id': groupId});
+      final req = await http.post(
+        Uri.parse('$serverUrl/getVideosAndALbumsOfGroup'),
+        body: body,
+      );
+
+      if (req.statusCode == 200) {
+        return GroupListVideoAlbumModel.fromJson(json.decode(req.body));
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  /// Fetch User's slideshow settings from the API
+  Future<Map<String, dynamic>> getSlideshowSettings() async {
+    try {
+      final token = await UserData().getUserToken();
+      final body = json.encode({'token': token});
+      final req = await http.post(
+        Uri.parse('$serverUrl/getAlbumSettings'),
+        body: body,
+      );
+
+      if (req.statusCode == 200) {
+        return json.decode(req.body);
+      } else {
+        return {"error": "An error occured while fetching slideshow settings"};
+      }
+    } catch (e) {
+      print(e.toString());
+      return {"error": "An unknown error occured"};
+    }
+  }
+
+  /// Save User's slideshow settings to the API
+  Future<bool> saveSlideshowSettings(
+      {int slideshowSpeed, String slideshowTransition}) async {
+    try {
+      final token = await UserData().getUserToken();
+      final body = json.encode({
+        'token': token,
+        "value1": "$slideshowSpeed",
+        "value2": slideshowTransition,
+        "settingId1": 1,
+        "settingId2": 2,
+      });
+      final req = await http.post(
+        Uri.parse('$serverUrl/updateAllAlbumSettings'),
+        body: body,
+      );
+
+      if (req.statusCode == 200) {
+        final result = json.decode(req.body);
+        return result['success'];
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print(e.toString());
+      return false;
     }
   }
 }

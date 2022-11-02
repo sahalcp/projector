@@ -161,21 +161,5 @@ class AuthService {
     }
   }
 
-  tvLogin({code}) async {
-    var token = await UserData().getUserToken();
-    var body = json.encode({
-      'token': token,
-      'code': code,
-    });
-    var res = await http.post(
-      Uri.parse('$serverUrl/registerTv'),
-      body: body,
-    );
-    if (res.statusCode == 200) {
-      return json.decode(res.body);
-    } else {
-      return null;
-    }
-  }
 
 }

@@ -88,6 +88,10 @@ class _SplashScreenState extends State<SplashScreen> {
               updateButtonClick: (){
                 launch(status.appStoreLink);
               },
+              cancelButtonClick: (){
+                Navigator.pop(context);
+                _goToScreen();
+              },
             );
           }
       );

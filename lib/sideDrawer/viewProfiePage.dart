@@ -1276,54 +1276,6 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                                   textAlign: TextAlign.right,
                                   style: GoogleFonts.montserrat(
                                     color: Colors.white70,
-                                    fontSize: deviceType == DeviceType.mobile
-                                        ? 13
-                                        : 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Container(
-                                  margin: EdgeInsets.only(
-                                      right: MediaQuery.of(context).size.width *
-                                          0.01),
-                                  child: Icon(
-                                    Icons.arrow_forward_ios,
-                                    size: deviceType == DeviceType.mobile
-                                        ? 20
-                                        : 25,
-                                    color: Colors.white.withOpacity(0.5),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.007),
-
-                        InkWell(
-                          onTap: () {
-                            navigate(context, TVLoginScreen());
-                          },
-                          child: Container(
-                            height: height * 0.05,
-                            decoration: BoxDecoration(
-                              color: Color(0xff2E2E2E),
-                              border: Border.all(
-                                color: Color(0xff3E4243),
-                                width: 2,
-                              ),
-                            ),
-                            padding: EdgeInsets.only(left: 10, right: 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Log Into TV",
-                                  textAlign: TextAlign.right,
-                                  style: GoogleFonts.montserrat(
-                                    color: Colors.white70,
                                     fontSize: deviceType == DeviceType.mobile ? 13 : 18,
                                     fontWeight: FontWeight.bold,
                                   ),

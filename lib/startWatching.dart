@@ -1,29 +1,19 @@
 import 'dart:async';
+
 import 'package:email_validator/email_validator.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:focused_menu/focused_menu.dart';
-import 'package:focused_menu/modals.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projector/accountSettings/NotificationInvitationScreen.dart';
 import 'package:projector/apis/accountService.dart';
 import 'package:projector/apis/viewService.dart';
 import 'package:projector/common/customShowCaseWidget.dart';
 import 'package:projector/constant.dart';
-import 'package:projector/contents/contentViewScreen.dart';
 import 'package:projector/contents/newContentViewScreen.dart';
-import 'package:projector/provider/spriteView.dart';
 import 'package:projector/data/userData.dart';
 import 'package:projector/sideDrawer/dashboard.dart';
 import 'package:projector/sideDrawer/viewProfiePage.dart';
 import 'package:projector/style.dart';
-import 'package:projector/uploading/createCategoryScreen.dart';
-import 'package:projector/uploading/selectFileMainScreen.dart';
-import 'package:projector/uploading/selectVideo.dart';
-import 'package:projector/widgets/commingSoon.dart';
 import 'package:projector/widgets/dialogs.dart';
 import 'package:projector/widgets/uploadPopupDialog.dart';
 import 'package:projector/widgets/widgets.dart';
@@ -32,6 +22,11 @@ import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class StartWatchingScreen extends StatefulWidget {
+  const StartWatchingScreen({Key key, this.showPromoDialog = false})
+      : super(key: key);
+
+  final bool showPromoDialog;
+
   @override
   _StartWatchingScreenState createState() => _StartWatchingScreenState();
 }
@@ -588,7 +583,8 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
     );
   }
 
-  removeDialog(context, height, width, String userName, String userId,DeviceType deviceType) {
+  removeDialog(context, height, width, String userName, String userId,
+      DeviceType deviceType) {
     return showDialog(
       context: context,
       barrierColor: Color(0xff333333).withOpacity(0.7),
@@ -644,7 +640,10 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                                       "Once you remove a Projector you will have to request to view again.",
                                       textAlign: TextAlign.center,
                                       style: GoogleFonts.montserrat(
-                                        fontSize: deviceType == DeviceType.mobile? 17.0 : 20.0,
+                                        fontSize:
+                                            deviceType == DeviceType.mobile
+                                                ? 17.0
+                                                : 20.0,
                                         fontWeight: FontWeight.w500,
                                         color: Color(0xff0A112B),
                                       ),
@@ -668,12 +667,21 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                                                 padding: EdgeInsets.only(
                                                     left: 10,
                                                     right: 10,
-                                                    top: deviceType == DeviceType.mobile? 5 : 8,
-                                                    bottom: deviceType == DeviceType.mobile? 5 : 8),
+                                                    top: deviceType ==
+                                                            DeviceType.mobile
+                                                        ? 5
+                                                        : 8,
+                                                    bottom: deviceType ==
+                                                            DeviceType.mobile
+                                                        ? 5
+                                                        : 8),
                                                 child: Text(
                                                   "Remove",
                                                   style: GoogleFonts.montserrat(
-                                                    fontSize: deviceType == DeviceType.mobile? 16.0 : 18.0,
+                                                    fontSize: deviceType ==
+                                                            DeviceType.mobile
+                                                        ? 16.0
+                                                        : 18.0,
                                                     fontWeight: FontWeight.w500,
                                                     color: Color(0xffFF0000),
                                                   ),
@@ -726,12 +734,21 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                                               padding: EdgeInsets.only(
                                                   left: 10,
                                                   right: 10,
-                                                  top: deviceType == DeviceType.mobile? 5 : 8,
-                                                  bottom: deviceType == DeviceType.mobile?  5 : 8),
+                                                  top: deviceType ==
+                                                          DeviceType.mobile
+                                                      ? 5
+                                                      : 8,
+                                                  bottom: deviceType ==
+                                                          DeviceType.mobile
+                                                      ? 5
+                                                      : 8),
                                               child: Text(
                                                 "Go Back",
                                                 style: GoogleFonts.montserrat(
-                                                  fontSize: deviceType == DeviceType.mobile? 16.0 : 18.0,
+                                                  fontSize: deviceType ==
+                                                          DeviceType.mobile
+                                                      ? 16.0
+                                                      : 18.0,
                                                   fontWeight: FontWeight.w500,
                                                   color: Colors.black,
                                                 ),
@@ -797,8 +814,8 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
 
   startShowCase() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      UserData().isFirstLaunchShowCaseChooseProjectorPage().then((data){
-        if(data){
+      UserData().isFirstLaunchShowCaseChooseProjectorPage().then((data) {
+        if (data) {
           ShowCaseWidget.of(myContext).startShowCase([
             key1,
           ]);
@@ -806,7 +823,6 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
       });
     });
   }
-
 
   Future<void> getUserId() async {
     var userId = await UserData().getUserId();
@@ -833,34 +849,29 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
     getUserId();
     getLognedFirstName();
 
-
     ViewService().checkSubscription().then((response) {
-     if (response['has_subsription'] == false) {
-       isLaunchSubscriptionWeb = true;
-     }else{
-       ViewService().checkStorage().then((data) {
+      if (response['has_subsription'] == false) {
+        isLaunchSubscriptionWeb = true;
+      } else {
+        ViewService().checkStorage().then((data) {
+          var storageUsed = data['storageUsed'];
+          var totalStorage = storageUsed['total_storage'];
+          var usedStorage = storageUsed['used_storage'];
 
-         var storageUsed = data['storageUsed'];
-         var totalStorage = storageUsed['total_storage'];
-         var usedStorage = storageUsed['used_storage'];
-
-         print("total storage--->$totalStorage");
-         print("used storage--->$usedStorage");
+          print("total storage--->$totalStorage");
+          print("used storage--->$usedStorage");
 
           availableStorage =
-             double.parse(totalStorage) - double.parse(usedStorage);
+              double.parse(totalStorage) - double.parse(usedStorage);
 
-         storageAvailable = double.parse(totalStorage) >= availableStorage &&
-             availableStorage > 0;
+          storageAvailable = double.parse(totalStorage) >= availableStorage &&
+              availableStorage > 0;
 
-         print("available storage--->$availableStorage");
-         print("available storag--->$storageAvailable");
-       });
-
-     }
-
+          print("available storage--->$availableStorage");
+          print("available storag--->$storageAvailable");
+        });
+      }
     });
-
 
     ViewService().getAllViewRequestSentNotification('3', context).then((val) {
       notificationBadge = notificationBadge + val.length;
@@ -899,7 +910,18 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
       reqCon.add(val);
       len = val.length;
     });
+
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (widget.showPromoDialog) {
+      Future.delayed(Duration(seconds: 3), () {
+        showPromotionDialog(context: context);
+      });
+    }
+    super.didChangeDependencies();
   }
 
   bool viewAll = false;
@@ -923,9 +945,9 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
         SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight]);
       }*/
       return ShowCaseWidget(builder: Builder(
-        builder: (context){
+        builder: (context) {
           myContext = context;
-         return SafeArea(
+          return SafeArea(
             bottom: false,
             top: false,
             child: Scaffold(
@@ -936,34 +958,37 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                 backgroundColor: appBgColor,
                 title: Container(
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Image(
-                          width: deviceType == DeviceType.mobile? 45 : 55,
-                          height: deviceType == DeviceType.mobile? 45 : 55,
-                          image: AssetImage('images/logoTransparent.png'),
-                        ),
-                        Spacer(),
-                        InkWell(
-                          onTap: () async {
-                            //commingSoonDialog(context);
-                            // navigateLeft(context, SelectFileMainScreen());
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image(
+                      width: deviceType == DeviceType.mobile ? 45 : 55,
+                      height: deviceType == DeviceType.mobile ? 45 : 55,
+                      image: AssetImage('images/logoTransparent.png'),
+                    ),
+                    Spacer(),
+                    InkWell(
+                      onTap: () async {
+                        //commingSoonDialog(context);
+                        // navigateLeft(context, SelectFileMainScreen());
 
+                        if (isLaunchSubscriptionWeb == true) {
+                          launch(serverPlanUrl);
+                        } else {
+                          if (storageAvailable) {
+                            showPopupUpload(
+                                context: context,
+                                availableStorage: availableStorage,
+                                left: 25.0,
+                                top: 100,
+                                right: 0.0,
+                                bottom: 0.0);
+                          } else {
+                            storageDialog(context, height, width);
+                          }
+                        }
 
-                            if(isLaunchSubscriptionWeb == true){
-                              launch(serverPlanUrl);
-                            }else{
-                              if(storageAvailable){
-                                showPopupUpload(context: context,availableStorage: availableStorage,
-                                left: 25.0,top: 100,right: 0.0,bottom: 0.0);
-                              }else{
-                                storageDialog(context, height, width);
-                              }
-                            }
-
-
-                            /* var response = await ViewService().checkSubscription();
+                        /* var response = await ViewService().checkSubscription();
                   if (response['has_subsription'] == false) {
                     launch(serverPlanUrl);
                   } else {
@@ -978,12 +1003,12 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                     storageAvailable = double.parse(totalStorage) >= availableStorage &&
                         availableStorage > 0;
 
-                    *//*if (double.parse(totalStorage) >= availableStorage &&
+                    */ /*if (double.parse(totalStorage) >= availableStorage &&
                         availableStorage > 0) {
                       showPopupUpload(context);
                     } else {
                       storageDialog(context, height, width);
-                    }*//*
+                    }*/ /*
 
                     if(storageAvailable){
                       showPopupUpload(context);
@@ -991,96 +1016,102 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                       storageDialog(context, height, width);
                     }
                   }*/
-                          },
-                          child: CustomShowcaseWidget(
-                            globalKey: key1,
-                            title: "Start Uploading!",
-                            description: "Upload all your videos and photos to share on your Projector!",
-                            child: Icon(
-                              Icons.video_call,
-                              size: deviceType == DeviceType.mobile? 35 : 45,
-                              color: Colors.white,
-                            ),
-                          ),
+                      },
+                      child: CustomShowcaseWidget(
+                        globalKey: key1,
+                        title: "Start Uploading!",
+                        description:
+                            "Upload all your videos and photos to share on your Projector!",
+                        child: Icon(
+                          Icons.video_call,
+                          size: deviceType == DeviceType.mobile ? 35 : 45,
+                          color: Colors.white,
                         ),
-                        SizedBox(width: deviceType == DeviceType.mobile? 10 : 15),
-                        InkWell(
-                          onTap: () {
-                            //navigate(context, NotificationInvitationScreen());
-                          },
-                          child: new Stack(
-                            children: <Widget>[
-                              new IconButton(
-                                  icon: Icon(
-                                    Icons.notifications,
-                                    size: deviceType == DeviceType.mobile? 31 : 31,
-                                  ),
-                                  onPressed: () {
-                                    navigate(context, NotificationInvitationScreen());
-                                    //navigate(context, SpriteView());
-                                  }),
-                              notificationBadge != 0
-                                  ? new Positioned(
-                                right: 11,
-                                top: 11,
-                                child: new Container(
-                                  padding: EdgeInsets.all(2),
-                                  decoration: new BoxDecoration(
-                                    color: Colors.red,
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  constraints: BoxConstraints(
-                                    minWidth: 11,
-                                    minHeight: 11,
-                                  ),
-                                  child: Text(
-                                    '$notificationBadge',
-                                    style: TextStyle(
+                      ),
+                    ),
+                    SizedBox(width: deviceType == DeviceType.mobile ? 10 : 15),
+                    InkWell(
+                      onTap: () {
+                        //navigate(context, NotificationInvitationScreen());
+                      },
+                      child: new Stack(
+                        children: <Widget>[
+                          new IconButton(
+                              icon: Icon(
+                                Icons.notifications,
+                                size: deviceType == DeviceType.mobile ? 31 : 31,
+                              ),
+                              onPressed: () {
+                                navigate(
+                                    context, NotificationInvitationScreen());
+                                //navigate(context, SpriteView());
+                              }),
+                          notificationBadge != 0
+                              ? new Positioned(
+                                  right: 11,
+                                  top: 11,
+                                  child: new Container(
+                                    padding: EdgeInsets.all(2),
+                                    decoration: new BoxDecoration(
                                       color: Colors.red,
-                                      fontSize: 5,
+                                      borderRadius: BorderRadius.circular(6),
                                     ),
-                                    textAlign: TextAlign.center,
+                                    constraints: BoxConstraints(
+                                      minWidth: 11,
+                                      minHeight: 11,
+                                    ),
+                                    child: Text(
+                                      '$notificationBadge',
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 5,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
-                                ),
-                              )
-                                  : new Container()
-                            ],
-                          ),
-                        ),
-                        SizedBox(width: deviceType == DeviceType.mobile? 10 : 15),
-                        InkWell(
-                          onTap: () {
-                            navigate(context, ViewProfilePage());
-                          },
-                          child: image != null
-                              ? CircleAvatar(
-                            backgroundColor: Colors.white,
-                            radius: deviceType == DeviceType.mobile? 21 : 21,
-                            child: CircleAvatar(
-                              radius: deviceType == DeviceType.mobile? 20 : 20,
-                              backgroundImage: NetworkImage(image),
-                            ),
-                          )
-                              : Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: Image(
-                                width: deviceType == DeviceType.mobile? 20 : 20,
-                                height: deviceType == DeviceType.mobile? 20.0 : 20,
-                                color: Colors.white,
-                                image: AssetImage(
-                                  'images/person.png',
+                                )
+                              : new Container()
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: deviceType == DeviceType.mobile ? 10 : 15),
+                    InkWell(
+                      onTap: () {
+                        navigate(context, ViewProfilePage());
+                      },
+                      child: image != null
+                          ? CircleAvatar(
+                              backgroundColor: Colors.white,
+                              radius: deviceType == DeviceType.mobile ? 21 : 21,
+                              child: CircleAvatar(
+                                radius:
+                                    deviceType == DeviceType.mobile ? 20 : 20,
+                                backgroundImage: NetworkImage(image),
+                              ),
+                            )
+                          : Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.white),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Image(
+                                  width:
+                                      deviceType == DeviceType.mobile ? 20 : 20,
+                                  height: deviceType == DeviceType.mobile
+                                      ? 20.0
+                                      : 20,
+                                  color: Colors.white,
+                                  image: AssetImage(
+                                    'images/person.png',
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                      ],
-                    )),
+                    ),
+                  ],
+                )),
               ),
               // backgroundColor: Color(0xff1A1D2A),
               backgroundColor: appBgColor,
@@ -1101,7 +1132,8 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                             'START\n WATCHING',
                             style: GoogleFonts.montserrat(
                               color: Colors.white,
-                              fontSize: deviceType == DeviceType.mobile? 33.0 : 45.0,
+                              fontSize:
+                                  deviceType == DeviceType.mobile ? 33.0 : 45.0,
                               fontWeight: FontWeight.w900,
                             ),
                             textAlign: TextAlign.center,
@@ -1118,280 +1150,340 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                                 setLength(snapshot.data.length);
                                 return snapshot.data.length == 0
                                     ? InkWell(
-                                  onTap: () {
-                                    navigate(
-                                      context,
-                                      NewContentViewScreen(
-                                        myVideos: true,
-                                        userId: _loginedUserId,
-                                        userEmail: _loginedFirstName,
-                                        userImage: image,
-                                      ),
-                                    );
-                                  },
-                                  child: Center(
-                                    child: Container(
-                                      margin: EdgeInsets.all(6.0),
-                                      height: height * 0.15,
-                                      width:  width * 0.33,
-                                      decoration: BoxDecoration(
-                                        color: Colors.transparent,
-                                        border: Border.all(
-                                          color: Color(0xff5AA5EF),
-                                          width: 3.0,
-                                        ),
-                                        borderRadius:
-                                        BorderRadius.circular(10.0),
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          'View My Projector',
-                                          textAlign: TextAlign.center,
-                                          style: GoogleFonts.montserrat(
-                                              color: Colors.white,
-                                              fontSize: deviceType == DeviceType.mobile? 11 : 17,
-                                              fontWeight: FontWeight.w600),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                                    : Container(
-                                  margin: EdgeInsets.symmetric(horizontal: deviceType == DeviceType.mobile?25 : 80),
-                                  child: GridView.builder(
-                                    itemCount: viewAll
-                                        ? snapshot.data.length + 1
-                                        : snapshot.data.length > 3
-                                        ? 4
-                                        : snapshot.data.length + 1,
-                                    gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: deviceType == DeviceType.mobile? 2 : 3,
-                                      childAspectRatio: deviceType == DeviceType.mobile? 0.85 : 1,
-                                      crossAxisSpacing: 1,
-                                      mainAxisSpacing: 1,
-                                    ),
-                                    physics: NeverScrollableScrollPhysics(),
-                                    shrinkWrap: true,
-                                    itemBuilder: (context, index) {
-                                      var userId = '',
-                                          userEmail = '',
-                                          userName = '',
-                                          responseImage;
-                                      if (index != 0) {
-                                        userId = snapshot.data[index - 1]['id'];
-                                        userEmail =
-                                        snapshot.data[index - 1]['email'];
-                                        userName = snapshot.data[index - 1]
-                                        ['firstname'];
-                                        responseImage =
-                                        snapshot.data[index - 1]['image'];
-                                      }
-                                      if (index == 0) {
-                                        manageProjectorButtonEnabled = false;
-                                      } else {
-                                        manageProjectorButtonEnabled = true;
-                                      }
-
-                                      return Container(
-                                          child: index == 0
-                                              ? InkWell(
-                                            onTap: () {
-                                              navigate(
-                                                context,
-                                                NewContentViewScreen(
-                                                  myVideos: true,
-                                                  userId: _loginedUserId,
-                                                  userEmail:
-                                                  _loginedFirstName,
-                                                  userImage: image,
-                                                ),
-                                              );
-                                            },
-                                            child: Column(
-                                              children: [
-                                                Container(
-                                                  margin:
-                                                  EdgeInsets.all(6.0),
-                                                  height: deviceType == DeviceType.mobile? height * 0.15 : 200,
-                                                  width: deviceType == DeviceType.mobile? width * 0.33 : 200,
-                                                  decoration:
-                                                  BoxDecoration(
-                                                    color: Colors
-                                                        .transparent,
-                                                    border: Border.all(
-                                                      color: Color(
-                                                          0xff5AA5EF),
-                                                      width: 3.0,
-                                                    ),
-                                                    borderRadius:
-                                                    BorderRadius
-                                                        .circular(
-                                                        10.0),
-                                                  ),
-                                                  child: Center(
-                                                    child: Text(
-                                                      'View My Projector',
-                                                      textAlign: TextAlign.center,
-                                                      style: GoogleFonts
-                                                          .montserrat(
-                                                        color:
-                                                        Colors.white,
-                                                        fontWeight:
-                                                        FontWeight
-                                                            .w500,
-                                                        fontSize: deviceType == DeviceType.mobile? 11 : 17,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                SizedBox(height: 16),
-                                              ],
+                                        onTap: () {
+                                          navigate(
+                                            context,
+                                            NewContentViewScreen(
+                                              myVideos: true,
+                                              userId: _loginedUserId,
+                                              userEmail: _loginedFirstName,
+                                              userImage: image,
                                             ),
-                                          )
-                                              : InkWell(
-                                            onTap: () {
-                                              navigate(
-                                                context,
-                                                NewContentViewScreen(
-                                                  myVideos: false,
-                                                  userId: userId,
-                                                  userEmail: userName,
-                                                  userImage:
-                                                  responseImage,
-                                                ),
-                                              );
-                                            },
+                                          );
+                                        },
+                                        child: Center(
+                                          child: Container(
+                                            margin: EdgeInsets.all(6.0),
+                                            height: height * 0.15,
+                                            width: width * 0.33,
+                                            decoration: BoxDecoration(
+                                              color: Colors.transparent,
+                                              border: Border.all(
+                                                color: Color(0xff5AA5EF),
+                                                width: 3.0,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                            ),
                                             child: Center(
-                                              child: Stack(
-                                                children: [
-                                                  Column(
-                                                    children: [
-                                                      Container(
-                                                        margin: EdgeInsets.all(6.0),
-                                                        height: deviceType == DeviceType.mobile? height * 0.15 : 200,
-                                                        width: deviceType == DeviceType.mobile? width * 0.33 : 200,
-                                                        decoration:
-                                                        BoxDecoration(
-                                                          color: Colors
-                                                              .transparent,
-                                                          border:
-                                                          Border.all(
-                                                            color: Color(
-                                                                0xff5AA5EF),
-                                                            width: 3.0,
-                                                          ),
-                                                          borderRadius:
-                                                          BorderRadius
-                                                              .circular(
-                                                              10.0),
-                                                        ),
-                                                        child: Padding(
-                                                          padding:
-                                                          EdgeInsets
-                                                              .all(
-                                                            deviceType == DeviceType.mobile?  width * 0.07 : width * 0.00,
-                                                          ),
-                                                          child: Center(
-                                                            child: responseImage !=
-                                                                null
-                                                                ? CircleAvatar(
-                                                              backgroundColor:
-                                                              Colors.white,
-                                                              radius:
-                                                              deviceType == DeviceType.mobile? 30 : 48,
-                                                              child:
-                                                              CircleAvatar(
-                                                                radius:
-                                                                deviceType == DeviceType.mobile? 28 : 47,
-                                                                backgroundImage:
-                                                                NetworkImage(responseImage),
-                                                              ),
-                                                            )
-                                                                : Container(
-                                                              decoration:
-                                                              BoxDecoration(
-                                                                shape:
-                                                                BoxShape.circle,
-                                                                border:
-                                                                Border.all(color: Colors.white),
-                                                              ),
-                                                              child:
-                                                              Image(
-                                                                height:
-                                                                height * 0.08,
-                                                                image:
-                                                                AssetImage('images/person.png'),
-                                                              ),
-                                                            ),
-                                                            // child: Image(
-                                                            //   image: AssetImage(
-                                                            //       'images/male.png'),
-                                                            // ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Container(
-                                                        margin:
-                                                        EdgeInsets.only(
-                                                            left: 15,
-                                                            right: 15),
-                                                        child: Text(
-                                                          userName == ""
-                                                              ? userEmail
-                                                              : userName,
-                                                          maxLines: 2,
-                                                          overflow:
-                                                          TextOverflow
-                                                              .ellipsis,
-                                                          style: GoogleFonts
-                                                              .montserrat(
-                                                            color: Colors
-                                                                .white,
-                                                            fontSize: deviceType == DeviceType.mobile? 11.0 : 17.0,
-                                                            fontWeight:
-                                                            FontWeight
-                                                                .w600,
-                                                          ),
-                                                          textAlign:
-                                                          TextAlign
-                                                              .center,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Visibility(
-                                                    visible:
-                                                    removeButtonEnabled,
-                                                    child: Positioned(
-                                                      top: 15.0,
-                                                      right: 15.0,
-                                                      child: InkWell(
-                                                        onTap: () {
-                                                          removeDialog(
-                                                              context,
-                                                              height,
-                                                              width,
-                                                              userName == ""
-                                                                  ? userEmail
-                                                                  : userName,
-                                                              userId,deviceType);
-                                                        },
-                                                        child: Image.asset(
-                                                          "images/icon_remove.png",
-                                                          width: deviceType == DeviceType.mobile? 25 : 38,
-                                                          height:  deviceType == DeviceType.mobile? 25 : 38,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
+                                              child: Text(
+                                                'View My Projector',
+                                                textAlign: TextAlign.center,
+                                                style: GoogleFonts.montserrat(
+                                                    color: Colors.white,
+                                                    fontSize: deviceType ==
+                                                            DeviceType.mobile
+                                                        ? 11
+                                                        : 17,
+                                                    fontWeight:
+                                                        FontWeight.w600),
                                               ),
                                             ),
-                                          ));
-                                    },
-                                  ),
-                                );
+                                          ),
+                                        ),
+                                      )
+                                    : Container(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal:
+                                                deviceType == DeviceType.mobile
+                                                    ? 25
+                                                    : 80),
+                                        child: GridView.builder(
+                                          itemCount: viewAll
+                                              ? snapshot.data.length + 1
+                                              : snapshot.data.length > 3
+                                                  ? 4
+                                                  : snapshot.data.length + 1,
+                                          gridDelegate:
+                                              SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount:
+                                                deviceType == DeviceType.mobile
+                                                    ? 2
+                                                    : 3,
+                                            childAspectRatio:
+                                                deviceType == DeviceType.mobile
+                                                    ? 0.85
+                                                    : 1,
+                                            crossAxisSpacing: 1,
+                                            mainAxisSpacing: 1,
+                                          ),
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          shrinkWrap: true,
+                                          itemBuilder: (context, index) {
+                                            var userId = '',
+                                                userEmail = '',
+                                                userName = '',
+                                                responseImage;
+                                            if (index != 0) {
+                                              userId = snapshot.data[index - 1]
+                                                  ['id'];
+                                              userEmail = snapshot
+                                                  .data[index - 1]['email'];
+                                              userName = snapshot
+                                                  .data[index - 1]['firstname'];
+                                              responseImage = snapshot
+                                                  .data[index - 1]['image'];
+                                            }
+                                            if (index == 0) {
+                                              manageProjectorButtonEnabled =
+                                                  false;
+                                            } else {
+                                              manageProjectorButtonEnabled =
+                                                  true;
+                                            }
+
+                                            return Container(
+                                                child: index == 0
+                                                    ? InkWell(
+                                                        onTap: () {
+                                                          navigate(
+                                                            context,
+                                                            NewContentViewScreen(
+                                                              myVideos: true,
+                                                              userId:
+                                                                  _loginedUserId,
+                                                              userEmail:
+                                                                  _loginedFirstName,
+                                                              userImage: image,
+                                                            ),
+                                                          );
+                                                        },
+                                                        child: Column(
+                                                          children: [
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .all(6.0),
+                                                              height: deviceType ==
+                                                                      DeviceType
+                                                                          .mobile
+                                                                  ? height *
+                                                                      0.15
+                                                                  : 200,
+                                                              width: deviceType ==
+                                                                      DeviceType
+                                                                          .mobile
+                                                                  ? width * 0.33
+                                                                  : 200,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color: Colors
+                                                                    .transparent,
+                                                                border:
+                                                                    Border.all(
+                                                                  color: Color(
+                                                                      0xff5AA5EF),
+                                                                  width: 3.0,
+                                                                ),
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            10.0),
+                                                              ),
+                                                              child: Center(
+                                                                child: Text(
+                                                                  'View My Projector',
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                  style: GoogleFonts
+                                                                      .montserrat(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    fontSize:
+                                                                        deviceType ==
+                                                                                DeviceType.mobile
+                                                                            ? 11
+                                                                            : 17,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                                height: 16),
+                                                          ],
+                                                        ),
+                                                      )
+                                                    : InkWell(
+                                                        onTap: () {
+                                                          navigate(
+                                                            context,
+                                                            NewContentViewScreen(
+                                                              myVideos: false,
+                                                              userId: userId,
+                                                              userEmail:
+                                                                  userName,
+                                                              userImage:
+                                                                  responseImage,
+                                                            ),
+                                                          );
+                                                        },
+                                                        child: Center(
+                                                          child: Stack(
+                                                            children: [
+                                                              Column(
+                                                                children: [
+                                                                  Container(
+                                                                    margin: EdgeInsets
+                                                                        .all(
+                                                                            6.0),
+                                                                    height: deviceType ==
+                                                                            DeviceType
+                                                                                .mobile
+                                                                        ? height *
+                                                                            0.15
+                                                                        : 200,
+                                                                    width: deviceType ==
+                                                                            DeviceType
+                                                                                .mobile
+                                                                        ? width *
+                                                                            0.33
+                                                                        : 200,
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      color: Colors
+                                                                          .transparent,
+                                                                      border:
+                                                                          Border
+                                                                              .all(
+                                                                        color: Color(
+                                                                            0xff5AA5EF),
+                                                                        width:
+                                                                            3.0,
+                                                                      ),
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              10.0),
+                                                                    ),
+                                                                    child:
+                                                                        Padding(
+                                                                      padding:
+                                                                          EdgeInsets
+                                                                              .all(
+                                                                        deviceType == DeviceType.mobile
+                                                                            ? width *
+                                                                                0.07
+                                                                            : width *
+                                                                                0.00,
+                                                                      ),
+                                                                      child:
+                                                                          Center(
+                                                                        child: responseImage !=
+                                                                                null
+                                                                            ? CircleAvatar(
+                                                                                backgroundColor: Colors.white,
+                                                                                radius: deviceType == DeviceType.mobile ? 30 : 48,
+                                                                                child: CircleAvatar(
+                                                                                  radius: deviceType == DeviceType.mobile ? 28 : 47,
+                                                                                  backgroundImage: NetworkImage(responseImage),
+                                                                                ),
+                                                                              )
+                                                                            : Container(
+                                                                                decoration: BoxDecoration(
+                                                                                  shape: BoxShape.circle,
+                                                                                  border: Border.all(color: Colors.white),
+                                                                                ),
+                                                                                child: Image(
+                                                                                  height: height * 0.08,
+                                                                                  image: AssetImage('images/person.png'),
+                                                                                ),
+                                                                              ),
+                                                                        // child: Image(
+                                                                        //   image: AssetImage(
+                                                                        //       'images/male.png'),
+                                                                        // ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  Container(
+                                                                    margin: EdgeInsets.only(
+                                                                        left:
+                                                                            15,
+                                                                        right:
+                                                                            15),
+                                                                    child: Text(
+                                                                      userName ==
+                                                                              ""
+                                                                          ? userEmail
+                                                                          : userName,
+                                                                      maxLines:
+                                                                          2,
+                                                                      overflow:
+                                                                          TextOverflow
+                                                                              .ellipsis,
+                                                                      style: GoogleFonts
+                                                                          .montserrat(
+                                                                        color: Colors
+                                                                            .white,
+                                                                        fontSize: deviceType ==
+                                                                                DeviceType.mobile
+                                                                            ? 11.0
+                                                                            : 17.0,
+                                                                        fontWeight:
+                                                                            FontWeight.w600,
+                                                                      ),
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              Visibility(
+                                                                visible:
+                                                                    removeButtonEnabled,
+                                                                child:
+                                                                    Positioned(
+                                                                  top: 15.0,
+                                                                  right: 15.0,
+                                                                  child:
+                                                                      InkWell(
+                                                                    onTap: () {
+                                                                      removeDialog(
+                                                                          context,
+                                                                          height,
+                                                                          width,
+                                                                          userName == ""
+                                                                              ? userEmail
+                                                                              : userName,
+                                                                          userId,
+                                                                          deviceType);
+                                                                    },
+                                                                    child: Image
+                                                                        .asset(
+                                                                      "images/icon_remove.png",
+                                                                      width: deviceType ==
+                                                                              DeviceType.mobile
+                                                                          ? 25
+                                                                          : 38,
+                                                                      height: deviceType ==
+                                                                              DeviceType.mobile
+                                                                          ? 25
+                                                                          : 38,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ));
+                                          },
+                                        ),
+                                      );
                               } else {
                                 return Center(
                                   child: CircularProgressIndicator(),
@@ -1472,26 +1564,29 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                             // height: height * 0.06,
                             width: width * 0.5,
                             child: Center(
-                              child: deviceType == DeviceType.mobile? Text(
-                                len <= 3 ? '' : viewAllText,
-                                style: GoogleFonts.montserrat(
-                                  fontSize: 12.0,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xff6D6F76),
-                                ),
-                              ) :
-                              Text(
-                                len <= 6 ? '' : viewAllText,
-                                style: GoogleFonts.montserrat(
-                                  fontSize:  18.0,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xff6D6F76),
-                                ),
-                              ),
+                              child: deviceType == DeviceType.mobile
+                                  ? Text(
+                                      len <= 3 ? '' : viewAllText,
+                                      style: GoogleFonts.montserrat(
+                                        fontSize: 12.0,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xff6D6F76),
+                                      ),
+                                    )
+                                  : Text(
+                                      len <= 6 ? '' : viewAllText,
+                                      style: GoogleFonts.montserrat(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xff6D6F76),
+                                      ),
+                                    ),
                             ),
                           ),
                         ),
-                        SizedBox(height: 40,),
+                        SizedBox(
+                          height: 40,
+                        ),
 
                         Visibility(
                           visible: manageProjectorButtonEnabled,
@@ -1500,19 +1595,23 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                             child: SizedBox(
                               // width: 210,
                               child: InkWell(
-                                  onTap : () {
+                                  onTap: () {
                                     removeButtonEnabled = !removeButtonEnabled;
 
                                     setState(() {
                                       if (removeButtonEnabled) {
                                         manageProjectorText = "Cancel";
                                       } else {
-                                        manageProjectorText = "Manage Projectors";
+                                        manageProjectorText =
+                                            "Manage Projectors";
                                       }
                                     });
                                   },
                                   child: Container(
-                                    padding: EdgeInsets.all(deviceType == DeviceType.mobile? 7.0 : 10.0),
+                                    padding: EdgeInsets.all(
+                                        deviceType == DeviceType.mobile
+                                            ? 7.0
+                                            : 10.0),
                                     decoration: BoxDecoration(
                                       border: Border.all(
                                         color: Color(0xff6D6F76),
@@ -1524,16 +1623,19 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                                       manageProjectorText,
                                       style: GoogleFonts.montserrat(
                                         color: Color(0xff6D6F76),
-                                        fontSize: deviceType == DeviceType.mobile? 14.0 : 20.0,
+                                        fontSize:
+                                            deviceType == DeviceType.mobile
+                                                ? 14.0
+                                                : 20.0,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                   )
-                                // borderSide: BorderSide(
-                                //   color: Color(0xff6D6F76),
-                                //   width: 2.0,
-                                // ),
-                              ),
+                                  // borderSide: BorderSide(
+                                  //   color: Color(0xff6D6F76),
+                                  //   width: 2.0,
+                                  // ),
+                                  ),
                             ),
                           ),
                         ),
@@ -1552,11 +1654,13 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                           children: [
                             FloatingActionButton(
                               onPressed: () {
-                                requestDialog(context, height, width).then((data) {
+                                requestDialog(context, height, width)
+                                    .then((data) {
                                   if (data != null) {
                                     //content: Text('${data['message']}'),
                                     String messageText;
-                                    if (data['message'] == "View Request Sent...") {
+                                    if (data['message'] ==
+                                        "View Request Sent...") {
                                       messageText = "Request Sent Successfully";
                                     } else {
                                       messageText = data['message'];
@@ -1572,7 +1676,7 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                               child: Icon(
                                 Icons.add,
                                 color: Colors.white,
-                                size: deviceType == DeviceType.mobile? 40 : 50,
+                                size: deviceType == DeviceType.mobile ? 40 : 50,
                               ),
                               backgroundColor: Color(0xff31343E),
                             ),
@@ -1581,7 +1685,9 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                               "Request Access",
                               style: GoogleFonts.montserrat(
                                 color: Color(0xff5AA5EF),
-                                fontSize: deviceType == DeviceType.mobile? 11.0 : 18.0,
+                                fontSize: deviceType == DeviceType.mobile
+                                    ? 11.0
+                                    : 18.0,
                                 fontWeight: FontWeight.w600,
                               ),
                               textAlign: TextAlign.center,
@@ -1598,6 +1704,5 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
         },
       ));
     });
-
   }
 }

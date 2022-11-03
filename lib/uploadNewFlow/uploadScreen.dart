@@ -9,6 +9,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:projector/apis/cacheService.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:projector/apis/groupService.dart';
 import 'package:projector/apis/videoService.dart';
@@ -984,10 +985,15 @@ class _UploadScreenState extends State<UploadScreen> {
                       /// bgUpload video
                       bgUploadVideo(videoId: videoId);
                       print('videoidupload----->$videoId');
+
+                      final promoSkipCount = await CacheService()
+                          .readIntFromCache("promoSkipCount");
+
                       navigate(
                           context,
                           NewListVideo(
                             videoId: videoId.toString(),
+                            promoSkipCount: promoSkipCount,
                           ));
                     } else {
                       print('false');
@@ -2325,11 +2331,18 @@ class _UploadScreenState extends State<UploadScreen> {
                                               bgUploadVideo(videoId: videoId);
                                               print(
                                                   'videoidupload----->$videoId');
+                                              final promoSkipCount =
+                                                  await CacheService()
+                                                      .readIntFromCache(
+                                                          "promoSkipCount");
+
                                               navigate(
                                                   context,
                                                   NewListVideo(
-                                                    videoId: videoId.toString(),
-                                                  ));
+                                                      videoId:
+                                                          videoId.toString(),
+                                                      promoSkipCount:
+                                                          promoSkipCount));
                                             } else {
                                               print('false');
                                             }

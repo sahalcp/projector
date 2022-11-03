@@ -15,25 +15,27 @@ class UserData {
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool('logged', false);
     prefs.setBool('started', false);
-    prefs.setString('token', null);
-    prefs.setString('id', null);
-    prefs.setString('videoId', null);
-    prefs.setString('albumId', null);
-
+    prefs.remove('token');
+    prefs.remove('id');
+    prefs.remove('videoId');
+    prefs.remove('albumId');
   }
 
   setUserToken(token) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('token', token);
   }
+
   getUserToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
   }
+
   setUserId(id) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('id', id);
   }
+
   getUserId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('id');
@@ -63,16 +65,17 @@ class UserData {
     final prefs = await SharedPreferences.getInstance();
     prefs.setInt('videoId', id);
   }
+
   getVideoId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getInt('videoId');
   }
 
-
   setAlbumTitle(title) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('albumTitle', title);
   }
+
   getAlbumTitle() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('albumTitle');
@@ -92,6 +95,7 @@ class UserData {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('firstName', firstName);
   }
+
   getFirstName() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('firstName');
@@ -101,6 +105,7 @@ class UserData {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('id', id);
   }
+
   getCategoryId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('id');
@@ -110,6 +115,7 @@ class UserData {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('categoryName', categoryName);
   }
+
   getCategoryName() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('categoryName');
@@ -120,10 +126,8 @@ class UserData {
 
     bool isFirstLaunch = prefs.getBool("choose_projector") ?? true;
 
-    if(isFirstLaunch)
-      prefs.setBool("choose_projector", false);
+    if (isFirstLaunch) prefs.setBool("choose_projector", false);
 
     return isFirstLaunch;
   }
-
 }

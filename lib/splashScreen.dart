@@ -28,7 +28,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     if (Platform.isIOS) {
-      _checkVersion();
+     // _checkVersion();
+      _goToScreen();
     }else if (Platform.isAndroid){
       _goToScreen();
     }

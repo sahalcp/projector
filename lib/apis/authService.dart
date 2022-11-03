@@ -129,18 +129,22 @@ class AuthService {
   }
 
   getTokenFromWeb({code}) async {
-    var body = json.encode({
-      'code': code,
-    });
-    var res = await http.post(
-      Uri.parse('$serverUrl/getUserDetFrmCode'),
-      body: body,
-    );
-    print("code from web--" + res.body);
-    if (res.statusCode == 200) {
-      return json.decode(res.body);
-    } else {
-      return null;
+    try {
+      var body = json.encode({
+        'code': code,
+      });
+      var res = await http.post(
+        Uri.parse('$serverUrl/getUserDetFrmCode'),
+        body: body,
+      );
+      print("code from web--" + res.body);
+      if (res.statusCode == 200) {
+        return json.decode(res.body);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print(e.toString());
     }
   }
 

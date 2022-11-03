@@ -1,17 +1,23 @@
+var serverPlanUrl = 'https://projector.app/plans';
+
 // ---------------- Production -------------------
- var serverUrl = 'https://restfull.projectorstream.com/api';
- var serverPlanUrl = 'https://projector.app/plans';
- var webUrlSignUp = 'https://projector.app/sign-up';
- var webUrlChooseProjector = 'https://projector.app/access';
+var serverUrl = 'https://restfull.projectorstream.com/api';
+var webUrlSignIn = 'https://projector.app/sign-in';
+var webUrlAccessProjector = 'https://projector.app/access';
+
+// ---------------- Development --------------------
+// var serverUrl = 'http://54.202.224.141/api';
+// var webUrlSignIn =
+//     'http://dev.app.projectorstream.com.s3-website-us-west-2.amazonaws.com/sign-in';
+// var webUrlAccessProjector =
+//     'http://dev.app.projectorstream.com.s3-website-us-west-2.amazonaws.com/access';
 
 // ---------------- Staging --------------------
 //var serverUrl = 'http://35.81.203.85/api';
-
-// ---------------- Development --------------------
-/*var serverUrl = 'http://54.202.224.141/api';
-var serverPlanUrl = 'https://projector.app/plans';
-var webUrlSignUp = 'http://app.projectorstream.com.s3-website-us-west-2.amazonaws.com/sign-up';
-var webUrlChooseProjector = 'http://app.projectorstream.com.s3-website-us-west-2.amazonaws.com/access';*/
+// var webUrlSignIn =
+//     'http://app.projectorstream.com.s3-website-us-west-2.amazonaws.com/sign-up';
+// var webUrlAccessProjector =
+//     'http://app.projectorstream.com.s3-website-us-west-2.amazonaws.com/access';
 
 //'http://app.projectorstream.com.s3-website-us-west-2.amazonaws.com/plans';
 

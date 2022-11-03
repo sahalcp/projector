@@ -8,6 +8,7 @@ import 'package:projector/shimmer/shimmerLoading.dart';
 import 'package:projector/sideDrawer/viewProfiePage.dart';
 import 'package:projector/startWatching.dart';
 import 'package:projector/uploading/summaryScreen.dart';
+import 'package:projector/widgets/dialogs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // import '../getStartedScreen.dart';
@@ -15,11 +16,12 @@ import '../apis/photoService.dart';
 import '../widgets/widgets.dart';
 
 class NewListVideo extends StatefulWidget {
-  NewListVideo({
-    this.videoId,
-  });
+  NewListVideo({this.videoId, this.promoSkipCount});
 
   final String videoId;
+
+  final int promoSkipCount;
+
   @override
   _NewListVideoState createState() => _NewListVideoState();
 }
@@ -124,6 +126,13 @@ class _NewListVideoState extends State<NewListVideo> {
     super.initState();
     _getVideoId();
     _getAlbumId();
+
+    // Only show promotion popup if it was skipped less than 2 times
+    if (widget.promoSkipCount != null && widget.promoSkipCount < 2) {
+      Future.delayed(Duration(seconds: 3), () {
+        showPromotionDialog(context: context, skipCount: widget.promoSkipCount);
+      });
+    }
 
     //CheckConnectionSFervice().init(_scaffoldKey);
   }

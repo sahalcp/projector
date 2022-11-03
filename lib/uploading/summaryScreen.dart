@@ -1432,7 +1432,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                     padding: EdgeInsets.all(0),
                                     onPressed: () async {
                                       if (edit) {
-                                        if (groupName != '') {
+                                        if (groupName != null &&
+                                            groupName != '') {
                                           var data =
                                               await GroupService().addNewGroup(
                                             controller.text,
@@ -3154,34 +3155,37 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                                         //height: height * 0.02,
                                                         width: width * 0.75,
                                                         color: Colors.white,
-                                                        child:
-                                                            (categoryText != '')
-                                                                ? Text(
-                                                                    categoryText,
-                                                                    style:
-                                                                        TextStyle(
-                                                                      color: Colors
-                                                                          .black,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w500,
-                                                                    ),
-                                                                    maxLines: 2,
-                                                                    overflow:
-                                                                        TextOverflow
-                                                                            .ellipsis,
-                                                                  )
-                                                                : Text(
-                                                                    'Select a main category that\nyour video fits into.',
-                                                                    style: GoogleFonts
+                                                        child: (categoryText !=
+                                                                    null &&
+                                                                categoryText !=
+                                                                    '')
+                                                            ? Text(
+                                                                categoryText,
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                ),
+                                                                maxLines: 2,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              )
+                                                            : Text(
+                                                                'Select a main category that\nyour video fits into.',
+                                                                style:
+                                                                    GoogleFonts
                                                                         .poppins(
-                                                                      fontSize:
-                                                                          12.0,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w400,
-                                                                    ),
-                                                                  ),
+                                                                  fontSize:
+                                                                      12.0,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400,
+                                                                ),
+                                                              ),
                                                       )
                                                     ],
                                                   ),
@@ -3332,39 +3336,41 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                                         //height: height * 0.02,
                                                         width: width * 0.75,
                                                         color: Colors.white,
-                                                        child:
-                                                            (subCategoryText !=
+                                                        child: (subCategoryText !=
+                                                                    null &&
+                                                                subCategoryText !=
                                                                     '')
-                                                                ? Text(
-                                                                    subCategoryText,
-                                                                    style:
-                                                                        TextStyle(
-                                                                      color: Colors
-                                                                          .black,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w500,
-                                                                    ),
-                                                                    maxLines: 1,
-                                                                    overflow:
-                                                                        TextOverflow
-                                                                            .ellipsis,
-                                                                  )
-                                                                : Text(
-                                                                    'Better sort your video for your viewers.',
-                                                                    style: GoogleFonts
+                                                            ? Text(
+                                                                subCategoryText,
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                ),
+                                                                maxLines: 1,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              )
+                                                            : Text(
+                                                                'Better sort your video for your viewers.',
+                                                                style:
+                                                                    GoogleFonts
                                                                         .poppins(
-                                                                      fontSize:
-                                                                          12.0,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w400,
-                                                                    ),
-                                                                    maxLines: 1,
-                                                                    overflow:
-                                                                        TextOverflow
-                                                                            .ellipsis,
-                                                                  ),
+                                                                  fontSize:
+                                                                      12.0,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400,
+                                                                ),
+                                                                maxLines: 1,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              ),
                                                       )
                                                     ],
                                                   ),

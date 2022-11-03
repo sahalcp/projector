@@ -4,12 +4,16 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:projector/apis/cacheService.dart';
 import 'package:projector/apis/groupService.dart';
+import 'package:projector/apis/promotionService.dart';
 import 'package:projector/apis/videoService.dart';
 import 'package:projector/apis/viewService.dart';
 import 'package:projector/constant.dart';
 import 'package:projector/sideDrawer/contentLayoutScreen.dart';
+import 'package:projector/widgets/info_toast.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:collection/collection.dart';
 
 List cat = ['Vacation', 'Sports', 'Gym'];
 List subCat = [
@@ -1204,5 +1208,108 @@ storageDialog(context, height, width) {
         );
       });
     },
+  );
+}
+
+showPromotionDialog(
+    {BuildContext context,
+    String promoCode,
+    String promoValue,
+    int skipCount}) async {
+  if (promoCode == null || promoValue == null) {
+    final promoList = await PromotionService().getUserPromotion();
+    if (promoList != null) {
+      final userPromo =
+          promoList.firstWhereOrNull((e) => e['promo_type'] == "1");
+      promoCode = userPromo['promo_code'];
+      promoValue = userPromo['promo_value'];
+    } else {
+      return;
+    }
+  }
+
+  return showDialog<String>(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) => AlertDialog(
+      titlePadding: EdgeInsets.all(0),
+      contentPadding: EdgeInsets.fromLTRB(24.0, 32.0, 24.0, 12.0),
+      actionsPadding: EdgeInsets.all(24.0),
+      actionsAlignment: MainAxisAlignment.center,
+      title: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Align(
+            alignment: Alignment.topRight,
+            child: IconButton(
+              icon: Icon(Icons.close, size: 32.0),
+              onPressed: () async {
+                // If the promo is skipped for first time or already once skipped.
+                if (skipCount == null) {
+                  CacheService()
+                      .storeIntToCache(key: "promoSkipCount", value: 1);
+                } else {
+                  CacheService().storeIntToCache(
+                      key: "promoSkipCount", value: skipCount + 1);
+                  PromotionService().updatePromoCodePopUpSkipped();
+                }
+                Navigator.pop(context);
+              },
+            ),
+          ),
+          SizedBox(height: 8.0),
+          const Text(
+            'Upgrade Now and Save',
+            style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Get $promoValue FREE months of an upgraded package today!',
+            style: TextStyle(
+              fontSize: 26.0,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 24.0),
+          Text(
+            'Store, share and stream all your memories, pictures and videos in one spot',
+            style: TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: TextAlign.center,
+          )
+        ],
+      ),
+      actions: <Widget>[
+        ElevatedButton(
+          child: Text(
+            'GET $promoValue FREE MONTHS NOW',
+            textAlign: TextAlign.center,
+          ),
+          onPressed: () async {
+            final result = await PromotionService().addUserPromotion(promoCode);
+
+            if (result) {
+              CacheService().storeIntToCache(key: "promoSkipCount", value: 2);
+              Navigator.pop(context);
+              InfoToast.showSnackBar(context,
+                  message:
+                      "Congrats! Offer grabbed.. It will be applied once you purchase a plan.");
+            } else {
+              InfoToast.showSnackBar(context,
+                  message: "Could not apply promo code. Please try again.");
+              Navigator.pop(context);
+            }
+          },
+        ),
+      ],
+    ),
   );
 }

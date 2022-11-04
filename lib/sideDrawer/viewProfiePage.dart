@@ -982,7 +982,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                             ),
                           ),
                         ),
-                       /* SizedBox(
+                      SizedBox(
                             height: MediaQuery.of(context).size.height * 0.007),
                         InkWell(
                           onTap: () {
@@ -1030,7 +1030,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                               ],
                             ),
                           ),
-                        ),*/
+                        ),
                         SizedBox(
                             height: MediaQuery.of(context).size.height * 0.007),
 

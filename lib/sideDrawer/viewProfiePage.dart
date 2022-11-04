@@ -982,7 +982,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                             ),
                           ),
                         ),
-                        SizedBox(
+                       /* SizedBox(
                             height: MediaQuery.of(context).size.height * 0.007),
                         InkWell(
                           onTap: () {
@@ -1030,7 +1030,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                               ],
                             ),
                           ),
-                        ),
+                        ),*/
                         SizedBox(
                             height: MediaQuery.of(context).size.height * 0.007),
 
@@ -1272,7 +1272,7 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "Log Into TV",
+                                  "Login to TV",
                                   textAlign: TextAlign.right,
                                   style: GoogleFonts.montserrat(
                                     color: Colors.white70,

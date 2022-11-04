@@ -250,7 +250,11 @@ class _NewContentViewScreenState extends State<NewContentViewScreen> {
                       if (storageAvailable) {
                         showPopupUpload(
                             context: context,
-                            availableStorage: availableStorage);
+                            availableStorage: availableStorage,
+                            left: 25.0,
+                            top: 100,
+                            right: 0.0,
+                            bottom: 0.0);
                       } else {
                         storageDialog(context, height, width);
                       }

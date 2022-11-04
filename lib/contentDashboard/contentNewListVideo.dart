@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:projector/apis/cacheService.dart';
 import 'package:projector/apis/videoService.dart';
 import 'package:projector/contents/contentViewScreen.dart';
 import 'package:projector/shimmer/shimmerLoading.dart';
@@ -26,53 +27,59 @@ class _ContentNewListVideoState extends State<ContentNewListVideo> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   StreamController streamContentList = StreamController.broadcast();
 
-  final String title = 'All Videos';
   String filterText = 'Date';
   var isVideoSelected = true;
   var isVideoProcessing = false;
   var processingThumbnail = "";
+  String uploadingVideoId, uploadingVideotitle;
   Timer timer;
 
   @override
   void initState() {
-    //CheckConnectionService().init(_scaffoldKey);
+    _getProcessingVideo(widget.videoId);
 
-    //"https://picsum.photos/seed/picsum/200/300"
+    super.initState();
+  }
 
-    //print("SOOR status---${widget.videoId}");
+  _getProcessingVideo(String videoId) async {
+    if (videoId == null || videoId == '') {
+      videoId = (await CacheService().readIntFromCache('videoId')).toString();
+    }
 
-    if (widget.videoId != null && widget.videoId != "") {
-      timer = Timer.periodic(Duration(seconds: 3), (timer) async {
-// call Api here
-        VideoService().getVideoStatus(videoId: widget.videoId).then((response) {
-          if (response['success'] == true) {
-            var videos = response['videos'][0];
+    if (videoId != null && videoId != "") {
+      setState(() {
+        uploadingVideoId = videoId;
+        timer = Timer.periodic(Duration(seconds: 3), (timer) async {
+          // call Api here
+          VideoService()
+              .getVideoStatus(videoId: uploadingVideoId.toString())
+              .then((response) {
+            if (response['success'] == true) {
+              var videos = response['videos'][0];
 
-            processingThumbnail = videos['thumbnails'][0];
-            var status = videos['status'];
-            if (status == "Completed") {
-              setState(() {
-                isVideoProcessing = false;
-                timer.cancel();
-              });
-            } else {
-              setState(() {
-                isVideoProcessing = true;
-              });
+              processingThumbnail = videos['thumbnails'][0];
+              var status = videos['status'];
+              var title = videos['title'];
+              uploadingVideotitle = title;
+              if (status == "Completed") {
+                setState(() {
+                  isVideoProcessing = false;
+                  timer.cancel();
+                });
+              } else if (status == "Not Started") {
+                setState(() {
+                  isVideoProcessing = true;
+                });
+              } else {
+                setState(() {
+                  isVideoProcessing = true;
+                });
+              }
             }
-
-            print("SOOR status---$isVideoProcessing");
-
-            // print("SOOR vid---$videos");
-            // print("SOOR thumb---$processingThumbnail");
-            // print("SOOR status---$status");
-
-          }
+          });
         });
       });
     }
-
-    super.initState();
   }
 
   @override
@@ -341,6 +348,87 @@ class _ContentNewListVideoState extends State<ContentNewListVideo> {
                           ],
                         ),
                       ),
+                      isVideoProcessing == true &&
+                              uploadingVideoId != null &&
+                              uploadingVideoId != ""
+                          ? Container(
+                              height: height * 0.11,
+                              width: width,
+                              color: Colors.grey,
+                              margin: EdgeInsets.symmetric(vertical: 8),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 6,
+                                      ),
+                                      Container(
+                                        height: 80,
+                                        width: 135,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          image: DecorationImage(
+                                            fit: BoxFit.fill,
+                                            image: processingThumbnail != null
+                                                ? NetworkImage(
+                                                    processingThumbnail)
+                                                : AssetImage(''),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: width * 0.03,
+                                      ),
+                                      Container(
+                                        width: width * 0.3,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            // SizedBox(height: 15),
+                                            Text(
+                                              uploadingVideotitle,
+                                              style: TextStyle(
+                                                fontSize: 14.0,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Text(
+                                              "",
+                                              maxLines: 2,
+                                              style: TextStyle(
+                                                fontSize: 10.0,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 8.0),
+                                    child: Text(
+                                      'Processing...  ',
+                                      style: TextStyle(
+                                        fontSize: 13.0,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )
+                          : Container(),
                       Container(
                         margin: EdgeInsets.only(
                           top: 10.0,
@@ -683,73 +771,6 @@ class _ContentNewListVideoState extends State<ContentNewListVideo> {
                       ),
                     ],
                   ),
-                  isVideoProcessing == true &&
-                          widget.videoId != null &&
-                          widget.videoId != ""
-                      ? Positioned(
-                          bottom: 40,
-                          child: Container(
-                            color: Colors.grey,
-                            height: 75,
-                            width: width,
-                            child: Align(
-                              alignment: Alignment.bottomCenter,
-                              child: Container(
-                                  child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Container(
-                                    height: 50,
-                                    width: 80,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      image: DecorationImage(
-                                        fit: BoxFit.fill,
-                                        image: processingThumbnail != null
-                                            ? NetworkImage(processingThumbnail)
-                                            : AssetImage(''),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'File Processing',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 13.0,
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      Text(
-                                        'Your file will be completed soon and will show in your contents tab.',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 8.0,
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                ],
-                              )),
-                            ),
-                          ),
-                        )
-                      : Container()
                 ],
               )),
         ),

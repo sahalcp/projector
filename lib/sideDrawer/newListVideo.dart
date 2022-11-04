@@ -7,11 +7,11 @@ import 'package:projector/contents/contentViewScreen.dart';
 import 'package:projector/shimmer/shimmerLoading.dart';
 import 'package:projector/sideDrawer/viewProfiePage.dart';
 import 'package:projector/startWatching.dart';
+import 'package:projector/style.dart';
 import 'package:projector/uploading/summaryScreen.dart';
 import 'package:projector/widgets/dialogs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// import '../getStartedScreen.dart';
 import '../apis/photoService.dart';
 import '../widgets/widgets.dart';
 
@@ -225,6 +225,7 @@ class _NewListVideoState extends State<NewListVideo> {
       bottom: false,
       top: false,
       child: Scaffold(
+        backgroundColor: appBgColor,
         appBar: AppBar(
           bottom: PreferredSize(
               child: Container(
@@ -233,7 +234,7 @@ class _NewListVideoState extends State<NewListVideo> {
               ),
               preferredSize: Size.fromHeight(4.0)),
           elevation: 0,
-          backgroundColor: Color(0xff1A1D2A),
+          backgroundColor: appBgColor,
           leading: IconButton(
             onPressed: () {
               if (timerAlbumUpload != null) {
@@ -281,7 +282,6 @@ class _NewListVideoState extends State<NewListVideo> {
         key: _scaffoldKey,
         // drawer: DrawerList(title: title),
         body: Container(
-            color: Color(0xff1A1D2A),
             width: width,
             // padding: EdgeInsets.all(16.0),
             child: Stack(

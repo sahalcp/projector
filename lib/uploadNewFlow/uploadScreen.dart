@@ -10,6 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:projector/apis/cacheService.dart';
+import 'package:projector/widgets/info_toast.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:projector/apis/groupService.dart';
 import 'package:projector/apis/videoService.dart';
@@ -918,115 +919,119 @@ class _UploadScreenState extends State<UploadScreen> {
             color: Colors.black,
           ),
           titleSpacing: 0.0,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                'Upload Video ',
-                style: GoogleFonts.poppins(
-                  fontSize: 22.0,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              InkWell(
-                onTap: () async {
-                  if (thumbnailBool &&
-                          titleBool &&
-                          descritionBool &&
-                          categoryBool &&
-                          subCategoryBool &&
-                          visibilityBool
-                      //selectedThumbnailList !=0 ||
-                      // selectedThumbnailListLocal !=0
-                      ) {
-                    String base64Image = '';
-                    if (_image != null) {
-                      List<int> imageBytes = _image.readAsBytesSync();
-                      base64Image = base64Encode(imageBytes);
-                    }
-                    setState(() {
-                      IsvideoUploading = true;
-                    });
-
-                    var data = await VideoService().addVideoContent(
-                      title: title,
-                      description: description,
-                      status: 0,
-                      videoId: widget.videoId,
-                      customThumbnail:
-                          localThumbanilSelected ? base64Image : null,
-                      thumbnail: localThumbanilSelected
-                          ? null
-                          : widget.image[selectedThumbnail],
-                      categoryId: parentId,
-                      subCategoryId: subCategoryId,
-                      playlistId: playlistIds,
-                      groupId: groupListIds,
-                      visibility: visibilityId,
-                    );
-                    if (data['success'] == true) {
-                      setState(() {
-                        FocusScope.of(context).unfocus();
-                        titleErrorBool = false;
-                        descriptionErrorBool = false;
-                        category = true;
-                        IsvideoUploading = false;
-                      });
-                      setState(() {
-                        videoUploading = false;
-                      });
-                      Navigator.of(context).pop();
-
-                      var videoId = data['video_id'];
-
-                      await UserData().setVideoId(videoId);
-
-                      /// bgUpload video
-                      bgUploadVideo(videoId: videoId);
-                      print('videoidupload----->$videoId');
-
-                      final promoSkipCount = await CacheService()
-                          .readIntFromCache("promoSkipCount");
-
-                      navigate(
-                          context,
-                          NewListVideo(
-                            videoId: videoId.toString(),
-                            promoSkipCount: promoSkipCount,
-                          ));
-                    } else {
-                      print('false');
-                      IsvideoUploading = false;
-                    }
-                  } else {
-                    Fluttertoast.showToast(
-                      msg: 'All fields are necessary',
-                      textColor: Colors.white,
-                    );
-                  }
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 20.0),
-                  child: Text(
-                    'Publish',
-                    style: GoogleFonts.poppins(
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.w500,
-                      color: (thumbnailBool &&
-                              titleBool &&
-                              descritionBool &&
-                              categoryBool &&
-                              subCategoryBool &&
-                              visibilityBool)
-                          ? Color(0xff5AA5EF)
-                          : Colors.grey,
-                    ),
-                  ),
-                ),
-              )
-            ],
+          title: Text(
+            'Upload Video ',
+            style: GoogleFonts.poppins(
+              fontSize: 22.0,
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+            ),
           ),
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          icon: (circleLoading)
+              ? Icon(Icons.hourglass_top)
+              : Icon(Icons.file_upload),
+          label: (circleLoading) ? Text("WAIT") : Text("PUBLISH"),
+          foregroundColor: Colors.black,
+          backgroundColor: (thumbnailBool &&
+                  titleBool &&
+                  descritionBool &&
+                  categoryBool &&
+                  subCategoryBool &&
+                  visibilityBool)
+              ? Color(0xff5AA5EF)
+              : Colors.grey,
+          onPressed: () async {
+            if (circleLoading) return;
+
+            if (thumbnailBool &&
+                    titleBool &&
+                    descritionBool &&
+                    categoryBool &&
+                    subCategoryBool &&
+                    visibilityBool
+                // selectedThumbnailList !=0 ||
+                // selectedThumbnailListLocal !=0
+                ) {
+              String base64Image = '';
+              if (_image != null) {
+                List<int> imageBytes = _image.readAsBytesSync();
+                base64Image = base64Encode(imageBytes);
+              }
+
+              if (videoThumbnailByte != null &&
+                  localGeneratedThumbanilSelected == true) {
+                base64Image = base64Encode(videoThumbnailByte);
+              }
+
+              setState(() {
+                circleLoading = true;
+              });
+
+              //   customThumbnail:
+              //   localThumbanilSelected
+              //       ? base64Image
+              //       : null,
+              // thumbnail: localThumbanilSelected
+              // ? null
+              //     : widget
+              //     .image[selectedThumbnail],
+
+              /// video upload
+              var data = await VideoService().addVideoContent(
+                title: title.toString(),
+                description: description,
+                status: 0,
+                videoId: widget.videoId,
+                customThumbnail: base64Image,
+                thumbnail: null,
+                categoryId: parentId,
+                subCategoryId: subCategoryId,
+                playlistId: playlistIds,
+                groupId: groupListIds,
+                visibility: visibilityId,
+              );
+              if (data['success'] == true) {
+                setState(() {
+                  FocusScope.of(context).unfocus();
+                  titleErrorBool = false;
+                  descriptionErrorBool = false;
+                  category = true;
+                  circleLoading = false;
+                });
+                setState(() {
+                  videoUploading = false;
+                });
+                Navigator.of(context).pop();
+
+                var videoId = data['video_id'];
+
+                await UserData().setVideoId(videoId);
+
+                /// bgUpload video
+                bgUploadVideo(videoId: videoId);
+                print('videoidupload----->$videoId');
+                final promoSkipCount =
+                    await CacheService().readIntFromCache("promoSkipCount");
+
+                navigate(
+                    context,
+                    NewListVideo(
+                        videoId: videoId.toString(),
+                        promoSkipCount: promoSkipCount));
+              } else {
+                print('false');
+              }
+
+              setState(() {
+                circleLoading = false;
+              });
+            } else {
+              InfoToast.showSnackBar(context,
+                  message: 'Please enter the required fields');
+            }
+          },
         ),
         body: GestureDetector(
           onTap: () {
@@ -2245,152 +2250,6 @@ class _UploadScreenState extends State<UploadScreen> {
                                     ),
                                   ),
                                 ],
-                                Container(
-                                  height: 70,
-                                  width: width,
-                                  color: Colors.white,
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 20.0, horizontal: 5.0),
-                                  child: Container(
-                                    width: width,
-                                    height: 35,
-                                    child: ElevatedButton(
-                                        onPressed: () async {
-                                          if (thumbnailBool &&
-                                                  titleBool &&
-                                                  descritionBool &&
-                                                  categoryBool &&
-                                                  subCategoryBool &&
-                                                  visibilityBool
-                                              // selectedThumbnailList !=0 ||
-                                              // selectedThumbnailListLocal !=0
-                                              ) {
-                                            String base64Image = '';
-                                            if (_image != null) {
-                                              List<int> imageBytes =
-                                                  _image.readAsBytesSync();
-                                              base64Image =
-                                                  base64Encode(imageBytes);
-                                            }
-
-                                            if (videoThumbnailByte != null &&
-                                                localGeneratedThumbanilSelected ==
-                                                    true) {
-                                              base64Image = base64Encode(
-                                                  videoThumbnailByte);
-                                            }
-
-                                            setState(() {
-                                              circleLoading = true;
-                                            });
-
-                                            //   customThumbnail:
-                                            //   localThumbanilSelected
-                                            //       ? base64Image
-                                            //       : null,
-                                            // thumbnail: localThumbanilSelected
-                                            // ? null
-                                            //     : widget
-                                            //     .image[selectedThumbnail],
-
-                                            /// video upload
-                                            var data = await VideoService()
-                                                .addVideoContent(
-                                              title: title.toString(),
-                                              description: description,
-                                              status: 0,
-                                              videoId: widget.videoId,
-                                              customThumbnail: base64Image,
-                                              thumbnail: null,
-                                              categoryId: parentId,
-                                              subCategoryId: subCategoryId,
-                                              playlistId: playlistIds,
-                                              groupId: groupListIds,
-                                              visibility: visibilityId,
-                                            );
-                                            if (data['success'] == true) {
-                                              setState(() {
-                                                FocusScope.of(context)
-                                                    .unfocus();
-                                                titleErrorBool = false;
-                                                descriptionErrorBool = false;
-                                                category = true;
-                                                circleLoading = false;
-                                              });
-                                              setState(() {
-                                                videoUploading = false;
-                                              });
-                                              Navigator.of(context).pop();
-
-                                              var videoId = data['video_id'];
-
-                                              await UserData()
-                                                  .setVideoId(videoId);
-
-                                              /// bgUpload video
-                                              bgUploadVideo(videoId: videoId);
-                                              print(
-                                                  'videoidupload----->$videoId');
-                                              final promoSkipCount =
-                                                  await CacheService()
-                                                      .readIntFromCache(
-                                                          "promoSkipCount");
-
-                                              navigate(
-                                                  context,
-                                                  NewListVideo(
-                                                      videoId:
-                                                          videoId.toString(),
-                                                      promoSkipCount:
-                                                          promoSkipCount));
-                                            } else {
-                                              print('false');
-                                            }
-
-                                            setState(() {
-                                              circleLoading = false;
-                                            });
-                                          } else {
-                                            Fluttertoast.showToast(
-                                              msg: 'All fields are necessary',
-                                              textColor: Colors.white,
-                                            );
-                                          }
-                                        },
-                                        child: Center(
-                                          child: circleLoading
-                                              ? CircularProgressIndicator(
-                                                  backgroundColor: Colors.white,
-                                                )
-                                              : Text(
-                                                  'PUBLISH',
-                                                  style: TextStyle(
-                                                    fontSize: 16.0,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                        ),
-                                        style: ElevatedButton.styleFrom(
-                                          primary: (thumbnailBool == true &&
-                                                  titleBool == true &&
-                                                  descritionBool == true &&
-                                                  categoryBool == true &&
-                                                  subCategoryBool == true &&
-                                                  visibilityBool == true)
-                                              ? Color(0xff5AA5EF)
-                                              : Colors.black,
-                                        )),
-                                    color: (thumbnailBool == true &&
-                                            titleBool == true &&
-                                            descritionBool == true &&
-                                            categoryBool == true &&
-                                            subCategoryBool == true &&
-                                            visibilityBool == true)
-                                        ? Color(0xff5AA5EF)
-                                        : Colors.black,
-                                  ),
-                                ),
-                                SizedBox(height: height * 0.02),
                               ]),
                         ],
                         controller: _scrollController,

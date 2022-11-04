@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:projector/uploading/photo/selectPhoto.dart';
-import 'package:projector/uploading/selectVideo.dart';
-import 'package:projector/uploading/selectVideoUpload.dart';
 import 'package:projector/widgets/dialogs.dart';
 import 'package:projector/widgets/widgets.dart';
 
@@ -89,7 +87,13 @@ showUploadDropDown(context) {
   );
 }
 
-showPopupUpload({context,availableStorage,double left,double top,double right,double bottom}) {
+showPopupUpload(
+    {context,
+    availableStorage,
+    double left,
+    double top,
+    double right,
+    double bottom}) {
   showMenu<String>(
     context: context,
     position: RelativeRect.fromLTRB(left, top, right, bottom),
@@ -97,7 +101,7 @@ showPopupUpload({context,availableStorage,double left,double top,double right,do
 
     //position where you want to show the menu on screen
     items: [
-     /* PopupMenuItem<String>(
+      /* PopupMenuItem<String>(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -121,7 +125,7 @@ showPopupUpload({context,availableStorage,double left,double top,double right,do
             ],
           ),
           value: '1'),*/
-     // PopupMenuDivider(),
+      // PopupMenuDivider(),
       PopupMenuItem<String>(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -187,35 +191,34 @@ showPopupUpload({context,availableStorage,double left,double top,double right,do
       //video
       //navigate(context, SelectVideoView());
 
-      selectVideoFromFileManager(context,availableStorage);
-
-
+      selectVideoFromFileManager(context, availableStorage);
     }
   });
 }
 
-selectVideoFromFileManager(context,availableStorage) async {
+selectVideoFromFileManager(context, availableStorage) async {
   final picker = ImagePicker();
   final pickedFile = await picker.getVideo(source: ImageSource.gallery);
 
-  if(pickedFile !=null){
-
+  if (pickedFile != null) {
     File file = File(pickedFile.path);
     final size = file.lengthSync() / 1000000;
-   var selectedVideoSize = size;
+    var selectedVideoSize = size;
     print("videosize selected---$selectedVideoSize");
     print("videosize available storage---$availableStorage");
 
-    if(availableStorage > selectedVideoSize){
+    if (availableStorage > selectedVideoSize) {
       print("videosize storage available--->$availableStorage");
       // upload video
-     // navigate(context, SelectVideoUploadView(videoFile: file,));
-      navigate(context, UploadScreen(videoFile: file,));
-    }else{
+      // navigate(context, SelectVideoUploadView(videoFile: file,));
+      navigate(
+          context,
+          UploadScreen(
+            videoFile: file,
+          ));
+    } else {
       storageDialog(context, 100, 100);
-
     }
-
   }
 
   /* File file = await FilePicker.getFile(
@@ -262,8 +265,7 @@ showPopupMenu(context) {
       iconTheme: IconThemeData(color: Colors.green),
       textTheme: TextTheme().apply(bodyColor: Colors.orange),
     ),
-    child: showPopupUpload(context: context,
-        left: 25.0,top: 100,right: 0.0,bottom: 0.0),
+    child: showPopupUpload(
+        context: context, left: 25.0, top: 100, right: 0.0, bottom: 0.0),
   );
 }
-

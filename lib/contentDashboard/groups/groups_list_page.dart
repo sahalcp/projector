@@ -27,6 +27,8 @@ class _GroupsListPageState extends State<GroupsListPage> {
   final GlobalKey expansionTileKey = GlobalKey();
   double previousOffset;
 
+  String selectedGroupId;
+
   @override
   void initState() {
     groupsProvider = GroupsProvider()..initialize();
@@ -38,66 +40,84 @@ class _GroupsListPageState extends State<GroupsListPage> {
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
-    return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          centerTitle: false,
-          elevation: 1.0,
-          leading: IconButton(
-            onPressed: () {
-              if (Navigator.canPop(context)) {
-                Navigator.pop(context);
-              } else {
-                SystemNavigator.pop();
-              }
-            },
-            icon: Icon(Icons.arrow_back_ios),
-            color: Colors.black,
-          ),
-          titleSpacing: 0.0,
-          title: Transform(
-            transform: Matrix4.translationValues(0.0, 0.0, 0.0),
-            child: Text(
-              "Groups",
-              style: GoogleFonts.montserrat(
-                color: Colors.black,
-                fontSize: 20.0,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-          actions: [
-            TextButton.icon(
-              onPressed: () {
-                requestDialog(
-                  scaffoldKey: _scaffoldKey,
-                  context: context,
-                  height: height,
-                  width: width,
-                  type: "AddGroup",
-                  spin: spin,
-                );
-              },
-              label: Text(
-                "New group",
-                style: GoogleFonts.montserrat(
-                  fontSize: 14.0,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.blue,
+    return ChangeNotifierProvider.value(
+        value: groupsProvider,
+        builder: (builderContext, child) {
+          return Scaffold(
+              backgroundColor: Colors.white,
+              appBar: AppBar(
+                backgroundColor: Colors.white,
+                centerTitle: false,
+                elevation: 1.0,
+                leading: IconButton(
+                  onPressed: () {
+                    if (Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                    } else {
+                      SystemNavigator.pop();
+                    }
+                  },
+                  icon: Icon(Icons.arrow_back_ios),
+                  color: Colors.black,
                 ),
+                titleSpacing: 0.0,
+                title: Transform(
+                  transform: Matrix4.translationValues(0.0, 0.0, 0.0),
+                  child: Text(
+                    "Groups",
+                    style: GoogleFonts.montserrat(
+                      color: Colors.black,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                actions: [
+                  TextButton.icon(
+                    onPressed: () {
+                      requestDialog(
+                        scaffoldKey: _scaffoldKey,
+                        context: context,
+                        height: height,
+                        width: width,
+                        type: "AddGroup",
+                        spin: spin,
+                      );
+                    },
+                    label: Text(
+                      "New group",
+                      style: GoogleFonts.montserrat(
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    icon: Icon(Icons.add, color: Colors.blue),
+                  )
+                ],
               ),
-              icon: Icon(Icons.add, color: Colors.blue),
-            )
-          ],
-        ),
-        key: _scaffoldKey,
-        body: ChangeNotifierProvider.value(
-          value: groupsProvider,
-          builder: (builderContext, child) {
-            return _body(builderContext);
-          },
-        ));
+              key: _scaffoldKey,
+              floatingActionButton: FloatingActionButton(
+                backgroundColor:
+                    (selectedGroupId != null) ? Color(0xff5AA5EF) : Colors.grey,
+                child: Icon(Icons.save, color: Colors.black),
+                onPressed: () async {
+                  if (selectedGroupId == null) return;
+
+                  final result = await groupsProvider.saveGroupData(
+                      groupId: selectedGroupId);
+
+                  if (result) {
+                    InfoToast.showSnackBar(context,
+                        message: "Group saved Successfully");
+                  } else {
+                    InfoToast.showSnackBar(context,
+                        message: "Error Saving data");
+                  }
+                },
+              ),
+              body: _body(builderContext));
+        });
   }
 
   _body(BuildContext bodyContext) {
@@ -120,11 +140,12 @@ class _GroupsListPageState extends State<GroupsListPage> {
 
     return Container(
       margin: EdgeInsets.only(left: 16.0, right: 16.0, top: 25.0),
-      child: ListView.builder(
+      child: ListView.separated(
           controller: _scrollController,
           itemCount: provider.groupListData.length,
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
+          separatorBuilder: (context, index) => SizedBox(height: 12.0),
           itemBuilder: (context, groupIndex) {
             final groupId = provider.groupListData[groupIndex]['id'];
             final groupItems = provider.checkedGroupItems.firstWhereOrNull(
@@ -140,6 +161,7 @@ class _GroupsListPageState extends State<GroupsListPage> {
             }
 
             return Container(
+              margin: const EdgeInsets.all(2.0),
               decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12.0),
@@ -154,6 +176,11 @@ class _GroupsListPageState extends State<GroupsListPage> {
               child: ExpansionTile(
                 onExpansionChanged: (isExpanded) {
                   if (isExpanded) previousOffset = _scrollController.offset;
+
+                  setState(() {
+                    selectedGroupId = (isExpanded) ? groupId : null;
+                  });
+
                   _scrollToSelectedContent(
                       isExpanded, previousOffset, groupIndex, expansionTileKey);
                 },
@@ -452,49 +479,7 @@ class _GroupsListPageState extends State<GroupsListPage> {
                             ),
                           ],
                         ),
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: SizedBox(
-                            child: InkWell(
-                                onTap: () async {
-                                  final result = await provider.saveGroupData(
-                                      groupId: groupId);
-
-                                  if (result) {
-                                    InfoToast.showSnackBar(context,
-                                        message: "Saved Successfully");
-                                  } else {
-                                    InfoToast.showSnackBar(context,
-                                        message: "Error Saving data");
-                                  }
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.only(
-                                      left: 16.0,
-                                      right: 16.0,
-                                      top: 7.0,
-                                      bottom: 7.0),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: Colors.blue,
-                                      width: 1.5,
-                                    ),
-                                    borderRadius: BorderRadius.circular(5.0),
-                                  ),
-                                  child: Text(
-                                    'Save',
-                                    style: GoogleFonts.montserrat(
-                                      color: Colors.black,
-                                      fontSize: 14.0,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                )),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
+                        SizedBox(height: 12.0),
                       ],
                     ),
                   ),
@@ -503,7 +488,6 @@ class _GroupsListPageState extends State<GroupsListPage> {
                 textColor: Colors.black,
                 collapsedTextColor: Colors.black,
               ),
-              margin: EdgeInsets.only(bottom: 15),
             );
           }),
     );

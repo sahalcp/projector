@@ -979,9 +979,9 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                             showPopupUpload(
                                 context: context,
                                 availableStorage: availableStorage,
-                                left: 25.0,
-                                top: 100,
-                                right: 0.0,
+                                left: 75.0,
+                                top: 100.0,
+                                right: 75.0,
                                 bottom: 0.0);
                           } else {
                             storageDialog(context, height, width);

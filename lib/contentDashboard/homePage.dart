@@ -274,9 +274,9 @@ class _HomePageState extends State<HomePage> {
                                         showPopupUpload(
                                             context: context,
                                             availableStorage: availableStorage,
-                                            left: 25.0,
-                                            top: 200,
-                                            right: 0.0,
+                                            left: 75.0,
+                                            top: 100.0,
+                                            right: 75.0,
                                             bottom: 0.0);
                                       } else {
                                         storageDialog(context, height, width);
@@ -355,7 +355,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                   SizedBox(height: height * 0.01),
                                   Text(
-                                    "$currentPlan : $totalStorageText Storage ( $availableStorageTxt Available )",
+                                    "$currentPlan : $totalStorageText Storage",
                                     style: GoogleFonts.montserrat(
                                       fontSize: deviceType == DeviceType.mobile
                                           ? 14.0
@@ -451,7 +451,7 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                       SizedBox(width: 8.0),
                                       Text(
-                                        "Free space : $availableStorageTxt",
+                                        "Available : $availableStorageTxt",
                                         style: GoogleFonts.montserrat(
                                           fontSize:
                                               deviceType == DeviceType.mobile
@@ -486,7 +486,7 @@ class _HomePageState extends State<HomePage> {
                                                     ? 14.0
                                                     : 18.0,
                                                 fontWeight: FontWeight.w600,
-                                                color: Colors.white,
+                                                color: Colors.black,
                                               )),
                                         ),
                                       ),

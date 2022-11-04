@@ -7,6 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:projector/accountSettings/editUserDetails.dart';
 import 'package:projector/apis/accountService.dart';
+import 'package:projector/data/userData.dart';
+import 'package:projector/login/GuideScreen.dart';
 import 'package:projector/widgets/widgets.dart';
 // import 'package:projector/widgets/widgets.dart';
 
@@ -174,6 +176,21 @@ _showToast(context);
                               SizedBox(height: 30),
                               userDataRow(context, 'Password',
                                   '***************', 'Password'),
+                              SizedBox(height: 80),
+
+                              InkWell(
+                                onTap: (){
+                                  deActivateDialog(context, height, width);
+                                },
+                                child:  Text(
+                                  'Deactivate Account',
+                                  style: GoogleFonts.montserrat(
+                                    color: Colors.red,
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -246,6 +263,139 @@ void _showToast(BuildContext context) {
       content: const Text('Profile Updated'),
      // action: SnackBarAction(label: 'UNDO', onPressed: scaffold.hideCurrentSnackBar),
     ),
+  );
+}
+
+deActivateDialog(context, height, width) {
+
+  return showDialog(
+    context: context,
+    barrierColor: Color(0xff333333).withOpacity(0.7),
+    builder: (context) {
+      return StatefulBuilder(builder: (context, setState) {
+
+
+        return Container(
+          height: height * 0.3,
+          color: Color(0xff333333).withOpacity(0.3),
+          child: Dialog(
+            backgroundColor: Colors.white.withOpacity(0),
+            insetPadding: EdgeInsets.only(
+              left: 26.0,
+              right: 25.0,
+              top: 60.0,
+              bottom: 80.0,
+            ),
+            child: Container(
+                height: height * 0.4,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12.0),
+                  border: Border.all(
+                    color: Color(0xff707070),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    SizedBox(height: 20,),
+                    Center(
+                      child: Container(
+                        margin: EdgeInsets.only(left: 10,right: 10),
+                        child: Text(
+                          'Are you sure?',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 25.0,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 50,),
+                    Center(
+                      child: Container(
+                        margin: EdgeInsets.only(left: 20,right: 20),
+                        child: Text(
+                          'You are about to deactivate your account. Are you sure you want to continue?',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 50,),
+                    Container(
+                      margin: EdgeInsets.only(left: 10,right: 10),
+                      alignment: Alignment.center,
+                      height: height * 0.055,
+                      width: width * 0.35,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(7),
+                      ),
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(7),
+                        ),
+                        color: Color(0xff5AA5EF),
+                        onPressed: () async {
+
+                          Navigator.pop(context);
+                        },
+                        child: Center(
+                          child: Text(
+                            'Cancel',
+                            style: GoogleFonts.poppins(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 30,),
+                    InkWell(
+                      onTap: () async{
+                        var response = await AccountService().deleteUser();
+                        if(response['success']){
+                          Navigator.pop(context);
+                          Fluttertoast.showToast(
+                            backgroundColor: Colors.white,
+                            msg: response['message'],
+                            textColor: Colors.black,
+                          );
+
+                          UserData().deleteUserLogged();
+                          navigateReplace(context, GuideScreens());
+                        }
+                      },
+                      child: Center(
+                        child: Container(
+                          margin: EdgeInsets.only(left: 10,right: 10),
+                          child: Text(
+                            'Deactivate',
+                            style: GoogleFonts.montserrat(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.red,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10,),
+                  ],
+                )
+            ),
+          ),
+        );
+      });
+    },
   );
 }
 

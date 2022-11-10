@@ -1276,7 +1276,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                                   textAlign: TextAlign.right,
                                   style: GoogleFonts.montserrat(
                                     color: Colors.white70,
-                                    fontSize: deviceType == DeviceType.mobile ? 13 : 18,
+                                    fontSize: deviceType == DeviceType.mobile
+                                        ? 13
+                                        : 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -1286,7 +1288,9 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                                           0.01),
                                   child: Icon(
                                     Icons.arrow_forward_ios,
-                                    size: deviceType == DeviceType.mobile ? 20 : 25,
+                                    size: deviceType == DeviceType.mobile
+                                        ? 20
+                                        : 25,
                                     color: Colors.white.withOpacity(0.5),
                                   ),
                                 ),
@@ -1294,7 +1298,6 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                             ),
                           ),
                         ),
-
 
                         /*InkWell(
                         onTap: () {

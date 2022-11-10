@@ -164,6 +164,4 @@ class AuthService {
       return null;
     }
   }
-
-
 }

@@ -41,3 +41,15 @@ var planUrl = 'https://projectorstream.netlify.app/plans';
 // ----------------- Help -----------------------
 var helpUrl = 'https://support.projector.app/hc/en-us';
 //var helpUrl = 'http://help.projectorstream.com';
+
+// Home screeen Category Layout
+const int LAYOUT_TYPE_DEFAULT = 1;
+const int LAYOUT_TYPE_WHATS_NEW = 2;
+const int LAYOUT_TYPE_IMAGES = 3;
+const int LAYOUT_TYPE_FEATURED_VIDEO = 4;
+const int LAYOUT_TYPE_FEATURED_ALBUM = 5;
+
+const String CATEGORY_LARGE_AND_SQUARE = "1";
+const String CATEGORY_LARGE_AND_ROUNDED = "2";
+const String CATEGORY_SMALL_AND_SQUARE = "3";
+const String CATEGORY_SMALL_AND_ROUNDED = "4";

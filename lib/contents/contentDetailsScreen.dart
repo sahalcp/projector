@@ -107,21 +107,27 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
           future: VideoService().getVideoDetails(widget.videoId),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              var image = snapshot.data['thumbnails'][0],
-                  description = snapshot.data['description'],
-                  category = snapshot.data['Category'],
-                  subCategory = snapshot.data['SubCategory'],
-                  date = snapshot.data['publish_date'],
-                  isInPausedList = snapshot.data['isInPausedlist'],
-                  isInWatchList = snapshot.data['isInWatchlist'];
-              userVideoId = snapshot.data['id'];
-              thumbnailPreview = snapshot.data['thumbnail_hover'];
-              title = snapshot.data['title'];
-              spriteRow = snapshot.data['sprite_row'];
-              spriteColumn = snapshot.data['sprite_coloumn'];
-              var orientation = snapshot.data['orientation'];
-              var orderNumber = snapshot.data['order_number'];
-              var pausedPosition = snapshot.data['paused_at'];
+              var response = snapshot.data;
+              var image = response['thumbnails'][0],
+                  description = response['description'],
+                  category = response['Category'],
+                  subCategory = response['SubCategory'],
+                  date = response['publish_date'],
+                  isInPausedList = response['isInPausedlist'],
+                  isInWatchList = response['isInWatchlist'];
+              userVideoId = response['id'];
+              thumbnailPreview = response['thumbnail_hover'];
+              title = response['title'];
+              spriteRow = response['sprite_row'];
+              spriteColumn = response['sprite_coloumn'];
+              var orientation = response['orientation'];
+              var orderNumber = response['order_number'];
+              var pausedPosition = response['paused_at'];
+
+              var bannerPreviewStyleId =
+                  snapshot.data['banner_preview_style_id'];
+              // bannerPreviewStyleId = 1 (large)
+              // bannerPreviewStyleId = 2 (small)
               if (pausedPosition == "" || pausedPosition == null) {
                 pausedPosition = 0;
               }
@@ -134,8 +140,8 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
               // }
 
               var year = DateTime.parse(date).year;
-              var videoUrlS3 = snapshot.data['video_file'];
-              videoUrl = snapshot.data['video_raw_file'];
+              var videoUrlS3 = response['video_file'];
+              videoUrl = response['video_raw_file'];
               // print("video url raw--->$videoUrl");
 
               if (videoUrl != null && videoUrl != "") {
@@ -147,11 +153,9 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
               // print("video url s3 --->$videoUrlS3");
               print("video id--->$userVideoId");
 
-              var list = [];
+              // var videosList = response['videos'];
 
-              var videosList = snapshot.data['videos'];
-
-              list = videosList;
+              // var list = videosList;
 
               // final filterOrderNumber =
               //     list.where((element) => orderNumber > element['order_number']);
@@ -168,17 +172,16 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
               var nextScreenView = "";
               var nextVideoId = "";
 
-              for (var i = 0; i < snapshot.data['videos'].length; i++) {
-                if (int.parse(snapshot.data['videos'][i]['order_number']) >
+              for (var i = 0; i < response['videos'].length; i++) {
+                if (int.parse(response['videos'][i]['order_number']) >
                     int.parse(orderNumber)) {
-                  listOrderNumber = snapshot.data['videos'][i]['order_number'];
-                  nextVideoThumbnail = snapshot.data['videos'][i]['thumbnails'];
-                  nextVideoTitle = snapshot.data['videos'][i]['title'];
-                  nextVideoUrl = snapshot.data['videos'][i]['video_file'];
-                  nextVideoRawUrl =
-                      snapshot.data['videos'][i]['video_raw_file'];
-                  nextScreenView = snapshot.data['videos'][i]['orientation'];
-                  nextVideoId = snapshot.data['videos'][i]['id'];
+                  listOrderNumber = response['videos'][i]['order_number'];
+                  nextVideoThumbnail = response['videos'][i]['thumbnails'];
+                  nextVideoTitle = response['videos'][i]['title'];
+                  nextVideoUrl = response['videos'][i]['video_file'];
+                  nextVideoRawUrl = response['videos'][i]['video_raw_file'];
+                  nextScreenView = response['videos'][i]['orientation'];
+                  nextVideoId = response['videos'][i]['id'];
 
                   if (nextVideoRawUrl != null && nextVideoRawUrl != "") {
                     nextVideoRawUrl = nextVideoRawUrl;
@@ -192,15 +195,14 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
 
               // to get the first order number if the last next order number is finished
               if (nextVideoRawUrl.isEmpty) {
-                if (snapshot.data['videos'].length > 0) {
-                  listOrderNumber = snapshot.data['videos'][0]['order_number'];
-                  nextVideoThumbnail = snapshot.data['videos'][0]['thumbnails'];
-                  nextVideoTitle = snapshot.data['videos'][0]['title'];
-                  nextVideoUrl = snapshot.data['videos'][0]['video_file'];
-                  nextVideoRawUrl =
-                      snapshot.data['videos'][0]['video_raw_file'];
-                  nextScreenView = snapshot.data['videos'][0]['orientation'];
-                  nextVideoId = snapshot.data['videos'][0]['id'];
+                if (response['videos'].length > 0) {
+                  listOrderNumber = response['videos'][0]['order_number'];
+                  nextVideoThumbnail = response['videos'][0]['thumbnails'];
+                  nextVideoTitle = response['videos'][0]['title'];
+                  nextVideoUrl = response['videos'][0]['video_file'];
+                  nextVideoRawUrl = response['videos'][0]['video_raw_file'];
+                  nextScreenView = response['videos'][0]['orientation'];
+                  nextVideoId = response['videos'][0]['id'];
 
                   if (nextVideoRawUrl != null && nextVideoRawUrl != "") {
                     nextVideoRawUrl = nextVideoRawUrl;
@@ -219,157 +221,338 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
 
               return Container(
                 //color: Color(0xff17191E),
-                color: appBgColor,
+                color: Colors.black,
                 width: width,
                 child: Column(
                   children: [
                     Expanded(
-                      child: Container(
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              colorFilter: new ColorFilter.mode(
-                                  Colors.black.withOpacity(0.8),
-                                  BlendMode.dstATop),
-                              image: NetworkImage(image),
-                              fit: BoxFit.fill,
-                            ),
-                            borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(40),
-                              bottomRight: Radius.circular(40),
-                            ),
-                          ),
-                          child: Container(
-                            padding: EdgeInsets.only(
-                              left: 20,
-                              right: 10,
-                              top: 50,
-                            ),
-                            child: Column(
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.arrow_back_ios,
-                                        color: Colors.white,
-                                        size: 28,
-                                      ),
-                                      Text(
-                                        'BACK',
-                                        style: GoogleFonts.montserrat(
-                                          fontSize: 20.0,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                        textAlign: TextAlign.start,
-                                      ),
-                                    ],
+                      child: Stack(
+                        children: [
+                          // bannerPreviewStyleId = 1 (large)
+                          // bannerPreviewStyleId = 2 (small)
+
+                          bannerPreviewStyleId == "2"
+                              ? Container(
+                                  padding: EdgeInsets.only(
+                                    left: 20,
+                                    right: 10,
+                                    top: 50,
                                   ),
-                                ),
-                              ],
-                            ),
-                          )),
-                      flex: 1,
-                    ),
-                    Expanded(
-                      child: Container(
-                        //color: Color(0xff17191E),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: 40,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 25.0, right: 25.0),
-                              child: Text(
-                                title,
-                                style: TextStyle(
-                                  fontSize: deviceType == DeviceType.mobile
-                                      ? 25.0
-                                      : 35.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.start,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 40,
-                            ),
-                            Container(
-                              padding: EdgeInsets.only(left: 28.0, right: 10),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
+                                  child: Column(
                                     children: [
                                       InkWell(
                                         onTap: () {
-                                          if (Platform.isAndroid) {
-                                            /// Android-specific code
-                                            //_flutterToAndroid();
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    PlayVideoScreenNew(
-                                                  title: title,
-                                                  video: videoUrlS3,
-                                                  videoId: userVideoId,
-                                                  screenView: orientation,
-                                                  nextVideoTitle:
-                                                      nextVideoTitle,
-                                                  nextVideoThumbnail:
-                                                      nextVideoThumbnail,
-                                                  nextVideoUrl: nextVideoUrl,
-                                                  nextVideoScreenView:
-                                                      nextScreenView,
-                                                  nextVideoId: nextVideoId,
-                                                  pausedPosition: 0,
-                                                ),
+                                          Navigator.pop(context);
+                                        },
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.arrow_back_ios,
+                                              color: Colors.white,
+                                              size: 28,
+                                            ),
+                                            Text(
+                                              '',
+                                              style: GoogleFonts.montserrat(
+                                                fontSize: 20.0,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
                                               ),
-                                            ).then((value) {
-                                              setState(() {});
-                                            });
-                                          } else if (Platform.isIOS) {
-                                            /// iOS-specific code
-                                            //_flutterToIos();
+                                              textAlign: TextAlign.start,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : Container(),
+                          bannerPreviewStyleId == "2"
+                              ? Positioned(
+                                  right: 0,
+                                  child: Container(
+                                    width: 250,
+                                    height: 250,
+                                    foregroundDecoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Colors.black,
+                                          Colors.transparent
+                                        ],
+                                        begin: FractionalOffset.centerLeft,
+                                        end: FractionalOffset.centerRight,
+                                        stops: [0.0, 1.0],
+                                      ),
+                                    ),
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: NetworkImage(image),
+                                        fit: BoxFit.fill,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : Positioned(
+                                  top: 0,
+                                  bottom: 0,
+                                  left: 0,
+                                  right: 0,
+                                  child: Container(
+                                      foregroundDecoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            Colors.transparent,
+                                            Colors.transparent,
+                                            Colors.transparent,
+                                            Colors.black
+                                          ],
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          stops: [0, 0.2, 0, 2],
+                                        ),
+                                      ),
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          // colorFilter: new ColorFilter.mode(
+                                          //     Colors.black.withOpacity(0.8),
+                                          //     BlendMode.dstATop),
+                                          image: NetworkImage(image),
+                                          fit: BoxFit.fill,
+                                        ),
+                                      ),
+                                      child: Container(
+                                        padding: EdgeInsets.only(
+                                          left: 20,
+                                          right: 10,
+                                          top: 50,
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.arrow_back_ios,
+                                                    color: Colors.white,
+                                                    size: 28,
+                                                  ),
+                                                  Text(
+                                                    '',
+                                                    style:
+                                                        GoogleFonts.montserrat(
+                                                      fontSize: 20.0,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.white,
+                                                    ),
+                                                    textAlign: TextAlign.start,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )),
+                                ),
 
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    PlayVideoScreenNew(
-                                                  title: title,
-                                                  video: videoUrlS3,
-                                                  videoId: userVideoId,
-                                                  screenView: orientation,
-                                                  nextVideoTitle:
-                                                      nextVideoTitle,
-                                                  nextVideoThumbnail:
-                                                      nextVideoThumbnail,
-                                                  nextVideoUrl: nextVideoUrl,
-                                                  nextVideoScreenView:
-                                                      nextScreenView,
-                                                  nextVideoId: nextVideoId,
-                                                  pausedPosition: 0,
+                          Container(
+                            margin: EdgeInsets.only(left: 30, right: 30),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Row(
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        if (Platform.isAndroid) {
+                                          /// Android-specific code
+                                          //_flutterToAndroid();
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PlayVideoScreenNew(
+                                                title: title,
+                                                video: videoUrlS3,
+                                                videoId: userVideoId,
+                                                screenView: orientation,
+                                                nextVideoTitle: nextVideoTitle,
+                                                nextVideoThumbnail:
+                                                    nextVideoThumbnail,
+                                                nextVideoUrl: nextVideoUrl,
+                                                nextVideoScreenView:
+                                                    nextScreenView,
+                                                nextVideoId: nextVideoId,
+                                                pausedPosition: 0,
+                                              ),
+                                            ),
+                                          ).then((value) {
+                                            setState(() {});
+                                          });
+                                        } else if (Platform.isIOS) {
+                                          /// iOS-specific code
+                                          //_flutterToIos();
+
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PlayVideoScreenNew(
+                                                title: title,
+                                                video: videoUrlS3,
+                                                videoId: userVideoId,
+                                                screenView: orientation,
+                                                nextVideoTitle: nextVideoTitle,
+                                                nextVideoThumbnail:
+                                                    nextVideoThumbnail,
+                                                nextVideoUrl: nextVideoUrl,
+                                                nextVideoScreenView:
+                                                    nextScreenView,
+                                                nextVideoId: nextVideoId,
+                                                pausedPosition: 0,
+                                              ),
+                                            ),
+                                          ).then((value) {
+                                            setState(() {});
+                                          });
+                                        }
+                                      },
+                                      child: Image(
+                                        height: 45,
+                                        width: 45,
+                                        image: AssetImage(
+                                            'images/icon_play_new.png'),
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    InkWell(
+                                      onTap: () async {
+                                        if (!isInWatchList) {
+                                          setState(() {
+                                            loading = true;
+                                          });
+                                          var res = await VideoService()
+                                              .updateWatchlist(
+                                            videoId: widget.videoId,
+                                            action: 'add',
+                                          );
+                                          setState(() {
+                                            loading = false;
+                                          });
+                                          if (res['success']) {
+                                            setState(() {
+                                              // isWatchlist = true;
+                                            });
+                                            VideoService()
+                                                .getVideoDetails(widget.videoId)
+                                                .then((data) {
+                                              //videoController.add(data);
+                                            });
+
+                                            Fluttertoast.showToast(
+                                              msg: 'Added to watchlist',
+                                              textColor: Colors.black,
+                                              backgroundColor: Colors.white,
+                                            );
+                                          }
+                                        } else {
+                                          setState(() {
+                                            loading = true;
+                                          });
+                                          var res = await VideoService()
+                                              .updateWatchlist(
+                                            videoId: widget.videoId,
+                                            action: 'delete',
+                                          );
+                                          setState(() {
+                                            loading = false;
+                                          });
+                                          if (res['success']) {
+                                            setState(() {
+                                              // isWatchlist = false;
+                                            });
+                                            VideoService()
+                                                .getVideoDetails(widget.videoId)
+                                                .then((data) {
+                                              //videoController.add(data);
+                                            });
+
+                                            Fluttertoast.showToast(
+                                              msg: 'Removed from watchlist',
+                                              textColor: Colors.black,
+                                              backgroundColor: Colors.white,
+                                            );
+                                          }
+                                        }
+                                      },
+                                      child: Container(
+                                        child: loading
+                                            ? Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              )
+                                            : CircleAvatar(
+                                                radius: deviceType ==
+                                                        DeviceType.mobile
+                                                    ? 18
+                                                    : 22,
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                child: Center(
+                                                  child: Icon(
+                                                    isInWatchList
+                                                        ? Icons.check
+                                                        : Icons.add,
+                                                    color: Colors.white,
+                                                    size: deviceType ==
+                                                            DeviceType.mobile
+                                                        ? 25.0
+                                                        : 30.0,
+                                                  ),
                                                 ),
                                               ),
-                                            ).then((value) {
-                                              setState(() {});
-                                            });
-                                          }
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 15,
+                                ),
+                                isInPausedList == true
+                                    ? InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PlayVideoScreenNew(
+                                                title: title,
+                                                video: videoUrlS3,
+                                                videoId: userVideoId,
+                                                screenView: orientation,
+                                                nextVideoTitle: nextVideoTitle,
+                                                nextVideoThumbnail:
+                                                    nextVideoThumbnail,
+                                                nextVideoUrl: nextVideoUrl,
+                                                nextVideoScreenView:
+                                                    nextScreenView,
+                                                nextVideoId: nextVideoId,
+                                                pausedPosition: pausedPosition,
+                                              ),
+                                            ),
+                                          ).then((value) {
+                                            setState(() {});
+                                          });
                                         },
                                         child: Container(
                                           height: 56,
-                                          width: 140,
+                                          width: deviceType == DeviceType.mobile
+                                              ? 220
+                                              : 300,
                                           decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(5.0),
@@ -381,16 +564,8 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
-                                              // SizedBox(
-                                              //   width: 10,
-                                              // ),
-                                              Icon(
-                                                Icons.play_arrow_rounded,
-                                                color: Colors.black,
-                                                size: 43.0,
-                                              ),
                                               Text(
-                                                'PLAY',
+                                                'RESUME WATCHING',
                                                 style: TextStyle(
                                                   color: Colors.black,
                                                   fontSize: deviceType ==
@@ -400,196 +575,53 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
                                             ],
                                           ),
                                         ),
-                                      ),
-                                      SizedBox(width: 10),
-                                      InkWell(
-                                        onTap: () async {
-                                          if (!isInWatchList) {
-                                            setState(() {
-                                              loading = true;
-                                            });
-                                            var res = await VideoService()
-                                                .updateWatchlist(
-                                              videoId: widget.videoId,
-                                              action: 'add',
-                                            );
-                                            setState(() {
-                                              loading = false;
-                                            });
-                                            if (res['success']) {
-                                              setState(() {
-                                                // isWatchlist = true;
-                                              });
-                                              VideoService()
-                                                  .getVideoDetails(
-                                                      widget.videoId)
-                                                  .then((data) {
-                                                //videoController.add(data);
-                                              });
-
-                                              Fluttertoast.showToast(
-                                                msg: 'Added to watchlist',
-                                                textColor: Colors.black,
-                                                backgroundColor: Colors.white,
-                                              );
-                                            }
-                                          } else {
-                                            setState(() {
-                                              loading = true;
-                                            });
-                                            var res = await VideoService()
-                                                .updateWatchlist(
-                                              videoId: widget.videoId,
-                                              action: 'delete',
-                                            );
-                                            setState(() {
-                                              loading = false;
-                                            });
-                                            if (res['success']) {
-                                              setState(() {
-                                                // isWatchlist = false;
-                                              });
-                                              VideoService()
-                                                  .getVideoDetails(
-                                                      widget.videoId)
-                                                  .then((data) {
-                                                //videoController.add(data);
-                                              });
-
-                                              Fluttertoast.showToast(
-                                                msg: 'Removed from watchlist',
-                                                textColor: Colors.black,
-                                                backgroundColor: Colors.white,
-                                              );
-                                            }
-                                          }
-                                        },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: Colors.white,
-                                              width: 3.0,
-                                            ),
-                                          ),
-                                          child: loading
-                                              ? Center(
-                                                  child:
-                                                      CircularProgressIndicator(),
-                                                )
-                                              : CircleAvatar(
-                                                  radius: deviceType ==
-                                                          DeviceType.mobile
-                                                      ? 18
-                                                      : 22,
-                                                  backgroundColor:
-                                                      Colors.transparent,
-                                                  child: Center(
-                                                    child: Icon(
-                                                      isInWatchList
-                                                          ? Icons.check
-                                                          : Icons.add,
-                                                      color: Colors.white,
-                                                      size: deviceType ==
-                                                              DeviceType.mobile
-                                                          ? 25.0
-                                                          : 30.0,
-                                                    ),
-                                                  ),
-                                                ),
-                                        ),
                                       )
-                                      // Container(
-                                      //   height: 45,
-                                      //   width: 50,
-                                      //   decoration: BoxDecoration(
-                                      //     shape: BoxShape.circle,
-                                      //     border: Border.all(
-                                      //       color: Colors.white,
-                                      //       width: 3.0,
-                                      //     ),
-                                      //   ),
-                                      //   child: Center(
-                                      //     child: Icon(
-                                      //       Icons.add,
-                                      //       color: Colors.white,
-                                      //       size: 30.0,
-                                      //     ),
-                                      //   ),
-                                      // ),
-                                    ],
+                                    : Container(),
+                                isInPausedList == true
+                                    ? SizedBox(height: 12)
+                                    : Container(),
+                                Container(
+                                  margin: EdgeInsets.only(right: 30),
+                                  child: Text(
+                                    title,
+                                    style: TextStyle(
+                                      fontSize: deviceType == DeviceType.mobile
+                                          ? 25.0
+                                          : 35.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.start,
                                   ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      flex: 2,
+                    ),
+                    Expanded(
+                      child: Container(
+                        //color: Colors.black,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              padding: EdgeInsets.only(left: 28.0, right: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
                                   SizedBox(height: 12),
-                                  isInPausedList == true
-                                      ? InkWell(
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    PlayVideoScreenNew(
-                                                  title: title,
-                                                  video: videoUrlS3,
-                                                  videoId: userVideoId,
-                                                  screenView: orientation,
-                                                  nextVideoTitle:
-                                                      nextVideoTitle,
-                                                  nextVideoThumbnail:
-                                                      nextVideoThumbnail,
-                                                  nextVideoUrl: nextVideoUrl,
-                                                  nextVideoScreenView:
-                                                      nextScreenView,
-                                                  nextVideoId: nextVideoId,
-                                                  pausedPosition:
-                                                      pausedPosition,
-                                                ),
-                                              ),
-                                            ).then((value) {
-                                              setState(() {});
-                                            });
-                                          },
-                                          child: Container(
-                                            height: 56,
-                                            width:
-                                                deviceType == DeviceType.mobile
-                                                    ? 220
-                                                    : 300,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(5.0),
-                                              color: Colors.white,
-                                            ),
-                                            child: Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  'RESUME WATCHING',
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: deviceType ==
-                                                            DeviceType.mobile
-                                                        ? 18.0
-                                                        : 22,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        )
-                                      : Container(),
-                                  isInPausedList == true
-                                      ? SizedBox(height: 12)
-                                      : Container(),
                                   Row(
                                     children: [
                                       Text(
@@ -615,7 +647,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
                                       Flexible(
                                         child: Text(
                                           category ?? "",
-                                          maxLines: 2,
+                                          maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                             color: Colors.white,
@@ -639,7 +671,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
                                       Flexible(
                                         child: Text(
                                           subCategory ?? '',
-                                          maxLines: 2,
+                                          maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                             color: Colors.white,

@@ -214,21 +214,4 @@ class AccountService {
       return null;
     }
   }
-
-  deleteUser() async {
-    var token = await UserData().getUserToken();
-    var body = json.encode({
-      'token': token,
-    });
-    var res = await http.post(
-      Uri.parse('$serverUrl/deleteUser'),
-      body: body,
-    );
-    print("delete_user-->"+res.body);
-    if (res.statusCode == 200) {
-      return json.decode(res.body);
-    } else {
-      return null;
-    }
-  }
 }

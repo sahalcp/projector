@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:projector/constant.dart';
 import 'package:projector/data/userData.dart';
 import 'package:projector/login/GuideScreen.dart';
-import 'package:projector/signInScreen.dart';
 import 'package:projector/widgets/widgets.dart';
 
 class VideoService {
@@ -223,10 +222,7 @@ class VideoService {
 
   clearResumeList({userId}) async {
     var token = await UserData().getUserToken();
-    var body = json.encode({
-      'token': token,
-      'user_id': userId
-    });
+    var body = json.encode({'token': token, 'user_id': userId});
     var res = await http.post(
       Uri.parse('$serverUrl/v2/clearResumeList'),
       body: body,
@@ -305,7 +301,7 @@ class VideoService {
       Uri.parse('$serverUrl/getFrendsCategory'),
       body: body,
     );
-   // print("category list--${res.body}");
+    // print("category list--${res.body}");
     if (json.decode(res.body)['success'] == true) {
       return json.decode(res.body)['data'];
     } else {
@@ -409,17 +405,14 @@ class VideoService {
     }
 
     // print(formData.readAsBytes());
-    var res = await dio.post(
-      "$serverUrl/addVideoContnet",
-      data: formData,
-      onSendProgress: (sent, total){
-        final progressTotal = sent / total * 100;
-       var  totalProgressValue = progressTotal.round();
-        print("loading value vieoservice--->"+totalProgressValue.toString());
-      }
-    );
+    var res = await dio.post("$serverUrl/addVideoContnet", data: formData,
+        onSendProgress: (sent, total) {
+      final progressTotal = sent / total * 100;
+      var totalProgressValue = progressTotal.round();
+      print("loading value vieoservice--->" + totalProgressValue.toString());
+    });
 
-   // print("upload video content 3 ------"+res.toString());
+    // print("upload video content 3 ------"+res.toString());
 
     if (res.statusCode == 200) {
       return res.data;
@@ -439,7 +432,7 @@ class VideoService {
       Uri.parse('$serverUrl/getMyCategory'),
       body: body,
     );
-     //print("categoryResponse-->"+res.body);
+    //print("categoryResponse-->"+res.body);
     if (json.decode(res.body)['success'] == true) {
       return json.decode(res.body)['data'];
     } else {
@@ -458,7 +451,7 @@ class VideoService {
       Uri.parse('$serverUrl/getMySubCategory'),
       body: body,
     );
-   // print("subcategoryResponse-->"+res.body);
+    // print("subcategoryResponse-->"+res.body);
     if (json.decode(res.body)['success'] == true) {
       return json.decode(res.body);
     } else {
@@ -502,7 +495,7 @@ class VideoService {
       Uri.parse('$serverUrl/addEditSubCategory'),
       body: body,
     );
-     print("add edit sub category ----"+res.body);
+    print("add edit sub category ----" + res.body);
     if (res.statusCode == 200) {
       return json.decode(res.body);
     } else {
@@ -656,12 +649,12 @@ class VideoService {
       Uri.parse('$serverUrl/getUserContents'),
       body: body,
     );
-   // print("usercontents--->"+res.body);
+    // print("usercontents--->"+res.body);
     if (res.statusCode == 200) {
       var data = json.decode(res.body);
       // print("usercontents--->"+data);
       if (data['success'] == true) {
-        return data['data'];
+        return data;
       } else {
         return [];
       }
@@ -745,7 +738,7 @@ class VideoService {
         body: body,
       );
       if (res.statusCode == 200) {
-        return json.decode(res.body)['data'];
+        return json.decode(res.body);
       } else {
         return null;
       }
@@ -775,15 +768,12 @@ class VideoService {
 
   deleteVideo({videoId}) async {
     var token = await UserData().getUserToken();
-    var body = json.encode({
-      'token': token,
-      "video_id": videoId
-    });
+    var body = json.encode({'token': token, "video_id": videoId});
     var res = await http.post(
       Uri.parse('$serverUrl/deleteVideo'),
       body: body,
     );
-     print("deletevideo--->"+res.body);
+    print("deletevideo--->" + res.body);
     if (res.statusCode == 200) {
       return json.decode(res.body);
     } else {
@@ -793,10 +783,7 @@ class VideoService {
 
   deleteAlbum({albumId}) async {
     var token = await UserData().getUserToken();
-    var body = json.encode({
-      'token': token,
-      "album_id": albumId
-    });
+    var body = json.encode({'token': token, "album_id": albumId});
     var res = await http.post(
       Uri.parse('$serverUrl/deleteMyAlbum'),
       body: body,
@@ -808,5 +795,4 @@ class VideoService {
       return null;
     }
   }
-
 }

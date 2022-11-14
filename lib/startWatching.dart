@@ -926,7 +926,7 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
     super.didChangeDependencies();
   }
 
-  bool viewAll = true;
+  bool viewAll = false;
   String viewAllText = 'View all';
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -1193,12 +1193,10 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                                             if (index == 0) {
                                               manageProjectorButtonEnabled =
                                                   false;
-                                              return Container(
-                                                child: _indexProfileItem(
-                                                    deviceType: deviceType,
-                                                    width: width,
-                                                    height: height),
-                                              );
+                                              return _indexProfileItem(
+                                                  deviceType: deviceType,
+                                                  width: width,
+                                                  height: height);
                                             } else {
                                               final userId = snapshot
                                                       .data[index - 1]['id'] ??
@@ -1217,28 +1215,23 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                                               manageProjectorButtonEnabled =
                                                   true;
 
-                                              return Container(
-                                                child: _profileItem(
-                                                    userId: userId,
-                                                    userName: userName,
-                                                    userEmail: userEmail,
-                                                    responseImage:
-                                                        responseImage,
-                                                    deviceType: deviceType,
-                                                    width: width,
-                                                    height: height),
-                                              );
+                                              return _profileItem(
+                                                  userId: userId,
+                                                  userName: userName,
+                                                  userEmail: userEmail,
+                                                  responseImage: responseImage,
+                                                  deviceType: deviceType,
+                                                  width: width,
+                                                  height: height);
                                             }
                                           },
                                         ),
                                       )
                                     : Padding(
-                                        padding: const EdgeInsets.only(
-                                            right: 10.0,
-                                            left: 10.0,
-                                            bottom: 32.0),
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: (height * 0.05)),
                                         child: SizedBox(
-                                          height: max(height * 0.2, 120),
+                                          height: max(height * 0.24, 120),
                                           child: ListView.builder(
                                             scrollDirection: Axis.horizontal,
                                             itemCount:
@@ -1247,11 +1240,11 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                                               if (index == 0) {
                                                 manageProjectorButtonEnabled =
                                                     false;
-                                                return Container(
-                                                  child: _indexProfileItem(
-                                                      deviceType: deviceType,
-                                                      width: width,
-                                                      height: height),
+                                                return _indexProfileItem(
+                                                  deviceType: deviceType,
+                                                  width: width,
+                                                  height: height,
+                                                  isList: true,
                                                 );
                                               } else {
                                                 final userId =
@@ -1272,17 +1265,15 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                                                 manageProjectorButtonEnabled =
                                                     true;
 
-                                                return Container(
-                                                  child: _profileItem(
-                                                      userId: userId,
-                                                      userName: userName,
-                                                      userEmail: userEmail,
-                                                      responseImage:
-                                                          responseImage,
-                                                      deviceType: deviceType,
-                                                      width: width,
-                                                      height: height),
-                                                );
+                                                return _listProfileItem(
+                                                    userId: userId,
+                                                    userName: userName,
+                                                    userEmail: userEmail,
+                                                    responseImage:
+                                                        responseImage,
+                                                    deviceType: deviceType,
+                                                    width: width,
+                                                    height: height);
                                               }
                                             },
                                           ),
@@ -1455,8 +1446,12 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
     });
   }
 
+  // Index profile
   Widget _indexProfileItem(
-      {DeviceType deviceType, double width, double height}) {
+      {DeviceType deviceType,
+      double width,
+      double height,
+      bool isList = false}) {
     return InkWell(
       onTap: () {
         navigate(
@@ -1472,13 +1467,21 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
       child: Column(
         children: [
           Container(
-            margin: EdgeInsets.all(6.0),
-            height: deviceType == DeviceType.mobile ? height * 0.15 : 200,
-            width: deviceType == DeviceType.mobile ? width * 0.33 : 200,
+            margin: (isList) ? null : EdgeInsets.all(6.0),
+            height: deviceType == DeviceType.mobile
+                ? ((isList) ? height * 0.18 : height * 0.15)
+                : 200,
+            width: deviceType == DeviceType.mobile
+                ? ((isList) ? width * 0.36 : width * 0.33)
+                : 200,
             child: Padding(
-              padding: EdgeInsets.all(
-                deviceType == DeviceType.mobile ? width * 0.07 : width * 0.00,
-              ),
+              padding: EdgeInsets.only(
+                  left: deviceType == DeviceType.mobile ? width * 0.07 : 0,
+                  right: deviceType == DeviceType.mobile ? width * 0.07 : 0,
+                  top: deviceType == DeviceType.mobile ? width * 0.07 : 0,
+                  bottom: (!isList && deviceType == DeviceType.mobile)
+                      ? width * 0.07
+                      : 0),
               child: Center(
                 child: Container(
                   decoration: BoxDecoration(
@@ -1486,7 +1489,7 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                     border: Border.all(color: Colors.white),
                   ),
                   child: Image(
-                    height: height * 0.08,
+                    height: (isList) ? height * 0.10 : height * 0.08,
                     image: AssetImage('images/person.png'),
                   ),
                 ),
@@ -1494,14 +1497,13 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
             ),
           ),
           Container(
-            margin: EdgeInsets.only(left: 15, right: 15),
             child: Text(
               "Your Projector",
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: GoogleFonts.montserrat(
                 color: Colors.white,
-                fontSize: deviceType == DeviceType.mobile ? 11.0 : 17.0,
+                fontSize: deviceType == DeviceType.mobile ? 12.5 : 17.0,
                 fontWeight: FontWeight.w600,
               ),
               textAlign: TextAlign.center,
@@ -1512,6 +1514,7 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
     );
   }
 
+  // Grid View's Profile item
   Widget _profileItem({
     String userId,
     String userName,
@@ -1573,14 +1576,121 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(left: 15, right: 15),
+                  margin: EdgeInsets.symmetric(horizontal: 15),
                   child: Text(
                     userName == "" ? userEmail : userName,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.montserrat(
                       color: Colors.white,
-                      fontSize: deviceType == DeviceType.mobile ? 11.0 : 17.0,
+                      fontSize: deviceType == DeviceType.mobile ? 12.5 : 17.0,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+            Visibility(
+              visible: removeButtonEnabled,
+              child: Positioned(
+                top: 15.0,
+                right: 15.0,
+                child: InkWell(
+                  onTap: () {
+                    removeDialog(
+                        context,
+                        height,
+                        width,
+                        userName == "" ? userEmail : userName,
+                        userId,
+                        deviceType);
+                  },
+                  child: Image.asset(
+                    "images/icon_remove.png",
+                    width: deviceType == DeviceType.mobile ? 25 : 38,
+                    height: deviceType == DeviceType.mobile ? 25 : 38,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // List View's profile item
+  Widget _listProfileItem({
+    String userId,
+    String userName,
+    String userEmail,
+    String responseImage,
+    DeviceType deviceType,
+    double width,
+    double height,
+  }) {
+    return InkWell(
+      onTap: () {
+        navigate(
+          context,
+          NewContentViewScreen(
+            myVideos: false,
+            userId: userId,
+            userEmail: userName,
+            userImage: responseImage,
+          ),
+        );
+      },
+      child: Center(
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                Container(
+                  //margin: EdgeInsets.all(6.0),
+                  height: deviceType == DeviceType.mobile ? height * 0.18 : 200,
+                  width: deviceType == DeviceType.mobile ? width * 0.36 : 200,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                        left:
+                            deviceType == DeviceType.mobile ? width * 0.07 : 0,
+                        right:
+                            deviceType == DeviceType.mobile ? width * 0.07 : 0,
+                        top:
+                            deviceType == DeviceType.mobile ? width * 0.07 : 0),
+                    child: Center(
+                      child: responseImage != null
+                          ? CircleAvatar(
+                              backgroundColor: Colors.white,
+                              radius: deviceType == DeviceType.mobile ? 36 : 48,
+                              child: CircleAvatar(
+                                radius:
+                                    deviceType == DeviceType.mobile ? 34 : 47,
+                                backgroundImage: NetworkImage(responseImage),
+                              ),
+                            )
+                          : Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.white),
+                              ),
+                              child: Image(
+                                height: height * 0.10,
+                                image: AssetImage('images/person.png'),
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
+                Container(
+                  child: Text(
+                    userName == "" ? userEmail : userName,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.montserrat(
+                      color: Colors.white,
+                      fontSize: deviceType == DeviceType.mobile ? 12.5 : 17.0,
                       fontWeight: FontWeight.w600,
                     ),
                     textAlign: TextAlign.center,

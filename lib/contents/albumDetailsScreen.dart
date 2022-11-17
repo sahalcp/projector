@@ -96,7 +96,7 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
                                   right: 0,
                                   child: Container(
                                     width: 250,
-                                    height: 250,
+                                    height: 400,
                                     foregroundDecoration: BoxDecoration(
                                       gradient: LinearGradient(
                                         colors: [
@@ -105,13 +105,13 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
                                         ],
                                         begin: FractionalOffset.centerLeft,
                                         end: FractionalOffset.centerRight,
-                                        stops: [0.0, 1.0],
+                                        stops: [0.0, 0.75],
                                       ),
                                     ),
                                     decoration: BoxDecoration(
                                       image: DecorationImage(
                                         image: NetworkImage(image),
-                                        fit: BoxFit.fill,
+                                        fit: BoxFit.cover,
                                       ),
                                     ),
                                   ),

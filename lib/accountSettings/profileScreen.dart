@@ -1,14 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:projector/accountSettings/editUserDetails.dart';
 import 'package:projector/apis/accountService.dart';
+import 'package:projector/data/userData.dart';
+import 'package:projector/login/GuideScreen.dart';
 import 'package:projector/widgets/widgets.dart';
+// import 'package:projector/widgets/widgets.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -17,8 +19,6 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String userImage;
-  bool isBusy = false;
-
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -80,18 +80,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     print(snapshot.data);
-                    var email = snapshot.data['email'];
-                    var countryCode = snapshot.data['country_code'] ?? "";
-                    var mobile = snapshot.data['mobile'] ?? "";
+                    final email = snapshot.data['email'];
+                    final countryCode = snapshot.data['country_code'] ?? "";
+                    final mobile = snapshot.data['mobile'] ?? "";
                     userImage = snapshot.data['image'];
                     return Column(
                       children: [
                         Center(
                           child: userImage != null
                               ? CircleAvatar(
-                                  radius: width * 0.21,
+                                  radius: width * 0.11,
                                   backgroundImage: userImage.contains('http')
-                                      ? CachedNetworkImageProvider(userImage)
+                                      ? NetworkImage(userImage)
                                       : FileImage(File(userImage)),
                                 )
                               : Container(
@@ -110,18 +110,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                         ),
-                        SizedBox(height: 24.0),
                         Center(
                           child: InkWell(
                             onTap: () async {
-                              if (isBusy) return;
                               final image = await ImagePicker()
                                   .getImage(source: ImageSource.gallery);
                               List<int> imageBytes;
                               String base64Image;
                               if (image != null) {
                                 setState(() {
-                                  isBusy = true;
                                   userImage = image.path;
                                 });
                                 imageBytes = File(image.path).readAsBytesSync();
@@ -134,20 +131,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 );
 
                                 if (res["success"] == true) {
-                                  setState(() {
-                                    isBusy = false;
-                                  });
-                                  _showToast(
-                                      context, 'Profile Picture Updated');
+                                  setState(() {});
+                                  _showToast(context);
                                   /* Fluttertoast.showToast(
                                     msg: 'Profile Updated',
                                     textColor: Colors.white,
                                     backgroundColor: Colors.black,
                                   );*/
                                 } else {
-                                  setState(() {
-                                    isBusy = false;
-                                  });
                                   Fluttertoast.showToast(
                                     msg: 'Try Again',
                                     backgroundColor: Colors.black,
@@ -155,16 +146,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 }
                               }
                             },
-                            child: (isBusy)
-                                ? CircularProgressIndicator()
-                                : Text(
-                                    'Update Avatar',
-                                    style: GoogleFonts.montserrat(
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.w700,
-                                      color: Color(0xff5AA5EF),
-                                    ),
-                                  ),
+                            child: Text(
+                              'Edit Profile Picture',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xff5AA5EF),
+                              ),
+                            ),
                           ),
                         ),
                         SizedBox(height: 50),
@@ -183,6 +172,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               SizedBox(height: 30),
                               userDataRow(context, 'Password',
                                   '***************', 'Password'),
+                              SizedBox(height: 80),
+                              InkWell(
+                                onTap: () {
+                                  deActivateDialog(context, height, width);
+                                },
+                                child: Text(
+                                  'Deactivate Account',
+                                  style: GoogleFonts.montserrat(
+                                    color: Colors.red,
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -247,13 +250,151 @@ userDataRow(context, title, data, heading) {
   );
 }
 
-void _showToast(BuildContext context, String text) {
+void _showToast(BuildContext context) {
   final scaffold = ScaffoldMessenger.of(context);
   scaffold.showSnackBar(
     SnackBar(
-      content: Text(text),
+      content: const Text('Profile Updated'),
       // action: SnackBarAction(label: 'UNDO', onPressed: scaffold.hideCurrentSnackBar),
     ),
+  );
+}
+
+deActivateDialog(context, height, width) {
+  return showDialog(
+    context: context,
+    barrierColor: Color(0xff333333).withOpacity(0.7),
+    builder: (context) {
+      return StatefulBuilder(builder: (context, setState) {
+        return Container(
+          height: height * 0.3,
+          color: Color(0xff333333).withOpacity(0.3),
+          child: Dialog(
+            backgroundColor: Colors.white.withOpacity(0),
+            insetPadding: EdgeInsets.only(
+              left: 26.0,
+              right: 25.0,
+              top: 60.0,
+              bottom: 80.0,
+            ),
+            child: Container(
+                height: height * 0.4,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12.0),
+                  border: Border.all(
+                    color: Color(0xff707070),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Center(
+                      child: Container(
+                        margin: EdgeInsets.only(left: 10, right: 10),
+                        child: Text(
+                          'Are you sure?',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 25.0,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                    ),
+                    Center(
+                      child: Container(
+                        margin: EdgeInsets.only(left: 20, right: 20),
+                        child: Text(
+                          'You are about to deactivate your account. Are you sure you want to continue?',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(left: 10, right: 10),
+                      alignment: Alignment.center,
+                      height: height * 0.055,
+                      width: width * 0.35,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(7),
+                      ),
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(7),
+                        ),
+                        color: Color(0xff5AA5EF),
+                        onPressed: () async {
+                          Navigator.pop(context);
+                        },
+                        child: Center(
+                          child: Text(
+                            'Cancel',
+                            style: GoogleFonts.poppins(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        var response = await AccountService().deleteUser();
+                        if (response['success']) {
+                          Navigator.pop(context);
+                          Fluttertoast.showToast(
+                            backgroundColor: Colors.white,
+                            msg: response['message'],
+                            textColor: Colors.black,
+                          );
+
+                          UserData().deleteUserLogged();
+                          navigateReplace(context, GuideScreens());
+                        }
+                      },
+                      child: Center(
+                        child: Container(
+                          margin: EdgeInsets.only(left: 10, right: 10),
+                          child: Text(
+                            'Deactivate',
+                            style: GoogleFonts.montserrat(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.red,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                  ],
+                )),
+          ),
+        );
+      });
+    },
   );
 }
 

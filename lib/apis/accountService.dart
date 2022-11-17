@@ -5,12 +5,11 @@ import 'dart:convert';
 import 'package:projector/data/userData.dart';
 
 class AccountService {
-
   getProfile() async {
     var token = await UserData().getUserToken();
     var body = json.encode({'token': token});
     var res = await http.post(
-     Uri.parse( '$serverUrl/getMyProfile'),
+      Uri.parse('$serverUrl/getMyProfile'),
       body: body,
     );
     var data = json.decode(res.body);
@@ -74,7 +73,7 @@ class AccountService {
       Uri.parse('$serverUrl/updateProfileImge'),
       body: body,
     );
-    print("profile image"+res.body);
+    print("profile image" + res.body);
     if (res.statusCode == 200) {
       return json.decode(res.body);
     } else {
@@ -208,6 +207,23 @@ class AccountService {
       body: body,
     );
     // print("123"+res.body);
+    if (res.statusCode == 200) {
+      return json.decode(res.body);
+    } else {
+      return null;
+    }
+  }
+
+  deleteUser() async {
+    var token = await UserData().getUserToken();
+    var body = json.encode({
+      'token': token,
+    });
+    var res = await http.post(
+      Uri.parse('$serverUrl/deleteUser'),
+      body: body,
+    );
+    print("delete_user-->" + res.body);
     if (res.statusCode == 200) {
       return json.decode(res.body);
     } else {

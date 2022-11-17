@@ -29,44 +29,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
       top: false,
       bottom: false,
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          title: Text(
+            'Account Settings',
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+              )),
+          elevation: 0,
+        ),
         body: Container(
           color: Colors.white,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
             children: [
-              SizedBox(height: height * 0.07),
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 16,
-                  top: 10,
-                  right: 15.0,
-                ),
-                child: Row(
-                  children: <Widget>[
-                    InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Icon(
-                        Icons.arrow_back_ios,
-                      ),
-                    ),
-                    SizedBox(
-                      width: width * 0.02,
-                    ),
-                    Text(
-                      'Account Settings',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    SizedBox(width: width * 0.06)
-                  ],
-                ),
-              ),
-              SizedBox(height: 50),
+              SizedBox(height: 24.0),
               Padding(
                 padding: EdgeInsets.only(left: 15.0),
                 child: Text(
@@ -185,9 +172,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               SizedBox(height: 30),
                               userDataRow(context, 'Password',
                                   '***************', 'Password'),
-                              SizedBox(height: 80),
-                              InkWell(
-                                onTap: () {
+                              SizedBox(height: 75.0),
+                              TextButton(
+                                onPressed: () {
                                   deActivateDialog(context, height, width);
                                 },
                                 child: Text(
@@ -199,6 +186,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                               ),
+                              SizedBox(height: 24.0),
                             ],
                           ),
                         ),
@@ -291,7 +279,7 @@ deActivateDialog(context, height, width) {
               bottom: 80.0,
             ),
             child: Container(
-                height: height * 0.4,
+                height: 300.0,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12.0),
@@ -319,7 +307,7 @@ deActivateDialog(context, height, width) {
                       ),
                     ),
                     SizedBox(
-                      height: 50,
+                      height: 24.0,
                     ),
                     Center(
                       child: Container(

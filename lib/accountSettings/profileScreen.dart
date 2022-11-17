@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,7 +11,6 @@ import 'package:projector/apis/accountService.dart';
 import 'package:projector/data/userData.dart';
 import 'package:projector/login/GuideScreen.dart';
 import 'package:projector/widgets/widgets.dart';
-// import 'package:projector/widgets/widgets.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -19,6 +19,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String userImage;
+  bool isBusy = false;
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -80,7 +82,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     print(snapshot.data);
-                    final email = snapshot.data['email'];
+                    final email = snapshot.data['email'] ?? "";
                     final countryCode = snapshot.data['country_code'] ?? "";
                     final mobile = snapshot.data['mobile'] ?? "";
                     userImage = snapshot.data['image'];
@@ -89,9 +91,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Center(
                           child: userImage != null
                               ? CircleAvatar(
-                                  radius: width * 0.11,
+                                  radius: width * 0.21,
                                   backgroundImage: userImage.contains('http')
-                                      ? NetworkImage(userImage)
+                                      ? CachedNetworkImageProvider(userImage)
                                       : FileImage(File(userImage)),
                                 )
                               : Container(
@@ -110,15 +112,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                         ),
+                        SizedBox(height: 24.0),
                         Center(
                           child: InkWell(
                             onTap: () async {
+                              if (isBusy) return;
                               final image = await ImagePicker()
                                   .getImage(source: ImageSource.gallery);
                               List<int> imageBytes;
                               String base64Image;
                               if (image != null) {
                                 setState(() {
+                                  isBusy = true;
                                   userImage = image.path;
                                 });
                                 imageBytes = File(image.path).readAsBytesSync();
@@ -131,14 +136,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 );
 
                                 if (res["success"] == true) {
-                                  setState(() {});
-                                  _showToast(context);
+                                  setState(() {
+                                    isBusy = false;
+                                  });
+                                  _showToast(
+                                      context, 'Profile Picture Updated');
                                   /* Fluttertoast.showToast(
                                     msg: 'Profile Updated',
                                     textColor: Colors.white,
                                     backgroundColor: Colors.black,
                                   );*/
                                 } else {
+                                  setState(() {
+                                    isBusy = false;
+                                  });
                                   Fluttertoast.showToast(
                                     msg: 'Try Again',
                                     backgroundColor: Colors.black,
@@ -146,14 +157,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 }
                               }
                             },
-                            child: Text(
-                              'Edit Profile Picture',
-                              style: GoogleFonts.montserrat(
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xff5AA5EF),
-                              ),
-                            ),
+                            child: (isBusy)
+                                ? CircularProgressIndicator()
+                                : Text(
+                                    'Update Avatar',
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xff5AA5EF),
+                                    ),
+                                  ),
                           ),
                         ),
                         SizedBox(height: 50),
@@ -250,11 +263,11 @@ userDataRow(context, title, data, heading) {
   );
 }
 
-void _showToast(BuildContext context) {
+void _showToast(BuildContext context, String text) {
   final scaffold = ScaffoldMessenger.of(context);
   scaffold.showSnackBar(
     SnackBar(
-      content: const Text('Profile Updated'),
+      content: Text(text),
       // action: SnackBarAction(label: 'UNDO', onPressed: scaffold.hideCurrentSnackBar),
     ),
   );

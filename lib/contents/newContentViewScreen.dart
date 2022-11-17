@@ -2224,6 +2224,9 @@ class _NewContentViewScreenState extends State<NewContentViewScreen> {
                                                     );
                                                   }
                                                   return Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
                                                     mainAxisSize:
                                                         MainAxisSize.min,
                                                     children: [

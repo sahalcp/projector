@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,6 +10,7 @@ import 'package:projector/apis/accountService.dart';
 import 'package:projector/data/userData.dart';
 import 'package:projector/login/GuideScreen.dart';
 import 'package:projector/widgets/widgets.dart';
+// import 'package:projector/widgets/widgets.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -19,8 +19,6 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String userImage;
-  bool isBusy = false;
-
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -29,31 +27,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
       top: false,
       bottom: false,
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          title: Text(
-            'Account Settings',
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.black,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          leading: IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: Icon(
-                Icons.arrow_back_ios,
-                color: Colors.black,
-              )),
-          elevation: 0,
-        ),
         body: Container(
           color: Colors.white,
-          child: ListView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 24.0),
+              SizedBox(height: height * 0.07),
+              Padding(
+                padding: EdgeInsets.only(
+                  left: 16,
+                  top: 10,
+                  right: 15.0,
+                ),
+                child: Row(
+                  children: <Widget>[
+                    InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Icon(
+                        Icons.arrow_back_ios,
+                      ),
+                    ),
+                    SizedBox(
+                      width: width * 0.02,
+                    ),
+                    Text(
+                      'Account Settings',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    SizedBox(width: width * 0.06)
+                  ],
+                ),
+              ),
+              SizedBox(height: 50),
               Padding(
                 padding: EdgeInsets.only(left: 15.0),
                 child: Text(
@@ -69,18 +80,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     print(snapshot.data);
-                    final email = snapshot.data['email'] ?? "";
-                    final countryCode = snapshot.data['country_code'] ?? "";
-                    final mobile = snapshot.data['mobile'] ?? "";
-                    userImage = snapshot.data['image'];
+                    var email = snapshot.data['email'];
+                    //var countryCode = snapshot.data['country_code'];
+                   // var mobile = snapshot.data['mobile'];
+                    var countryCode = "";
+                    var mobile = "";
+                    userImage=snapshot.data['image'];
                     return Column(
                       children: [
                         Center(
                           child: userImage != null
                               ? CircleAvatar(
-                                  radius: width * 0.21,
+                                  radius: width * 0.11,
                                   backgroundImage: userImage.contains('http')
-                                      ? CachedNetworkImageProvider(userImage)
+                                      ? NetworkImage(userImage)
                                       : FileImage(File(userImage)),
                                 )
                               : Container(
@@ -99,44 +112,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                         ),
-                        SizedBox(height: 24.0),
                         Center(
                           child: InkWell(
                             onTap: () async {
-                              if (isBusy) return;
                               final image = await ImagePicker()
                                   .getImage(source: ImageSource.gallery);
                               List<int> imageBytes;
                               String base64Image;
                               if (image != null) {
                                 setState(() {
-                                  isBusy = true;
                                   userImage = image.path;
                                 });
                                 imageBytes = File(image.path).readAsBytesSync();
                                 base64Image =
                                     // Base64Encoder().convert(imageBytes);
                                     base64Encode(imageBytes);
-                                var res =
-                                    await AccountService().updateProfileImage(
+                                var res = await AccountService().updateProfileImage(
                                   image: base64Image,
                                 );
 
-                                if (res["success"] == true) {
+                                if (res["success"] == true){
+
                                   setState(() {
-                                    isBusy = false;
                                   });
-                                  _showToast(
-                                      context, 'Profile Picture Updated');
-                                  /* Fluttertoast.showToast(
+_showToast(context);
+                                 /* Fluttertoast.showToast(
                                     msg: 'Profile Updated',
                                     textColor: Colors.white,
                                     backgroundColor: Colors.black,
                                   );*/
-                                } else {
-                                  setState(() {
-                                    isBusy = false;
-                                  });
+                                }
+                                else{
                                   Fluttertoast.showToast(
                                     msg: 'Try Again',
                                     backgroundColor: Colors.black,
@@ -144,16 +150,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 }
                               }
                             },
-                            child: (isBusy)
-                                ? CircularProgressIndicator()
-                                : Text(
-                                    'Update Avatar',
-                                    style: GoogleFonts.montserrat(
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.w700,
-                                      color: Color(0xff5AA5EF),
-                                    ),
-                                  ),
+                            child: Text(
+                              'Edit Profile Picture',
+                              style: GoogleFonts.montserrat(
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xff5AA5EF),
+                              ),
+                            ),
                           ),
                         ),
                         SizedBox(height: 50),
@@ -172,12 +176,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               SizedBox(height: 30),
                               userDataRow(context, 'Password',
                                   '***************', 'Password'),
-                              SizedBox(height: 75.0),
-                              TextButton(
-                                onPressed: () {
+                              SizedBox(height: 80),
+
+                              InkWell(
+                                onTap: (){
                                   deActivateDialog(context, height, width);
                                 },
-                                child: Text(
+                                child:  Text(
                                   'Deactivate Account',
                                   style: GoogleFonts.montserrat(
                                     color: Colors.red,
@@ -186,7 +191,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 24.0),
                             ],
                           ),
                         ),
@@ -251,22 +255,26 @@ userDataRow(context, title, data, heading) {
   );
 }
 
-void _showToast(BuildContext context, String text) {
+void _showToast(BuildContext context) {
+
   final scaffold = ScaffoldMessenger.of(context);
   scaffold.showSnackBar(
     SnackBar(
-      content: Text(text),
-      // action: SnackBarAction(label: 'UNDO', onPressed: scaffold.hideCurrentSnackBar),
+      content: const Text('Profile Updated'),
+     // action: SnackBarAction(label: 'UNDO', onPressed: scaffold.hideCurrentSnackBar),
     ),
   );
 }
 
 deActivateDialog(context, height, width) {
+
   return showDialog(
     context: context,
     barrierColor: Color(0xff333333).withOpacity(0.7),
     builder: (context) {
       return StatefulBuilder(builder: (context, setState) {
+
+
         return Container(
           height: height * 0.3,
           color: Color(0xff333333).withOpacity(0.3),
@@ -279,7 +287,7 @@ deActivateDialog(context, height, width) {
               bottom: 80.0,
             ),
             child: Container(
-                height: 300.0,
+                height: height * 0.4,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12.0),
@@ -289,12 +297,10 @@ deActivateDialog(context, height, width) {
                 ),
                 child: Column(
                   children: [
-                    SizedBox(
-                      height: 20,
-                    ),
+                    SizedBox(height: 20,),
                     Center(
                       child: Container(
-                        margin: EdgeInsets.only(left: 10, right: 10),
+                        margin: EdgeInsets.only(left: 10,right: 10),
                         child: Text(
                           'Are you sure?',
                           style: GoogleFonts.montserrat(
@@ -306,12 +312,10 @@ deActivateDialog(context, height, width) {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 24.0,
-                    ),
+                    SizedBox(height: 50,),
                     Center(
                       child: Container(
-                        margin: EdgeInsets.only(left: 20, right: 20),
+                        margin: EdgeInsets.only(left: 20,right: 20),
                         child: Text(
                           'You are about to deactivate your account. Are you sure you want to continue?',
                           style: GoogleFonts.montserrat(
@@ -323,11 +327,9 @@ deActivateDialog(context, height, width) {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 50,
-                    ),
+                    SizedBox(height: 50,),
                     Container(
-                      margin: EdgeInsets.only(left: 10, right: 10),
+                      margin: EdgeInsets.only(left: 10,right: 10),
                       alignment: Alignment.center,
                       height: height * 0.055,
                       width: width * 0.35,
@@ -340,6 +342,7 @@ deActivateDialog(context, height, width) {
                         ),
                         color: Color(0xff5AA5EF),
                         onPressed: () async {
+
                           Navigator.pop(context);
                         },
                         child: Center(
@@ -354,13 +357,11 @@ deActivateDialog(context, height, width) {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 30,
-                    ),
+                    SizedBox(height: 30,),
                     InkWell(
-                      onTap: () async {
+                      onTap: () async{
                         var response = await AccountService().deleteUser();
-                        if (response['success']) {
+                        if(response['success']){
                           Navigator.pop(context);
                           Fluttertoast.showToast(
                             backgroundColor: Colors.white,
@@ -374,7 +375,7 @@ deActivateDialog(context, height, width) {
                       },
                       child: Center(
                         child: Container(
-                          margin: EdgeInsets.only(left: 10, right: 10),
+                          margin: EdgeInsets.only(left: 10,right: 10),
                           child: Text(
                             'Deactivate',
                             style: GoogleFonts.montserrat(
@@ -387,11 +388,10 @@ deActivateDialog(context, height, width) {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 10,
-                    ),
+                    SizedBox(height: 10,),
                   ],
-                )),
+                )
+            ),
           ),
         );
       });

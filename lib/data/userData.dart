@@ -130,14 +130,4 @@ class UserData {
 
     return isFirstLaunch;
   }
-
-  isFirstLaunchShowCaseVideoListPage() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    bool isFirstLaunch = prefs.getBool("video_list") ?? true;
-
-    if (isFirstLaunch) prefs.setBool("video_list", false);
-
-    return isFirstLaunch;
-  }
 }

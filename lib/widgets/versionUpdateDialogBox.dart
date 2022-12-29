@@ -6,8 +6,9 @@ class VersionUpdateDialogBox extends StatefulWidget {
   final String title, descriptions, text;
   final Image img;
   final VoidCallback updateButtonClick;
+  final VoidCallback cancelButtonClick;
 
-  const VersionUpdateDialogBox({Key key,this.title, this.descriptions, this.text, this.img, this.updateButtonClick}) : super(key: key);
+  const VersionUpdateDialogBox({Key key,this.title, this.descriptions, this.text, this.img, this.updateButtonClick, this.cancelButtonClick}) : super(key: key);
 
   @override
   State<VersionUpdateDialogBox> createState() => _VersionUpdateDialogBoxState();
@@ -56,9 +57,7 @@ class _VersionUpdateDialogBoxState extends State<VersionUpdateDialogBox> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   InkWell(
-                    onTap: (){
-                      exit(0);
-                    },
+                    onTap: widget.cancelButtonClick,
                     child: Text("Cancel",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w600,color: Colors.blue),),
                   ),
                   InkWell(

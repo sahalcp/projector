@@ -1,11 +1,17 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:new_version/new_version.dart';
 import 'package:projector/data/userData.dart';
+import 'package:projector/getStartedScreen.dart';
 import 'package:projector/login/GuideScreen.dart';
+import 'package:projector/sideDrawer/dashboard.dart';
+import 'package:projector/sideDrawer/listVideo.dart';
+import 'package:projector/signInScreen.dart';
 import 'package:projector/startWatching.dart';
 import 'package:projector/style.dart';
+import 'package:projector/widgets/logo.dart';
 import 'package:projector/widgets/versionUpdateDialogBox.dart';
 import 'package:projector/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
@@ -17,15 +23,17 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  var status;
+
+  var  status;
   @override
   void initState() {
     if (Platform.isIOS) {
-      //_checkVersion();
+     // _checkVersion();
       _goToScreen();
-    } else if (Platform.isAndroid) {
+    }else if (Platform.isAndroid){
       _goToScreen();
     }
+
 
     super.initState();
   }
@@ -35,7 +43,7 @@ class _SplashScreenState extends State<SplashScreen> {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.height;
 
-    return Sizer(builder: (context, orientation, deviceType) {
+    return Sizer(builder: (context, orientation, deviceType){
       return Scaffold(
         //backgroundColor: Color(0xff14141E),
         backgroundColor: appBgColor,
@@ -47,8 +55,8 @@ class _SplashScreenState extends State<SplashScreen> {
               children: <Widget>[
                 //LogoExpanded(width: width)
                 Image(
-                  height: deviceType == DeviceType.mobile ? 350 : 600,
-                  width: deviceType == DeviceType.mobile ? 350 : 600,
+                  height:deviceType == DeviceType.mobile? 350 : 600,
+                  width: deviceType == DeviceType.mobile? 350 : 600,
                   image: AssetImage('images/splash_anim_1080.gif'),
                 ),
               ],
@@ -59,28 +67,37 @@ class _SplashScreenState extends State<SplashScreen> {
     });
   }
 
-  void _checkVersion() async {
+  void _checkVersion() async{
+
     final newVersion = NewVersion(
       androidId: "com.projectorllc.projectorapp",
+
     );
 
-    status = await newVersion.getVersionStatus();
-    if (status.canUpdate) {
-      // update Dialog
-      showDialog(
-          context: context,
+
+
+     status = await newVersion.getVersionStatus();
+    if(status.canUpdate){
+     // update Dialog
+      showDialog(context: context,
           barrierDismissible: false,
-          builder: (BuildContext context) {
+          builder: (BuildContext context){
             return VersionUpdateDialogBox(
               title: "",
               descriptions: "",
               text: "",
-              updateButtonClick: () {
+              updateButtonClick: (){
                 launch(status.appStoreLink);
               },
+              cancelButtonClick: (){
+                Navigator.pop(context);
+                _goToScreen();
+              },
             );
-          });
-    } else {
+          }
+      );
+
+    }else{
       _goToScreen();
     }
 
@@ -88,9 +105,9 @@ class _SplashScreenState extends State<SplashScreen> {
     print("DEVICE : ${status.localVersion}");
     print("STORE : ${status.storeVersion}");
     print("STORE LINK : ${status.appStoreLink}");
-  }
 
-  void _goToScreen() {
+  }
+  void _goToScreen(){
     Future.delayed(Duration(seconds: 5), () {
       UserData().getUserLogged().then((data) {
         try {
@@ -101,6 +118,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
             navigateReplace(context, StartWatchingScreen());
 
+
             //   else
             //     navigateReplace(context, GetStartedScreen());
             // } catch (e) {
@@ -108,7 +126,8 @@ class _SplashScreenState extends State<SplashScreen> {
             // }
             // });
           } else {
-            // navigateReplace(context, SignInScreen());
+
+           // navigateReplace(context, SignInScreen());
             navigateReplace(context, GuideScreens());
           }
         } catch (e) {
@@ -117,4 +136,6 @@ class _SplashScreenState extends State<SplashScreen> {
       });
     });
   }
+
+
 }

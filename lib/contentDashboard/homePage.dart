@@ -32,6 +32,7 @@ class _HomePageState extends State<HomePage> {
 
   var storageAvailable;
   var availableStorage;
+  var uploadCount;
   var isLaunchSubscriptionWeb = false;
   String avatarUrl;
   var currentPlan,
@@ -100,7 +101,16 @@ class _HomePageState extends State<HomePage> {
       });
     });
 
-    getMySubscription().then((data) {
+    AccountService().getProfile().then((data) {
+      setState(() {
+        avatarUrl = data['image'];
+        if (data['subscription'] == null) {
+          uploadCount = data['totalContentUploaded'];
+        }
+      });
+    });
+
+    SubscriptionService().getMySubscription().then((data) {
       subscriptionController.add(data);
       // print(data);
       var subscriptionType = data['subscription'];
@@ -270,17 +280,13 @@ class _HomePageState extends State<HomePage> {
                                     if (isLaunchSubscriptionWeb == true) {
                                       launch(serverPlanUrl);
                                     } else {
-                                      if (storageAvailable) {
-                                        showPopupUpload(
-                                            context: context,
-                                            availableStorage: availableStorage,
-                                            left: 75.0,
-                                            top: 100.0,
-                                            right: 75.0,
-                                            bottom: 0.0);
-                                      } else {
-                                        storageDialog(context, height, width);
-                                      }
+                                      showPopupUpload(
+                                          context: context,
+                                          uploadCount: uploadCount,
+                                          left: 75.0,
+                                          top: 100.0,
+                                          right: 75.0,
+                                          bottom: 0.0);
                                     }
                                   },
                                   child: Text(

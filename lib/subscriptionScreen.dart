@@ -14,7 +14,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   @override
   void initState() {
     //TODO: PAYMENT
-   // StripeService.init();
+    // StripeService.init();
     super.initState();
   }
 
@@ -40,7 +40,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               ),
               SizedBox(height: 10),
               FutureBuilder(
-                future: getAllPlans(),
+                future: SubscriptionService().getAllActivePlans(),
                 builder: (context, subscription) {
                   if (subscription.hasData) {
                     return ListView.builder(

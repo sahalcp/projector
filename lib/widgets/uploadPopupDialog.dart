@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:projector/uploadNewFlow/paymentVideoPage.dart';
 import 'package:projector/uploading/photo/selectPhoto.dart';
 import 'package:projector/widgets/dialogs.dart';
 import 'package:projector/widgets/widgets.dart';
@@ -89,7 +90,7 @@ showUploadDropDown(context) {
 
 showPopupUpload(
     {context,
-    availableStorage,
+    uploadCount,
     double left,
     double top,
     double right,
@@ -186,17 +187,26 @@ showPopupUpload(
       //capture
     } else if (itemSelected == "2") {
       //photo
-      navigate(context, SelectPhotoView());
+
+      if (uploadCount != null && uploadCount > 2) {
+        navigate(context, PaymentVideoPage(uploadCount: uploadCount));
+      } else {
+        navigate(context, SelectPhotoView());
+      }
     } else {
       //video
       //navigate(context, SelectVideoView());
 
-      selectVideoFromFileManager(context, availableStorage);
+      if (uploadCount != null && uploadCount > 2) {
+        navigate(context, PaymentVideoPage(uploadCount: uploadCount));
+      } else {
+        selectVideoFromFileManager(context);
+      }
     }
   });
 }
 
-selectVideoFromFileManager(context, availableStorage) async {
+selectVideoFromFileManager(context) async {
   final picker = ImagePicker();
   final pickedFile = await picker.getVideo(source: ImageSource.gallery);
 
@@ -205,20 +215,14 @@ selectVideoFromFileManager(context, availableStorage) async {
     final size = file.lengthSync() / 1000000;
     var selectedVideoSize = size;
     print("videosize selected---$selectedVideoSize");
-    print("videosize available storage---$availableStorage");
 
-    if (availableStorage > selectedVideoSize) {
-      print("videosize storage available--->$availableStorage");
-      // upload video
-      // navigate(context, SelectVideoUploadView(videoFile: file,));
-      navigate(
-          context,
-          UploadScreen(
-            videoFile: file,
-          ));
-    } else {
-      storageDialog(context, 100, 100);
-    }
+    navigate(
+        context,
+        UploadScreen(
+          videoFile: file,
+        ));
+  } else {
+    //storageDialog(context, 100, 100);
   }
 
   /* File file = await FilePicker.getFile(

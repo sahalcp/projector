@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projector/accountSettings/NotificationInvitationScreen.dart';
+import 'package:projector/apis/accountService.dart';
 import 'package:projector/apis/videoService.dart';
 import 'package:projector/apis/viewService.dart';
 import 'package:projector/constant.dart';
@@ -45,6 +46,7 @@ class _NewContentViewScreenState extends State<NewContentViewScreen> {
   List resumeListData = [];
   var storageAvailable;
   var availableStorage;
+  var uploadCount;
   var isLaunchSubscriptionWeb = false;
   var resumeTitle;
   var resumeSubCategory;
@@ -78,17 +80,17 @@ class _NewContentViewScreenState extends State<NewContentViewScreen> {
       if (response['has_subsription'] == false) {
         isLaunchSubscriptionWeb = true;
       } else {
-        ViewService().checkStorage().then((data) {
-          var storageUsed = data['storageUsed'];
-          var totalStorage = storageUsed['total_storage'];
-          var usedStorage = storageUsed['used_storage'];
+        // ViewService().checkStorage().then((data) {
+        //   var storageUsed = data['storageUsed'];
+        //   var totalStorage = storageUsed['total_storage'];
+        //   var usedStorage = storageUsed['used_storage'];
 
-          availableStorage =
-              double.parse(totalStorage) - double.parse(usedStorage);
+        //   availableStorage =
+        //       double.parse(totalStorage) - double.parse(usedStorage);
 
-          storageAvailable = double.parse(totalStorage) >= availableStorage &&
-              availableStorage > 0;
-        });
+        //   storageAvailable = double.parse(totalStorage) >= availableStorage &&
+        //       availableStorage > 0;
+        // });
       }
     });
 
@@ -139,6 +141,15 @@ class _NewContentViewScreenState extends State<NewContentViewScreen> {
           resumeListData = data;
           print("resume list data--->");
           List.generate(resumeListData.length, (index) {});
+        });
+      }
+    });
+
+    AccountService().getProfile().then((data) {
+      if (data['subscription'] == null &&
+          data['totalContentUploaded'] != null) {
+        setState(() {
+          uploadCount = data['totalContentUploaded'];
         });
       }
     });
@@ -247,17 +258,13 @@ class _NewContentViewScreenState extends State<NewContentViewScreen> {
                     if (isLaunchSubscriptionWeb == true) {
                       launch(serverPlanUrl);
                     } else {
-                      if (storageAvailable) {
-                        showPopupUpload(
-                            context: context,
-                            availableStorage: availableStorage,
-                            left: 75.0,
-                            top: 100.0,
-                            right: 75.0,
-                            bottom: 0.0);
-                      } else {
-                        storageDialog(context, height, width);
-                      }
+                      showPopupUpload(
+                          context: context,
+                          uploadCount: uploadCount,
+                          left: 25.0,
+                          top: 100,
+                          right: 0.0,
+                          bottom: 0.0);
                     }
                   },
                   child: Icon(

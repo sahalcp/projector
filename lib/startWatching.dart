@@ -50,8 +50,8 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
   String _loginedUserId;
   String _loginedFirstName;
   int notificationBadge = 0;
-  var storageAvailable;
-  var availableStorage;
+
+  var uploadCount;
   var isLaunchSubscriptionWeb = false;
 
   var req = int.parse(maxReq) - reqSent;
@@ -855,24 +855,6 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
     ViewService().checkSubscription().then((response) {
       if (response['has_subsription'] == false) {
         isLaunchSubscriptionWeb = true;
-      } else {
-        ViewService().checkStorage().then((data) {
-          var storageUsed = data['storageUsed'];
-          var totalStorage = storageUsed['total_storage'];
-          var usedStorage = storageUsed['used_storage'];
-
-          print("total storage--->$totalStorage");
-          print("used storage--->$usedStorage");
-
-          availableStorage =
-              double.parse(totalStorage) - double.parse(usedStorage);
-
-          storageAvailable = double.parse(totalStorage) >= availableStorage &&
-              availableStorage > 0;
-
-          print("available storage--->$availableStorage");
-          print("available storag--->$storageAvailable");
-        });
       }
     });
 
@@ -906,6 +888,9 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
       // print(data);
       setState(() {
         image = data['image'];
+        if (data['subscription'] == null) {
+          uploadCount = data['totalContentUploaded'];
+        }
       });
     });
 
@@ -926,7 +911,7 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
     super.didChangeDependencies();
   }
 
-  bool viewAll = false;
+  bool viewAll = true;
   String viewAllText = 'View all';
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -978,17 +963,16 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                         if (isLaunchSubscriptionWeb == true) {
                           launch(serverPlanUrl);
                         } else {
-                          if (storageAvailable) {
-                            showPopupUpload(
-                                context: context,
-                                availableStorage: availableStorage,
-                                left: 25.0,
-                                top: 100,
-                                right: 0.0,
-                                bottom: 0.0);
-                          } else {
-                            storageDialog(context, height, width);
-                          }
+                          showPopupUpload(
+                              context: context,
+                              uploadCount: uploadCount,
+                              left: 25.0,
+                              top: 100,
+                              right: 0.0,
+                              bottom: 0.0);
+
+                          //storageDialog(context, height, width);
+
                         }
                       },
                       child: CustomShowcaseWidget(
@@ -1106,29 +1090,29 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
               backgroundColor: Colors.black,
               key: _scaffoldKey,
               body: Container(
-                decoration: BoxDecoration(
-                    gradient: RadialGradient(
-                  radius: 0.5,
-                  center: Alignment.bottomCenter,
-                  colors: [
-                    Color.fromARGB(255, 0, 30, 71),
-                    Colors.black,
-                  ],
-                )),
+                // decoration: BoxDecoration(
+                //     gradient: RadialGradient(
+                //   radius: 0.5,
+                //   center: Alignment.bottomCenter,
+                //   colors: [
+                //     Color.fromARGB(255, 0, 30, 71),
+                //     Colors.black,
+                //   ],
+                // )),
                 padding: EdgeInsets.all(16.0),
                 child: Stack(
                   children: [
                     Container(
                       height: MediaQuery.of(context).size.height * 0.5,
-                      decoration: BoxDecoration(
-                          gradient: RadialGradient(
-                        radius: 0.5,
-                        center: Alignment.topCenter,
-                        colors: [
-                          Color.fromARGB(255, 0, 30, 71),
-                          Colors.black,
-                        ],
-                      )),
+                      // decoration: BoxDecoration(
+                      //     gradient: RadialGradient(
+                      //   radius: 0.5,
+                      //   center: Alignment.topCenter,
+                      //   colors: [
+                      //     Color.fromARGB(255, 0, 30, 71),
+                      //     Colors.black,
+                      //   ],
+                      // )),
                     ),
                     ListView(
                       children: [
@@ -1287,42 +1271,42 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                             },
                           ),
                         ),
-                        InkWell(
-                          onTap: () {
-                            if (len < 3) return;
-                            setState(() {
-                              viewAll = !viewAll;
-                              if (viewAll) {
-                                viewAllText = 'View less';
-                              } else {
-                                viewAllText = 'View all';
-                              }
-                            });
-                          },
-                          child: Container(
-                            // height: height * 0.06,
-                            width: width * 0.5,
-                            child: Center(
-                              child: deviceType == DeviceType.mobile
-                                  ? Text(
-                                      len < 3 ? '' : viewAllText,
-                                      style: GoogleFonts.montserrat(
-                                        fontSize: 12.0,
-                                        fontWeight: FontWeight.w600,
-                                        color: Color(0xff6D6F76),
-                                      ),
-                                    )
-                                  : Text(
-                                      len <= 6 ? '' : viewAllText,
-                                      style: GoogleFonts.montserrat(
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.w600,
-                                        color: Color(0xff6D6F76),
-                                      ),
-                                    ),
-                            ),
-                          ),
-                        ),
+                        // InkWell(
+                        //   onTap: () {
+                        //     if (len < 3) return;
+                        //     setState(() {
+                        //       viewAll = !viewAll;
+                        //       if (viewAll) {
+                        //         viewAllText = 'View less';
+                        //       } else {
+                        //         viewAllText = 'View all';
+                        //       }
+                        //     });
+                        //   },
+                        //   child: Container(
+                        //     // height: height * 0.06,
+                        //     width: width * 0.5,
+                        //     child: Center(
+                        //       child: deviceType == DeviceType.mobile
+                        //           ? Text(
+                        //               len < 3 ? '' : viewAllText,
+                        //               style: GoogleFonts.montserrat(
+                        //                 fontSize: 12.0,
+                        //                 fontWeight: FontWeight.w600,
+                        //                 color: Color(0xff6D6F76),
+                        //               ),
+                        //             )
+                        //           : Text(
+                        //               len <= 6 ? '' : viewAllText,
+                        //               style: GoogleFonts.montserrat(
+                        //                 fontSize: 18.0,
+                        //                 fontWeight: FontWeight.w600,
+                        //                 color: Color(0xff6D6F76),
+                        //               ),
+                        //             ),
+                        //     ),
+                        //   ),
+                        // ),
                         SizedBox(
                           height: 40,
                         ),

@@ -28,9 +28,9 @@ class DashBoard extends StatefulWidget {
 }
 
 StreamController subscriptionController = StreamController.broadcast();
-String maxStorage='0', maxReq='0';
+String maxStorage = '0', maxReq = '0';
 int reqSent = 0;
-var diskUsed=0;
+var diskUsed = 0;
 
 class _DashBoardState extends State<DashBoard> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -40,7 +40,7 @@ class _DashBoardState extends State<DashBoard> {
   @override
   void initState() {
     //CheckConnectionService().init(_scaffoldKey);
-    getMySubscription().then((data) {
+    SubscriptionService().getMySubscription().then((data) {
       subscriptionController.add(data);
       // print(data);
       subscriptionType = data['subscription'];
@@ -887,7 +887,9 @@ class _DashBoardState extends State<DashBoard> {
                                 ),
                                 InkWell(
                                   onTap: () {
-                                    getMySubscription().then((data) {
+                                    SubscriptionService()
+                                        .getMySubscription()
+                                        .then((data) {
                                       // print(data);
                                       if (data['subscription'] == 'Free')
                                         Navigator.of(context).push(
@@ -958,8 +960,8 @@ class _DashBoardState extends State<DashBoard> {
                                                 requests[index]['email'];
                                             return manageUserContent(
                                               name: '$firstName $lastname',
-                                             email: '$email',
-                                             accept:  () async {
+                                              email: '$email',
+                                              accept: () async {
                                                 setState(() {
                                                   loading = true;
                                                 });
@@ -976,7 +978,7 @@ class _DashBoardState extends State<DashBoard> {
                                                   loading = false;
                                                 });
                                               },
-                                             reject:  () async {
+                                              reject: () async {
                                                 setState(() {
                                                   loading = true;
                                                 });

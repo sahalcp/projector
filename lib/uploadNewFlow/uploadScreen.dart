@@ -9,6 +9,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:projector/apis/accountService.dart';
 import 'package:projector/apis/cacheService.dart';
 import 'package:projector/widgets/info_toast.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
@@ -21,6 +22,7 @@ import 'package:projector/widgets/widgets.dart';
 
 import '../bgUpload/backgroundUploader.dart';
 import '../widgets/widgets.dart';
+import 'paymentVideoPage.dart';
 
 class UploadScreen extends StatefulWidget {
   UploadScreen({
@@ -1003,23 +1005,35 @@ class _UploadScreenState extends State<UploadScreen> {
                 setState(() {
                   videoUploading = false;
                 });
-                Navigator.of(context).pop();
 
                 var videoId = data['video_id'];
 
-                await UserData().setVideoId(videoId);
+                UserData().setVideoId(videoId);
 
-                /// bgUpload video
-                bgUploadVideo(videoId: videoId);
-                print('videoidupload----->$videoId');
-                final promoSkipCount =
-                    await CacheService().readIntFromCache("promoSkipCount");
+                final userDetails = await AccountService().getProfile();
+                final uploadCount = userDetails['totalContentUploaded'];
 
-                navigate(
-                    context,
-                    NewListVideo(
-                        videoId: videoId.toString(),
-                        promoSkipCount: promoSkipCount));
+                Navigator.of(context).pop();
+
+                if (uploadCount != null) {
+                  navigate(
+                      context,
+                      PaymentVideoPage(
+                          videoId: videoId.toString(),
+                          uploadCount: uploadCount));
+                } else {
+                  /// bgUpload video
+                  bgUploadVideo(videoId: videoId);
+                  print('videoidupload----->$videoId');
+                  final promoSkipCount =
+                      await CacheService().readIntFromCache("promoSkipCount");
+
+                  navigate(
+                      context,
+                      NewListVideo(
+                          videoId: videoId.toString(),
+                          promoSkipCount: promoSkipCount));
+                }
               } else {
                 print('false');
               }

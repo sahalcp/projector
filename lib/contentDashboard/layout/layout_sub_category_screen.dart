@@ -303,8 +303,7 @@ class _LayoutSubCategoryScreenState extends State<LayoutSubCategoryScreen> {
                         ),
                         Align(
                           alignment: Alignment.topRight,
-                          child: RaisedButton(
-                            color: Colors.blue,
+                          child: ElevatedButton(
                             onPressed: () async {
                               if (val.length != 0) {
                                 setState(() {

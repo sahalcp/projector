@@ -369,11 +369,10 @@ requestDialog({scaffoldKey, context, height, width, type, spin, groupId}) {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(7),
                             ),
-                            child: RaisedButton(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(7),
-                              ),
-                              color: Color(0xff5AA5EF),
+                            child: ElevatedButton(
+                              // shape: RoundedRectangleBorder(
+                              //   borderRadius: BorderRadius.circular(7),
+                              //),
                               onPressed: () async {
                                 if (email.isEmpty || email == "") {
                                   Fluttertoast.showToast(
@@ -540,9 +539,8 @@ removeDialog({context, height, width, String groupName, String groupId}) {
                                               side: BorderSide(
                                                   color: Colors.grey[600],
                                                   width: 1.0)),
-                                          child: RaisedButton(
-                                            elevation: 5.0,
-                                            color: Colors.white,
+                                          child: ElevatedButton(
+                                          
                                             child: Padding(
                                               padding: EdgeInsets.only(
                                                   left: 10,
@@ -578,9 +576,8 @@ removeDialog({context, height, width, String groupName, String groupId}) {
                                         SizedBox(
                                           width: 20,
                                         ),
-                                        RaisedButton(
-                                          elevation: 5.0,
-                                          color: Color(0xffDEDEDE),
+                                        ElevatedButton(
+                                  
                                           child: Padding(
                                             padding: EdgeInsets.only(
                                                 left: 10,

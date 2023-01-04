@@ -628,11 +628,10 @@ class _SuccessorListPageState extends State<SuccessorListPage> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(7),
                               ),
-                              child: RaisedButton(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(7),
-                                ),
-                                color: Color(0xff5AA5EF),
+                              child: ElevatedButton(
+                                // shape: RoundedRectangleBorder(
+                                //   borderRadius: BorderRadius.circular(7),
+                                // ),
                                 onPressed: () async {
 
                                   if(email.isEmpty || email==""){
@@ -649,8 +648,8 @@ class _SuccessorListPageState extends State<SuccessorListPage> {
                                     var data = await ContentDashboardService()
                                         .addSuccessors(user: selectedUsers);
 
-                                    _scaffoldKey.currentState
-                                        .removeCurrentSnackBar();
+                                    // _scaffoldKey.currentState
+                                    //     .removeCurrentSnackBar();
 
                                     setState(() {
                                       spin = false;

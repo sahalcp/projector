@@ -1100,12 +1100,12 @@ class _AddPhotoDetailsScreenState extends State<AddPhotoDetailsScreen> {
                                           // todo: upload photo api with group
                                           uploadPhotos();
                                         } else {
-                                          key.currentState.showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                  'Select any group from list'),
-                                            ),
-                                          );
+                                          // key.currentState.showSnackBar(
+                                          //   SnackBar(
+                                          //     content: Text(
+                                          //         'Select any group from list'),
+                                          //   ),
+                                          // );
                                         }
                                       } else if (visibilityId != null) {
                                         // todo : upload api call
@@ -1114,12 +1114,12 @@ class _AddPhotoDetailsScreenState extends State<AddPhotoDetailsScreen> {
                                       // navigate(context, );
                                       // editDialog(context, height, width);
                                     } else {
-                                      key.currentState.showSnackBar(
-                                        SnackBar(
-                                          content:
-                                              Text('All fields are necessary'),
-                                        ),
-                                      );
+                                      // key.currentState.showSnackBar(
+                                      //   SnackBar(
+                                      //     content:
+                                      //         Text('All fields are necessary'),
+                                      //   ),
+                                      // );
                                     }
                                   } else if (details) {
                                     if (titleController.text.toString().length >
@@ -1142,18 +1142,18 @@ class _AddPhotoDetailsScreenState extends State<AddPhotoDetailsScreen> {
                                                 .toString()
                                                 .length ==
                                             0) {
-                                      key.currentState.showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              'Title and Description cannot be empty'),
-                                        ),
-                                      );
+                                      // key.currentState.showSnackBar(
+                                      //   SnackBar(
+                                      //     content: Text(
+                                      //         'Title and Description cannot be empty'),
+                                      //   ),
+                                      // );
                                     } else if (selectedThumbnail == null) {
-                                      key.currentState.showSnackBar(
-                                        SnackBar(
-                                          content: Text('Add one thumbnail'),
-                                        ),
-                                      );
+                                      // key.currentState.showSnackBar(
+                                      //   SnackBar(
+                                      //     content: Text('Add one thumbnail'),
+                                      //   ),
+                                      // );
                                     } else {
                                       setState(() {
                                         //videoUploading = false;

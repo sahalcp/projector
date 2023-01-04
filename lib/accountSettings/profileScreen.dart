@@ -336,11 +336,10 @@ deActivateDialog(context, height, width) {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(7),
                       ),
-                      child: RaisedButton(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(7),
-                        ),
-                        color: Color(0xff5AA5EF),
+                      child: ElevatedButton(
+                        // shape: RoundedRectangleBorder(
+                        //   borderRadius: BorderRadius.circular(7),
+                        // ),
                         onPressed: () async {
 
                           Navigator.pop(context);

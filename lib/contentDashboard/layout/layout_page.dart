@@ -469,8 +469,7 @@ class _LayoutPageState extends State<LayoutPage> {
                         ),
                         Align(
                           alignment: Alignment.topRight,
-                          child: RaisedButton(
-                            color: Colors.blue,
+                          child: ElevatedButton(
                             onPressed: () async {
                               if (val.length != 0) {
                                 setState(() {

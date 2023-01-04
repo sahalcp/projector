@@ -107,7 +107,7 @@ class _EnterPasswordScreenState extends State<EnterPasswordScreen> {
                         obscureText: !hidePassword,
                         decoration: InputDecoration(
                           // contentPadding: EdgeInsets.all(6),
-                          suffixIcon: FlatButton(
+                          suffixIcon: TextButton(
                             child: hidePassword
                                 ? Icon(
                               Icons.visibility,
@@ -204,12 +204,12 @@ class _EnterPasswordScreenState extends State<EnterPasswordScreen> {
                               });
                               //Passwords are case sensitive, your entered password is incorrect. Please re enter
 
-                              scaffoldKey.currentState.showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                      '${data['message']}'),
-                                ),
-                              );
+                              // scaffoldKey.currentState.showSnackBar(
+                              //   SnackBar(
+                              //     content: Text(
+                              //         '${data['message']}'),
+                              //   ),
+                              // );
                             }
                             setState(() {
                               loading = false;

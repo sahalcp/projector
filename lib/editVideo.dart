@@ -336,8 +336,7 @@ class _EditVideoState extends State<EditVideo> {
                         ),
                         onChanged: (value) => {val = value},
                       ),
-                      RaisedButton(
-                        color: Colors.blue,
+                      ElevatedButton(
                         onPressed: () async {
                           if (val.length != 0) {
                             setState(() {
@@ -632,8 +631,7 @@ class _EditVideoState extends State<EditVideo> {
                             Container(
                               width: width,
                               height: 35,
-                              child: RaisedButton(
-                                color: Colors.blue,
+                              child: ElevatedButton(
                                 onPressed: () async {
                                   print(subCategoryId);
                                   var playlistId = '';

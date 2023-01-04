@@ -38,14 +38,14 @@ class _SelectVideoViewState extends State<SelectVideoView> {
   final picker = ImagePicker();
 
   fetchMedia() async {
-    var result = await PhotoManager.requestPermission();
-    if (result) {
+    var result = await PhotoManager.requestPermissionExtend();
+    if (result.isAuth) {
       List<AssetPathEntity> albums = await PhotoManager.getAssetPathList();
 
       PhotoManager.clearFileCache();
 
       albums.forEach((list) async {
-        List<AssetEntity> media = await list.getAssetListPaged(0, 100);
+        List<AssetEntity> media = await list.getAssetListPaged(page: 0, size: 100);
         // print(media);
         media.forEach((m) {
           if (m.type == AssetType.video) {
@@ -607,7 +607,7 @@ class _SelectVideoViewState extends State<SelectVideoView> {
                                   crossAxisCount: 3),
                           itemBuilder: (BuildContext context, int index) {
                             return FutureBuilder<Uint8List>(
-                              future: _mediaList[index].thumbData,
+                              future: _mediaList[index].thumbnailData,
                               builder: (BuildContext context, snapshot) {
                                 // if (snapshot.connectionState ==
                                 //     ConnectionState.done) {

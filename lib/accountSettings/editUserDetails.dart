@@ -75,12 +75,12 @@ class _EditUserDetailsPageState extends State<EditUserDetailsPage> {
                               if (data['success'] == true)
                                 Navigator.pop(context);
                               else {
-                                scaffoldKey.currentState.showSnackBar(
-                                  SnackBar(
-                                    content:
-                                        Text('Old password is not correct'),
-                                  ),
-                                );
+                                // scaffoldKey.currentState.showSnackBar(
+                                //   SnackBar(
+                                //     content:
+                                //         Text('Old password is not correct'),
+                                //   ),
+                                // );
                               }
                               setState(() {
                                 loading = false;
@@ -97,11 +97,11 @@ class _EditUserDetailsPageState extends State<EditUserDetailsPage> {
                                   text: data['message'],
                                 );
                               } else {
-                                scaffoldKey.currentState.showSnackBar(
-                                  SnackBar(
-                                    content: Text('Old Email is not correct'),
-                                  ),
-                                );
+                                // scaffoldKey.currentState.showSnackBar(
+                                //   SnackBar(
+                                //     content: Text('Old Email is not correct'),
+                                //   ),
+                                // );
                               }
                               setState(() {
                                 loading = false;
@@ -118,30 +118,30 @@ class _EditUserDetailsPageState extends State<EditUserDetailsPage> {
                                   text: 'Phone Number Updated',
                                 );
                               } else {
-                                scaffoldKey.currentState.showSnackBar(
-                                  SnackBar(
-                                    content:
-                                        Text('Old Phone Number is not correct'),
-                                  ),
-                                );
+                                // scaffoldKey.currentState.showSnackBar(
+                                //   SnackBar(
+                                //     content:
+                                //         Text('Old Phone Number is not correct'),
+                                //   ),
+                                // );
                               }
                               setState(() {
                                 loading = false;
                               });
                             }
                           } else {
-                            scaffoldKey.currentState.showSnackBar(
-                              SnackBar(
-                                content: Text('Both values cannot be same'),
-                              ),
-                            );
+                            // scaffoldKey.currentState.showSnackBar(
+                            //   SnackBar(
+                            //     content: Text('Both values cannot be same'),
+                            //   ),
+                            // );
                           }
                         } else {
-                          scaffoldKey.currentState.showSnackBar(
-                            SnackBar(
-                              content: Text('All fileds are required'),
-                            ),
-                          );
+                          // scaffoldKey.currentState.showSnackBar(
+                          //   SnackBar(
+                          //     content: Text('All fileds are required'),
+                          //   ),
+                          // );
                         }
                         // Navigator.pop(context);
                       },

@@ -62,8 +62,7 @@ class _CreateCategoryScreenState extends State<CreateCategoryScreen> {
                       ),
                       Align(
                         alignment: Alignment.topRight,
-                        child: RaisedButton(
-                          color: Colors.blue,
+                        child: ElevatedButton(
                           onPressed: () async {
                             if(val.isNotEmpty){
                               var categoryAdded = await VideoService()

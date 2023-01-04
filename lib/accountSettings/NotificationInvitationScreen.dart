@@ -279,9 +279,8 @@ class _NotificationInvitationScreenState
                                                             color: Color(
                                                                 0xff5AA5EF),
                                                             width: 2.0)),
-                                                    child: RaisedButton(
-                                                      elevation: 0,
-                                                      color: Colors.white,
+                                                    child: ElevatedButton(
+                                           
                                                       child: Padding(
                                                         padding:
                                                         EdgeInsets.all(5),
@@ -350,9 +349,8 @@ class _NotificationInvitationScreenState
                                                             color: Colors
                                                                 .black,
                                                             width: 2.0)),
-                                                    child: RaisedButton(
-                                                      elevation: 0,
-                                                      color: Colors.white,
+                                                    child: ElevatedButton(
+                                                  
                                                       child: Padding(
                                                         padding:
                                                         EdgeInsets.all(5),
@@ -567,9 +565,8 @@ class _NotificationInvitationScreenState
                                                                 color: Color(
                                                                     0xff5AA5EF),
                                                                 width: 2.0)),
-                                                    child: RaisedButton(
-                                                      elevation: 0,
-                                                      color: Colors.white,
+                                                    child: ElevatedButton(
+                                                 
                                                       child: Padding(
                                                         padding:
                                                             EdgeInsets.all(5),
@@ -641,9 +638,8 @@ class _NotificationInvitationScreenState
                                                                 color: Colors
                                                                     .black,
                                                                 width: 2.0)),
-                                                    child: RaisedButton(
-                                                      elevation: 0,
-                                                      color: Colors.white,
+                                                    child: ElevatedButton(
+                                                 
                                                       child: Padding(
                                                         padding:
                                                             EdgeInsets.all(5),

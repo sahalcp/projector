@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +35,7 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   bool checked = false, loading = false;
   final formKey = GlobalKey<FormState>();
-  final scaffoldKey = GlobalKey<ScaffoldState>();
+  final scaffoldKey = GlobalKey<ScaffoldMessengerState>();
   String email = '';
   String firstName = '';
   String lastName = '';
@@ -59,10 +61,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return Sizer(builder: (context, orientation, deviceType) {
-      if(deviceType == DeviceType.mobile){
+      if (deviceType == DeviceType.mobile) {
         SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-      }else{
-        SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight]);
+      } else {
+        SystemChrome.setPreferredOrientations(
+            [DeviceOrientation.landscapeRight]);
       }
       return SafeArea(
         top: false,
@@ -81,11 +84,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: Column(
                     children: <Widget>[
                       SizedBox(height: height * 0.05),
-                      loginButton(context: context,width: width,deviceType: deviceType),
+                      loginButton(
+                          context: context,
+                          width: width,
+                          deviceType: deviceType),
                       SizedBox(height: height * 0.08),
                       Center(
                         child: Image(
-                          height: deviceType == DeviceType.mobile? height * 0.09738 : 130,
+                          height: deviceType == DeviceType.mobile
+                              ? height * 0.09738
+                              : 130,
                           width: width,
                           image: AssetImage('images/newLogoText.png'),
                         ),
@@ -104,7 +112,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       Text(
                         'Enter your email',
                         style: GoogleFonts.montserrat(
-                          fontSize: deviceType == DeviceType.mobile? 18.0 : 28.0,
+                          fontSize:
+                              deviceType == DeviceType.mobile ? 18.0 : 28.0,
                           color: Color(0xffEFEFF0),
                           fontWeight: FontWeight.w700,
                         ),
@@ -118,7 +127,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             controller: textController,
                             style: GoogleFonts.montserrat(
                               color: Colors.white,
-                              fontSize: deviceType == DeviceType.mobile? 16.0 : 25.0,
+                              fontSize:
+                                  deviceType == DeviceType.mobile ? 16.0 : 25.0,
                             ),
                             validator: (val) {
                               if (!EmailValidator.validate(
@@ -135,7 +145,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               hintText: 'Email',
                               hintStyle: GoogleFonts.montserrat(
                                 color: Color(0xff8E8E8E),
-                                fontSize: deviceType == DeviceType.mobile? 13.0 : 20.0,
+                                fontSize: deviceType == DeviceType.mobile
+                                    ? 13.0
+                                    : 20.0,
                                 fontWeight: FontWeight.w400,
                               ),
                               enabledBorder: OutlineInputBorder(
@@ -170,7 +182,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 //controller: emailCon,
                                 style: GoogleFonts.montserrat(
                                   color: Colors.white,
-                                  fontSize: deviceType == DeviceType.mobile? 16.0 : 25.0,
+                                  fontSize: deviceType == DeviceType.mobile
+                                      ? 16.0
+                                      : 25.0,
                                 ),
                                 onChanged: (val) {
                                   firstName = val;
@@ -181,7 +195,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   hintText: 'First Name',
                                   hintStyle: GoogleFonts.montserrat(
                                     color: Color(0xff8E8E8E),
-                                    fontSize: deviceType == DeviceType.mobile? 13.0 : 20.0,
+                                    fontSize: deviceType == DeviceType.mobile
+                                        ? 13.0
+                                        : 20.0,
                                     fontWeight: FontWeight.w400,
                                   ),
                                   enabledBorder: OutlineInputBorder(
@@ -212,7 +228,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 //controller: emailCon,
                                 style: GoogleFonts.montserrat(
                                   color: Colors.white,
-                                  fontSize: deviceType == DeviceType.mobile? 16.0 : 25.0,
+                                  fontSize: deviceType == DeviceType.mobile
+                                      ? 16.0
+                                      : 25.0,
                                 ),
                                 onChanged: (val) {
                                   lastName = val;
@@ -223,7 +241,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   hintText: 'Last Name',
                                   hintStyle: GoogleFonts.montserrat(
                                     color: Color(0xff8E8E8E),
-                                    fontSize: deviceType == DeviceType.mobile? 13.0 : 20.0,
+                                    fontSize: deviceType == DeviceType.mobile
+                                        ? 13.0
+                                        : 20.0,
                                     fontWeight: FontWeight.w400,
                                   ),
                                   enabledBorder: OutlineInputBorder(
@@ -272,19 +292,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                               child: checked
                                   ? Center(
-                                child: Icon(
-                                  Icons.done,
-                                  size: 20,
-                                  color: Color(0xff5AA5EF),
-                                ),
-                              )
+                                      child: Icon(
+                                        Icons.done,
+                                        size: 20,
+                                        color: Color(0xff5AA5EF),
+                                      ),
+                                    )
                                   : SizedBox(),
                             ),
                           ),
                           Text(
                             'I have read and understood the Terms of Use, \nSubscriber Agreement  and Privacy Policy.',
                             style: GoogleFonts.montserrat(
-                              fontSize: deviceType == DeviceType.mobile? 10.0 : 14.0,
+                              fontSize:
+                                  deviceType == DeviceType.mobile ? 10.0 : 14.0,
                               color: Colors.white,
                               height: 1.5,
                               fontWeight: FontWeight.w400,
@@ -312,82 +333,93 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           children: <Widget>[
                             RichText(
                                 text: TextSpan(children: [
-                                  TextSpan(
-                                      text:
+                              TextSpan(
+                                  text:
                                       'Projector will use your data to personalize and improve your Projector experience and to send you information about Projector.  You can change your communication preferences anytime.  We may use your data as described in our ',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: deviceType == DeviceType.mobile? 10.0 : 14.0,
-                                        height: 1.5,
-                                        fontWeight: FontWeight.w400,
-                                      )),
-                                  TextSpan(
-                                    text: 'Privacy Policy',
-                                    style: TextStyle(
-                                      fontSize: deviceType == DeviceType.mobile? 10.0 : 14.0,
-                                      height: 1.5,
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        launch(privacyUrl);
-                                      },
-                                  ),
-                                  TextSpan(
-                                      text:
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: deviceType == DeviceType.mobile
+                                        ? 10.0
+                                        : 14.0,
+                                    height: 1.5,
+                                    fontWeight: FontWeight.w400,
+                                  )),
+                              TextSpan(
+                                text: 'Privacy Policy',
+                                style: TextStyle(
+                                  fontSize: deviceType == DeviceType.mobile
+                                      ? 10.0
+                                      : 14.0,
+                                  height: 1.5,
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    launch(privacyUrl);
+                                  },
+                              ),
+                              TextSpan(
+                                  text:
                                       ', including sharing it with the family of companies.  By clicking “Agree & Continue”, you agree to our  Subscriber Agreement and acknowledge that you have read our Privacy Policy.',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: deviceType == DeviceType.mobile? 10.0 : 14.0,
-                                        height: 1.5,
-                                        fontWeight: FontWeight.w400,
-                                      )),
-                                  TextSpan(
-                                    text: 'Terms of Use',
-                                    style: TextStyle(
-                                      fontSize: deviceType == DeviceType.mobile? 10.0 : 14.0,
-                                      height: 1.5,
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        launch(termsAndConditionsUrl);
-                                      },
-                                  ),
-                                  TextSpan(
-                                      text: ', ',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10.0,
-                                        height: 1.5,
-                                        fontWeight: FontWeight.w400,
-                                      )),
-                                  TextSpan(
-                                    text: 'Subscriber Agreement',
-                                    style: TextStyle(
-                                      fontSize: deviceType == DeviceType.mobile? 10.0 : 14.0,
-                                      height: 1.5,
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        launch(subscriberAgreementUrl);
-                                      },
-                                  ),
-                                  TextSpan(
-                                      text:
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: deviceType == DeviceType.mobile
+                                        ? 10.0
+                                        : 14.0,
+                                    height: 1.5,
+                                    fontWeight: FontWeight.w400,
+                                  )),
+                              TextSpan(
+                                text: 'Terms of Use',
+                                style: TextStyle(
+                                  fontSize: deviceType == DeviceType.mobile
+                                      ? 10.0
+                                      : 14.0,
+                                  height: 1.5,
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    launch(termsAndConditionsUrl);
+                                  },
+                              ),
+                              TextSpan(
+                                  text: ', ',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10.0,
+                                    height: 1.5,
+                                    fontWeight: FontWeight.w400,
+                                  )),
+                              TextSpan(
+                                text: 'Subscriber Agreement',
+                                style: TextStyle(
+                                  fontSize: deviceType == DeviceType.mobile
+                                      ? 10.0
+                                      : 14.0,
+                                  height: 1.5,
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    launch(subscriberAgreementUrl);
+                                  },
+                              ),
+                              TextSpan(
+                                  text:
                                       ' and acknowledge that you have read our Privacy Policy.',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: deviceType == DeviceType.mobile? 10.0 : 14.0,
-                                        height: 1.5,
-                                        fontWeight: FontWeight.w400,
-                                      )),
-                                ])),
-
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: deviceType == DeviceType.mobile
+                                        ? 10.0
+                                        : 14.0,
+                                    height: 1.5,
+                                    fontWeight: FontWeight.w400,
+                                  )),
+                            ])),
                             SizedBox(height: height * 0.03),
                             InkWell(
                               onTap: () async {
@@ -396,7 +428,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     loading = true;
                                   });
                                   var data =
-                                  await AuthService().signUpEmail(email);
+                                      await AuthService().signUpEmail(email);
                                   if (data['success'] == true) {
                                     // scaffoldKey.currentState.showSnackBar(
                                     //   SnackBar(
@@ -420,11 +452,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     //       'You seem to have an existing projector account, Login instead?',
                                     //   button: 'Log In',
                                     //   onTap: () {
-
-                                    navigateLeft(
-                                      context,
-                                      EnterPasswordScreen(email: email),
-                                    );
+                                    log('not valid');
+                                    // navigateLeft(
+                                    //   context,
+                                    //   EnterPasswordScreen(email: email),
+                                    // );
 
                                     // scaffoldKey.currentState.showSnackBar(
                                     //   SnackBar(
@@ -432,6 +464,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     //         'You seem to have an existing projector account, Login instead?'),
                                     //   ),
                                     // );
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            "You seem to have an existing projector account, Login instead?"),
+                                      ),
+                                    );
+                                    scaffoldKey.currentState.showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            "You seem to have an existing projector account, Login instead?"),
+                                      ),
+                                    );
                                     // navigate(
                                     //   context,
                                     //   CreatePasswordScreen(
@@ -453,7 +497,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 // }
                               },
                               child: Container(
-                                height: deviceType == DeviceType.mobile? height * 0.06 : height * 0.07,
+                                height: deviceType == DeviceType.mobile
+                                    ? height * 0.06
+                                    : height * 0.07,
                                 width: width,
                                 decoration: BoxDecoration(
                                   color: Color(0xff5AA5EF),
@@ -462,15 +508,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 child: Center(
                                   child: loading
                                       ? CircularProgressIndicator(
-                                    backgroundColor: Colors.white,
-                                  )
+                                          backgroundColor: Colors.white,
+                                        )
                                       : Text(
-                                    'AGREE AND CONTINUE',
-                                    style: TextStyle(
-                                        fontSize: deviceType == DeviceType.mobile? 13.0 : 20.0,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600),
-                                  ),
+                                          'AGREE AND CONTINUE',
+                                          style: TextStyle(
+                                              fontSize: deviceType ==
+                                                      DeviceType.mobile
+                                                  ? 13.0
+                                                  : 20.0,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600),
+                                        ),
                                 ),
                               ),
                             ),
@@ -484,6 +533,5 @@ class _SignUpScreenState extends State<SignUpScreen> {
             )),
       );
     });
-
   }
 }

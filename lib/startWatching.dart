@@ -537,11 +537,11 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(7),
                               ),
-                              child: RaisedButton(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(7),
-                                ),
-                                color: Color(0xff5AA5EF),
+                              child: ElevatedButton(
+                                // style: RoundedRectangleBorder(
+                                //   borderRadius: BorderRadius.circular(7),
+                                // ),
+                                // color: Color(0xff5AA5EF),
                                 onPressed: () async {
                                   setState(() {
                                     spin = true;
@@ -675,9 +675,9 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                                                 side: BorderSide(
                                                     color: Colors.grey[600],
                                                     width: 1.0)),
-                                            child: RaisedButton(
-                                              elevation: 5.0,
-                                              color: Colors.white,
+                                            child: ElevatedButton(
+                                              // elevation: 5.0,
+                                              // color: Colors.white,
                                               child: Padding(
                                                 padding: EdgeInsets.only(
                                                     left: 10,
@@ -742,9 +742,9 @@ class _StartWatchingScreenState extends State<StartWatchingScreen> {
                                           SizedBox(
                                             width: 20,
                                           ),
-                                          RaisedButton(
-                                            elevation: 5.0,
-                                            color: Color(0xffDEDEDE),
+                                          ElevatedButton(
+                                            // elevation: 5.0,
+                                            // color: Color(0xffDEDEDE),
                                             child: Padding(
                                               padding: EdgeInsets.only(
                                                   left: 10,

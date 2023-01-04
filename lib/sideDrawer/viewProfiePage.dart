@@ -507,11 +507,8 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(7),
                               ),
-                              child: RaisedButton(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(7),
-                                ),
-                                color: Color(0xff5AA5EF),
+                              child: ElevatedButton(
+                             
                                 onPressed: () async {
                                   setState(() {
                                     spin = true;
@@ -528,8 +525,8 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                                     //   reqCon.add(val);
                                     // });
                                   }
-                                  _scaffoldKey.currentState
-                                      .removeCurrentSnackBar();
+                                  // _scaffoldKey.currentState
+                                  //     .removeCurrentSnackBar();
 
                                   setState(() {
                                     spin = false;
@@ -693,11 +690,11 @@ class _ViewProfilePageState extends State<ViewProfilePage> {
                                     requestDialog(context, height, width)
                                         .then((data) {
                                       if (data != null) {
-                                        _scaffoldKey.currentState.showSnackBar(
-                                          SnackBar(
-                                            content: Text('${data['message']}'),
-                                          ),
-                                        );
+                                        // _scaffoldKey.currentState.showSnackBar(
+                                        //   SnackBar(
+                                        //     content: Text('${data['message']}'),
+                                        //   ),
+                                        // );
                                       }
                                     });
                                     // });

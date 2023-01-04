@@ -825,8 +825,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                         ),
                         Align(
                           alignment: Alignment.topRight,
-                          child: RaisedButton(
-                            color: Colors.blue,
+                          child: ElevatedButton(
                             onPressed: () async {
                               if (val.length != 0) {
                                 Navigator.pop(context);
@@ -1427,9 +1426,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                     borderRadius: BorderRadius.circular(7),
                                     // color: Color(0xff5AA5EF),
                                   ),
-                                  child: RaisedButton(
-                                    color: Color(0xff5AA5EF),
-                                    padding: EdgeInsets.all(0),
+                                  child: ElevatedButton(
+                              
                                     onPressed: () async {
                                       if (edit) {
                                         if (groupName != null &&
@@ -3970,11 +3968,11 @@ class _SummaryScreenState extends State<SummaryScreen> {
           });
           uploadPhotos();
         } else {
-          key.currentState.showSnackBar(
-            SnackBar(
-              content: Text('Select any group from list'),
-            ),
-          );
+          // key.currentState.showSnackBar(
+          //   SnackBar(
+          //     content: Text('Select any group from list'),
+          //   ),
+          // );
         }
       } else if (visibilityId != null) {
         // todo : upload api call
@@ -4168,9 +4166,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                                 side: BorderSide(
                                                     color: Colors.grey[600],
                                                     width: 1.0)),
-                                            child: RaisedButton(
-                                              elevation: 5.0,
-                                              color: Colors.white,
+                                            child: ElevatedButton(
+                                            
                                               child: Padding(
                                                 padding: EdgeInsets.only(
                                                     left: 10,
@@ -4219,9 +4216,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                           SizedBox(
                                             width: 20,
                                           ),
-                                          RaisedButton(
-                                            elevation: 5.0,
-                                            color: Colors.blue,
+                                          ElevatedButton(
+                                           
                                             child: Padding(
                                               padding: EdgeInsets.only(
                                                   left: 10,

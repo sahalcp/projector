@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:projector/apis/authService.dart';
@@ -164,7 +166,7 @@ class _SignUpWebViewScreenState extends State<SignUpWebViewScreen> {
                         }
                       },
                       onConsoleMessage: (controller, consoleMessage) {
-                        // print(consoleMessage);
+                         log(consoleMessage.toString());
                       },
                     ),
                     progress < 1.0

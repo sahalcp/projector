@@ -5,6 +5,7 @@ import 'package:projector/signInScreen.dart';
 import 'package:projector/signUpWebViewScreen.dart';
 import 'package:projector/widgets/widgets.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:video_player/video_player.dart';
 
 class GuideScreens extends StatefulWidget {
   @override
@@ -13,7 +14,26 @@ class GuideScreens extends StatefulWidget {
 
 class GuideScreensState extends State<GuideScreens> {
   final _controller = new PageController();
+  VideoPlayerController _videoPlayerController;
   bool isLastPage = false;
+  @override
+  void initState() {
+    _videoPlayerController = VideoPlayerController.network(
+        'https://assets.mixkit.co/videos/preview/mixkit-waves-in-the-water-1164-large.mp4')
+      ..initialize().then((_) {
+        _videoPlayerController.play();
+        _videoPlayerController.setLooping(true);
+
+        setState(() {});
+      });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _videoPlayerController.dispose();
+    super.dispose();
+  }
 
   Widget customPageView() => PageView(
         physics: new AlwaysScrollableScrollPhysics(),
@@ -140,16 +160,16 @@ class GuideScreensState extends State<GuideScreens> {
           ),
         ),*/
 
-            /* Positioned(
-          bottom: 50.0,
-          left: 0.0,
-          right: 0.0,
-          child: Image.asset(
-            'images/guide_screen_gradient.png',
-            height: 800,
-            width: 800,
-          ),
-        ),*/
+            //     /* Positioned(
+            //   bottom: 50.0,
+            //   left: 0.0,
+            //   right: 0.0,
+            //   child: Image.asset(
+            //     'images/guide_screen_gradient.png',
+            //     height: 800,
+            //     width: 800,
+            //   ),
+            // ),*/
 
             Positioned(
               bottom: 100.0,
@@ -267,7 +287,7 @@ class GuideScreensState extends State<GuideScreens> {
                 ),
               ),
             ),
-           Center(
+            Center(
               child: Image.asset(
                 'images/guide_screen2.png',
                 height: 200,
@@ -483,21 +503,128 @@ class GuideScreensState extends State<GuideScreens> {
       backgroundColor: Color(0xff1A1C22),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Color(0xff1A1C22),
+        backgroundColor: Colors.transparent,
         title: Align(
           alignment: Alignment.topLeft,
           child: Image.asset(
             'images/newLogoText.png',
             height: 50,
             width: 100,
-            //height: double.infinity,
           ),
         ),
       ),
       body: new Stack(
         children: <Widget>[
-          customPageView(),
-          pageingIndicator(),
+          SizedBox.expand(
+              child: FittedBox(
+            fit: BoxFit.fill,
+            child: SizedBox(
+              width: _videoPlayerController.value.size?.width ?? 0,
+              height: _videoPlayerController.value.size?.height ?? 0,
+              child: VideoPlayer(_videoPlayerController),
+            ),
+          )),
+          Positioned(
+            top: 30.0,
+            left: 0.0,
+            right: 0.0,
+            bottom: 0.0,
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Text(
+                "WELCOME",
+                style: GoogleFonts.montserrat(
+                  fontSize: 38.0,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 120.0,
+            left: 0.0,
+            right: 0.0,
+            child: Column(
+              children: [
+                Container(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Its time to ",
+                        style: GoogleFonts.montserrat(
+                          fontSize: 17.0,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          height: 1.6,
+                        ),
+                        //textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        "start building ",
+                        style: GoogleFonts.montserrat(
+                          fontSize: 17.0,
+                          color: Colors.blue,
+                          fontWeight: FontWeight.w700,
+                          height: 1.6,
+                        ),
+                        //textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        "your",
+                        style: GoogleFonts.montserrat(
+                          fontSize: 17.0,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          height: 1.6,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "very own ",
+                        style: GoogleFonts.montserrat(
+                          fontSize: 17.0,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          height: 1.6,
+                        ),
+                        //textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        "streaming app",
+                        style: GoogleFonts.montserrat(
+                          fontSize: 17.0,
+                          color: Colors.blue,
+                          fontWeight: FontWeight.w700,
+                          height: 1.6,
+                        ),
+                        //textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        "!",
+                        style: GoogleFonts.montserrat(
+                          fontSize: 17.0,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          height: 1.6,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Positioned(bottom: 20.0, right: 0.0, left: 0.0, child: loginButton()),
         ],
       ),
     );

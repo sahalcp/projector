@@ -116,8 +116,7 @@ class _SelectFileMainScreenState extends State<SelectFileMainScreen> {
                             SizedBox(height: 10),
                             Align(
                               alignment: Alignment.topRight,
-                              child: RaisedButton(
-                                color: Colors.blue,
+                              child: ElevatedButton(
                                 onPressed: () async {
                                   if (val.length != 0) {
 
@@ -262,8 +261,8 @@ class _SelectFileMainScreenState extends State<SelectFileMainScreen> {
                         margin: EdgeInsets.only(right: 20,bottom: 20),
                         child: Align(
                           alignment: Alignment.topRight,
-                          child:  RaisedButton(
-                            color: selectedTitle != null?Colors.blue: Colors.grey,
+                          child:  ElevatedButton(
+                            //  selectedTitle != null?Colors.blue: Colors.grey,
                             onPressed: () async{
 
                               // print("radiovalue-->"+selectedTitle.toString()+","+groupValue.toString());

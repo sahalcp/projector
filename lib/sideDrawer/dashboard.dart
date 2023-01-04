@@ -267,8 +267,7 @@ class _DashBoardState extends State<DashBoard> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(7),
                           ),
-                          child: RaisedButton(
-                            color: Color(0xff5AA5EF),
+                          child: ElevatedButton(
                             onPressed: () async {
                               setState(() {
                                 loading = true;
@@ -280,7 +279,7 @@ class _DashBoardState extends State<DashBoard> {
                                     await ViewService().sendViewRequest(item);
                                 await UserData().setUserStarted();
                               }
-                              _scaffoldKey.currentState.removeCurrentSnackBar();
+                              // _scaffoldKey.currentState.removeCurrentSnackBar();
                               setState(() {
                                 loading = false;
                               });
@@ -499,8 +498,7 @@ class _DashBoardState extends State<DashBoard> {
                                 //     color: Color(0xff1172D2),
                                 //   ),
                                 // ),
-                                child: RaisedButton(
-                                  color: Color(0xff1172D2),
+                                child: ElevatedButton(
                                   onPressed: () {
                                     // if (subscriptionType == 'Free') {
                                     //   Navigator.of(context).push(

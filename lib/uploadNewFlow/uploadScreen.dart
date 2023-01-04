@@ -596,8 +596,7 @@ class _UploadScreenState extends State<UploadScreen> {
                         ),
                         Align(
                           alignment: Alignment.topRight,
-                          child: RaisedButton(
-                            color: Colors.blue,
+                          child: ElevatedButton(
                             onPressed: () async {
                               if (val.length != 0) {
                                 Navigator.pop(context);
@@ -2628,9 +2627,8 @@ Future editDialog(context, height, width, edit, {groupId, title, grpimage}) {
                                   borderRadius: BorderRadius.circular(7),
                                   // color: Color(0xff5AA5EF),
                                 ),
-                                child: RaisedButton(
-                                  color: Color(0xff5AA5EF),
-                                  padding: EdgeInsets.all(0),
+                                child: ElevatedButton(
+                        
                                   onPressed: () async {
                                     if (edit) {
                                       if (groupName != '') {

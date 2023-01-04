@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -135,7 +136,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                       },
                       // validator: (val) {},
                       decoration: InputDecoration(
-                        suffixIcon: FlatButton(
+                        suffixIcon: TextButton(
                           child: hidePassword
                               ? Icon(
                             Icons.visibility,
@@ -349,25 +350,26 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                         }*/
 
                         else {
+                          log(data['message'].toString());
                           setState(() {
                             loading = false;
                           });
-                          scaffoldKey.currentState.showSnackBar(
-                            SnackBar(
-                              content: Text(data['message']),
-                            ),
-                          );
+                          // scaffoldKey.currentState.showSnackBar(
+                          //   SnackBar(
+                          //     content: Text(data['message']),
+                          //   ),
+                          // );
                         }
                         setState(() {
                           loading = false;
                         });
                       } else {
-                        scaffoldKey.currentState.showSnackBar(
-                          SnackBar(
-                            content: Text(
-                                'Please enter a stronger password to complete sign-up'),
-                          ),
-                        );
+                        // scaffoldKey.currentState.showSnackBar(
+                        //   SnackBar(
+                        //     content: Text(
+                        //         'Please enter a stronger password to complete sign-up'),
+                        //   ),
+                        // );
                       }
                     },
                     child: Container(

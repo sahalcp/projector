@@ -153,11 +153,11 @@ class _TVLoginScreenState extends State<TVLoginScreen> {
                                 loading = false;
                               });
 
-                              scaffoldKey.currentState.showSnackBar(
-                                SnackBar(
-                                  content: Text('${data['message']}'),
-                                ),
-                              );
+                              // scaffoldKey.currentState.showSnackBar(
+                              //   SnackBar(
+                              //     content: Text('${data['message']}'),
+                              //   ),
+                              // );
                             }
                             setState(() {
                               loading = false;

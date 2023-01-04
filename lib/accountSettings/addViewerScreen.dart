@@ -356,9 +356,8 @@ class _AddViewerScreenState extends State<AddViewerScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          RaisedButton(
-                                            color: Color(0xffFAFAFA),
-                                            padding: EdgeInsets.all(0),
+                                          ElevatedButton(
+                                         
                                             onPressed: () async {
                                               emailC.clear();
 
@@ -399,9 +398,8 @@ class _AddViewerScreenState extends State<AddViewerScreen> {
                                           SizedBox(
                                             width: 15,
                                           ),
-                                          RaisedButton(
-                                            color: Color(0xffFAFAFA),
-                                            padding: EdgeInsets.all(0),
+                                          ElevatedButton(
+                                    
                                             onPressed: () async {
                                               // var ids = [];
                                               setState(() {
@@ -775,9 +773,8 @@ class _AddViewerScreenState extends State<AddViewerScreen> {
                                             borderRadius:
                                                 BorderRadius.circular(5.0),
                                           ),
-                                          child: RaisedButton(
-                                            padding: EdgeInsets.all(0),
-                                            color: Color(0xffC6C6C6),
+                                          child: ElevatedButton(
+                                      
                                             onPressed: () {
                                               setState(() {
                                                 addViewer = true;
@@ -921,9 +918,8 @@ acceptUser(height, width, setState, loading) {
                                     ),
                                     borderRadius: BorderRadius.circular(5.0),
                                   ),
-                                  child: RaisedButton(
-                                    color: Color(0xff5AA5EF),
-                                    padding: EdgeInsets.all(0),
+                                  child: ElevatedButton(
+                             
                                     onPressed: () async {
                                       setState(() {
                                         loading = true;
@@ -965,9 +961,8 @@ acceptUser(height, width, setState, loading) {
                                     ),
                                     borderRadius: BorderRadius.circular(5.0),
                                   ),
-                                  child: RaisedButton(
-                                    color: Color(0xff5AA5EF),
-                                    padding: EdgeInsets.all(0),
+                                  child: ElevatedButton(
+                       
                                     onPressed: () async {
                                       var data = await ViewService()
                                           .updateRequestStatus(2, userId);

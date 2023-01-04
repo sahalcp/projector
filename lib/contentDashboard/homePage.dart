@@ -274,8 +274,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                               Container(
                                 width: width * 0.45,
-                                child: RaisedButton(
-                                  color: Color(0xff1172D2),
+                                child: ElevatedButton(
                                   onPressed: () {
                                     if (isLaunchSubscriptionWeb == true) {
                                       launch(serverPlanUrl);
@@ -1194,11 +1193,11 @@ class _HomePageState extends State<HomePage> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(7),
                               ),
-                              child: RaisedButton(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(7),
-                                ),
-                                color: Color(0xff5AA5EF),
+                              child: ElevatedButton(
+                                // shape: RoundedRectangleBorder(
+                                //   borderRadius: BorderRadius.circular(7),
+                                // ),
+                              
                                 onPressed: () async {
                                   if (email.isEmpty || email == "") {
                                     Fluttertoast.showToast(

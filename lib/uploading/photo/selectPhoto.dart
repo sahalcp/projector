@@ -479,8 +479,7 @@ class _SelectPhotoViewState extends State<SelectPhotoView> {
                             SizedBox(height: 10),
                             Align(
                               alignment: Alignment.topRight,
-                              child: RaisedButton(
-                                color: Colors.blue,
+                              child: ElevatedButton(
                                 onPressed: () async {
                                   if (isSingleClick(DateTime.now())) {
                                     print('hold on, processing');
@@ -696,10 +695,7 @@ class _SelectPhotoViewState extends State<SelectPhotoView> {
                           margin: EdgeInsets.only(right: 20, bottom: 20),
                           child: Align(
                             alignment: Alignment.topRight,
-                            child: RaisedButton(
-                              color: selectedTitle != null
-                                  ? Colors.blue
-                                  : Colors.grey,
+                            child: ElevatedButton(
                               onPressed: () async {
                                 // print("radiovalue-->"+selectedTitle.toString()+","+groupValue.toString());
 

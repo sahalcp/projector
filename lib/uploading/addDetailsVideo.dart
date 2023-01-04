@@ -520,8 +520,7 @@ class _AddDetailsScreenState extends State<AddDetailsScreen> {
                         ),
                         Align(
                           alignment: Alignment.topRight,
-                          child: RaisedButton(
-                            color: Colors.blue,
+                          child: ElevatedButton(
                             onPressed: () async {
                               if (val.length != 0) {
                                 setState(() {
@@ -2338,12 +2337,12 @@ child: Center(
                                           ),
                                         );*/
                                         } else {
-                                          key.currentState.showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                  'Select any group from list'),
-                                            ),
-                                          );
+                                          // key.currentState.showSnackBar(
+                                          //   SnackBar(
+                                          //     content: Text(
+                                          //         'Select any group from list'),
+                                          //   ),
+                                          // );
                                         }
                                       } else if (visibilityId != null) {
                                         setState(() {
@@ -2416,12 +2415,12 @@ child: Center(
                                         visibilty = true;
                                       });
                                     } else {
-                                      key.currentState.showSnackBar(
-                                        SnackBar(
-                                          content:
-                                              Text('All fields are necessary'),
-                                        ),
-                                      );
+                                      // key.currentState.showSnackBar(
+                                      //   SnackBar(
+                                      //     content:
+                                      //         Text('All fields are necessary'),
+                                      //   ),
+                                      // );
                                     }
                                   } else if (details) {
                                     if (title.length > 40) {
@@ -2434,19 +2433,19 @@ child: Center(
                                       });
                                     } else if (title.length == 0 &&
                                         description.length == 0) {
-                                      key.currentState.showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              'Title and Description cannot be empty'),
-                                        ),
-                                      );
+                                      // key.currentState.showSnackBar(
+                                      //   SnackBar(
+                                      //     content: Text(
+                                      //         'Title and Description cannot be empty'),
+                                      //   ),
+                                      // );
                                     } else if (selectedThumbnail == null) {
-                                      key.currentState.showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              'Add one thumbnail for video'),
-                                        ),
-                                      );
+                                      // key.currentState.showSnackBar(
+                                      //   SnackBar(
+                                      //     content: Text(
+                                      //         'Add one thumbnail for video'),
+                                      //   ),
+                                      // );
                                     } else {
                                       setState(() {
                                         videoUploading = true;
